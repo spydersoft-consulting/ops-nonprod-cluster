@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: test-applications
+spec:
+  generators:
+  - git:
+      repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster.git
+      revision: HEAD
+      directories:
+      - path: apps/test/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://192.168.1.43:6443
+        namespace: 'test'
