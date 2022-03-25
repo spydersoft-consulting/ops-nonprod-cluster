@@ -7,7 +7,7 @@ metadata:
   labels:
     helm.sh/chart: spydersoft-common-config-0.1.0
     app.kubernetes.io/name: spydersoft-common-config
-    app.kubernetes.io/instance: spydersoft-common-config
+    app.kubernetes.io/instance: home-automation-common-config
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
 data:
