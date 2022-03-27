@@ -57,7 +57,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.25-argo-migration.4"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.26"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -107,7 +107,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: "auth.mattgerega.net"
+    - host: "auth.mattgerega.org"
       http:
         paths:
           - path: "/"
