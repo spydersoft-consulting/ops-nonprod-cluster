@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: home-automation-apps-nonprod
+  name: nonproduction-apps
   labels:
     spydersoft.io/environment: non-production
     spydersoft.io/category: app-set
@@ -11,8 +11,8 @@ spec:
       repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
       revision: HEAD
       directories:
-      - path: apps/home-automation/test/*
-      - path: apps/home-automation/stage/*
+      - path: apps/**/*
+      
   template:
     metadata:
       name: '{{path.basename}}-{{path[2]}}'
@@ -20,7 +20,7 @@ spec:
         spydersoft.io/environment: non-production
         spydersoft.io/category: app
     spec:
-      project: home-automation-apps
+      project: '{{ path[1] }}-apps'
       source:
         repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
         targetRevision: main
