@@ -11,7 +11,8 @@ spec:
       repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
       revision: HEAD
       directories:
-      - path: apps/**/**/*
+      - path: apps/**/test/*
+      - path: apps/**/stage/*
       
   template:
     metadata:
