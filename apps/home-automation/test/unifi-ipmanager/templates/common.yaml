@@ -1,0 +1,126 @@
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-ipmanager
+  labels:
+    helm.sh/chart: unifi-ipmanager-0.1.0
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/instance: unifi-ipmanager
+    app.kubernetes.io/version: "1.0.9"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/instance: unifi-ipmanager
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi-ipmanager
+  labels:
+    helm.sh/chart: unifi-ipmanager-0.1.0
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/instance: unifi-ipmanager
+    app.kubernetes.io/version: "1.0.9"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: unifi-ipmanager
+      app.kubernetes.io/instance: unifi-ipmanager
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: unifi-ipmanager
+        app.kubernetes.io/instance: unifi-ipmanager
+    spec:
+      
+      imagePullSecrets:
+        - name: spydersoft-proget
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      containers:
+        - name: unifi-ipmanager
+          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.3-jwt-updates.2"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "Identity__ApiName"
+              value: "unifi.ipmanager"
+            - name: "UnifiControllerOptions__Url"
+              value: "https://unifi.mattgerega.com"
+          envFrom:
+            - configMapRef:
+                name: home-automation-common-config
+            - secretRef:
+                name: unifi-secrets
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          startupProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 0
+            failureThreshold: 30
+            timeoutSeconds: 1
+            periodSeconds: 5
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: unifi-ipmanager
+  labels:
+    helm.sh/chart: unifi-ipmanager-0.1.0
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/instance: unifi-ipmanager
+    app.kubernetes.io/version: "1.0.9"
+    app.kubernetes.io/managed-by: Helm
+    ingressClassName: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: "api.mattgerega.net"
+      http:
+        paths:
+          - path: "/unifi/ipmanager(/|$)(.*)"
+            pathType: Prefix
+            backend:
+              service:
+                name: unifi-ipmanager
+                port:
+                  number: 80
