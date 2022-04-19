@@ -57,7 +57,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: ha-isy-wrapper
-          image: "proget.mattgerega.com/spydersoft/ha/ha.api.isywrapper:1.0.9"
+          image: "proget.mattgerega.com/spydersoft/ha/ha.api.isywrapper:1.0.11"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Identity__ApiName"
@@ -76,7 +76,7 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health
+              path: /healthz
               port: 8080
             initialDelaySeconds: 0
             periodSeconds: 10
@@ -84,7 +84,7 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health
+              path: /healthz
               port: 8080
             initialDelaySeconds: 0
             periodSeconds: 10
