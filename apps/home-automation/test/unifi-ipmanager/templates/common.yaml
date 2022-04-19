@@ -57,7 +57,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: unifi-ipmanager
-          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.5-update-endpoint.1"
+          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.5-update-endpoint.2"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Identity__ApiName"
