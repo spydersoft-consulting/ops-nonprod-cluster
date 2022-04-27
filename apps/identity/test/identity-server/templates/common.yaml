@@ -57,7 +57,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.25-argo-migration.4"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.26-minimal-startup.1"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
