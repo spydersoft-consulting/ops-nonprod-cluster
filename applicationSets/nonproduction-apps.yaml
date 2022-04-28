@@ -28,7 +28,7 @@ spec:
         directory:
           recurse: true
       destination:
-        server: https://nonprodcp.gerega.net:6443
+        server: https://cp-nonprod.gerega.net:6443
         namespace: '{{ path[2] }}'
       syncPolicy:
         automated: 
