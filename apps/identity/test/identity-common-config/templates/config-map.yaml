@@ -17,4 +17,4 @@ data:
   Logging__LogLevel__Default: Warning
   Serilog__MinimumLevel__Default: Debug
   Serilog__WriteTo__ElasticSink__Args__indexFormat: log-test-{0:yyyy.MM}
-  Serilog__WriteTo__ElasticSink__Args__nodeUris: http://elastic.mattgerega.net/
+  Serilog__WriteTo__ElasticSink__Args__nodeUris: https://elastic.mattgerega.net/
