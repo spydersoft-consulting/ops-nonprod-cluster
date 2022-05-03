@@ -14,6 +14,7 @@ data:
   AllowedOrigins__0: https://*.mattgerega.net
   AllowedOrigins__1: http://localhost:3000
   Identity__AuthorityUrl: https://auth.mattgerega.net
-  Logging__LogLevel__Default: Debug
-  Serilog__WriteTo__Elastic__Args__indexFormat: log-test-{0:yyyy.MM}
-  Serilog__WriteTo__Elastic__Args__nodeUris: http://elastic.mattgerega.net/
+  Logging__LogLevel__Default: Warning
+  Serilog__MinimumLevel__Default: Debug
+  Serilog__WriteTo__ElasticSink__Args__indexFormat: log-test-{0:yyyy.MM}
+  Serilog__WriteTo__ElasticSink__Args__nodeUris: http://elastic.mattgerega.net/
