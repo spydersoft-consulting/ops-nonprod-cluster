@@ -47,6 +47,7 @@ spec:
       labels:
         app.kubernetes.io/name: identity-server
         app.kubernetes.io/instance: identity-server
+        spydersoft.io/log: dotnet-serilog
     spec:
       
       imagePullSecrets:
