@@ -60,6 +60,9 @@ spec:
         - name: identity-server
           image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.31-otel.5"
           imagePullPolicy: IfNotPresent
+          env:
+            - name: "Zipkin__ServiceName"
+              value: "identity-server-test"
           envFrom:
             - configMapRef:
                 name: identity-common-config
