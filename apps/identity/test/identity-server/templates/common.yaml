@@ -58,7 +58,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.31-otel.4"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.31-otel.5"
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
