@@ -14,3 +14,4 @@ data:
   AllowedOrigins__0: https://*.mattgerega.org
   Identity__AuthorityUrl: https://auth.mattgerega.org
   Serilog__MinimumLevel__Default: Warning
+  Zipkin__Host: https://tempo.mattgerega.net/zipkin/spans
