@@ -1,0 +1,19 @@
+environment: nonproduction
+
+redis:
+  global:
+    storageClass: nfs-client
+  architecture: standalone
+
+  auth:
+    existingSecret: redis-secrets
+    existingSecretPasswordKey: password
+
+  master:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 200Mi
