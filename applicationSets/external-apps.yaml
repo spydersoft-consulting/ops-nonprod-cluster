@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: external-apps
+  name: non-prod-external-apps
   labels:
     spydersoft.io/environment: non-production
     spydersoft.io/category: app-set
