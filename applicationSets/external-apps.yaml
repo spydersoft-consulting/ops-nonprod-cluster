@@ -31,9 +31,9 @@ spec:
       destination:
         server: https://cp-nonprod.gerega.net:6443
         namespace: '{{path[1]}}'
-      # syncPolicy:
+      syncPolicy:
       #   automated: 
       #     prune: true 
       #     selfHeal: true
-      #   syncOptions:   
-      #   - CreateNamespace=true
+        syncOptions:   
+        - CreateNamespace=true
