@@ -1,7 +1,7 @@
 type: application
 version: 17.3.7
 apiVersion: v2
-name: nonprod-redis
+name: nonproduction-redis
 dependencies:
 - version: 17.3.7
   name: redis
