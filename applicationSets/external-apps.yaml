@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: external-apps
+  labels:
+    spydersoft.io/environment: non-production
+    spydersoft.io/category: app-set
+spec:
+  generators:
+  - git:
+      repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+      revision: HEAD
+      directories:
+      - path: external/**/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        spydersoft.io/environment: non-production
+        spydersoft.io/category: '{{path[1]}}'
+    spec:
+      project: external-apps
+      source:
+        helm:
+          version: v3
+          valueFiles:
+          - values.yaml
+        path: '{{ path }}'
+        repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+        targetRevision: main
+      destination:
+        server: https://cp-nonprod.gerega.net:6443
+        namespace: '{{path[1]}}'
+      # syncPolicy:
+      #   automated: 
+      #     prune: true 
+      #     selfHeal: true
+      #   syncOptions:   
+      #   - CreateNamespace=true
