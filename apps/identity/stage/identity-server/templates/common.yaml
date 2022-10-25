@@ -47,6 +47,7 @@ spec:
       labels:
         app.kubernetes.io/name: identity-server
         app.kubernetes.io/instance: identity-server
+        spydersoft.io/log: dotnet-serilog
     spec:
       
       imagePullSecrets:
@@ -57,8 +58,11 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.28"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.34"
           imagePullPolicy: IfNotPresent
+          env:
+            - name: "Zipkin__ServiceName"
+              value: "identity-server-stage"
           envFrom:
             - configMapRef:
                 name: identity-common-config
