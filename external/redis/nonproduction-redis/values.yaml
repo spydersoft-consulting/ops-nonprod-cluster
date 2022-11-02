@@ -17,3 +17,8 @@ redis:
       limits:
         cpu: 100m
         memory: 200Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      scrapeTimeout: 30s
