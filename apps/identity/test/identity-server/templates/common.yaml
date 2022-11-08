@@ -58,7 +58,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.35-ha-7-email.2"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.36-fix-2fa-redirect.1"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Zipkin__ServiceName"
