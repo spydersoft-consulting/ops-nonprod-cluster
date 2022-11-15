@@ -18,6 +18,10 @@ spec:
     targetPort: 8080
     protocol: TCP
     name: http
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
   selector:
     app.kubernetes.io/name: identity-server
     app.kubernetes.io/instance: identity-server
@@ -58,7 +62,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.36-fix-2fa-redirect.1"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.34-data-protect-and-cache.1"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Zipkin__ServiceName"
@@ -71,6 +75,9 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
               protocol: TCP
           livenessProbe:
             tcpSocket:
