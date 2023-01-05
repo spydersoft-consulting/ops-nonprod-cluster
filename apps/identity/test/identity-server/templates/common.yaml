@@ -58,7 +58,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.36-linting-et-al.10"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.39-sonar-fixes.1"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Zipkin__ServiceName"
