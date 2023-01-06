@@ -14,5 +14,3 @@ data:
   AllowedOrigins__0: https://*.mattgerega.org
   Identity__AuthorityUrl: https://auth.mattgerega.org
   Logging__LogLevel__Default: Warning
-  Serilog__WriteTo__ElasticSink__Args__indexFormat: log-stage-{0:yyyy.MM}
-  Serilog__WriteTo__ElasticSink__Args__nodeUris: https://elastic.mattgerega.net/
