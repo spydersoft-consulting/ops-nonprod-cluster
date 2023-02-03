@@ -1,39 +1,39 @@
-apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
-metadata:
-  name: nonproduction-apps
-  labels:
-    spydersoft.io/environment: non-production
-    spydersoft.io/category: app-set
-spec:
-  generators:
-  - git:
-      repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
-      revision: HEAD
-      directories:
-      - path: apps/**/**/*
+# apiVersion: argoproj.io/v1alpha1
+# kind: ApplicationSet
+# metadata:
+#   name: nonproduction-apps
+#   labels:
+#     spydersoft.io/environment: non-production
+#     spydersoft.io/category: app-set
+# spec:
+#   generators:
+#   - git:
+#       repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+#       revision: HEAD
+#       directories:
+#       - path: apps/**/**/*
       
-  template:
-    metadata:
-      name: '{{path.basename}}-{{path[2]}}'
-      labels:
-        spydersoft.io/environment: non-production
-        spydersoft.io/category: app
-    spec:
-      project: '{{ path[1] }}-apps'
-      source:
-        repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
-        targetRevision: main
-        path: '{{ path }}'
-        directory:
-          recurse: true
-      destination:
-        server: https://cp-nonprod.gerega.net:6443
-        namespace: '{{ path[2] }}'
-      syncPolicy:
-        automated: 
-          prune: true 
-          selfHeal: true
-        syncOptions:   
-        - CreateNamespace=true
+#   template:
+#     metadata:
+#       name: '{{path.basename}}-{{path[2]}}'
+#       labels:
+#         spydersoft.io/environment: non-production
+#         spydersoft.io/category: app
+#     spec:
+#       project: '{{ path[1] }}-apps'
+#       source:
+#         repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+#         targetRevision: main
+#         path: '{{ path }}'
+#         directory:
+#           recurse: true
+#       destination:
+#         server: https://cp-nonprod.gerega.net:6443
+#         namespace: '{{ path[2] }}'
+#       syncPolicy:
+#         automated: 
+#           prune: true 
+#           selfHeal: true
+#         syncOptions:   
+#         - CreateNamespace=true
       
