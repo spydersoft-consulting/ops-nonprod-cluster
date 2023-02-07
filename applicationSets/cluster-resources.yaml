@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: production-cluster-resources
+  labels:
+    spydersoft.io/environment: production
+    spydersoft.io/category: app
+spec:
+  destination:
+    namespace: cluster-tools
+    server: https://cp-nonprod.gerega.net:6443
+  project: cluster-tools
+  source:
+    path: cluster-resources
+    repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+    targetRevision: HEAD
+
+    directory:
+      recurse: true
+      jsonnet: {}
+  # syncPolicy:
+  #   automated:
+  #     selfHeal: true
+  #     prune: true
