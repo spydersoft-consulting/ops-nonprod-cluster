@@ -2,3 +2,28 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: test
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: spydersoft-proget
+  namespace: test
+  labels:
+    name: proget-cr-secret
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    creationPolicy: Owner
+    template:
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        labels:
+          name: test
+  data:
+    - secretKey: .dockerconfigjson
+      remoteRef:
+        key: secrets-k8/proget-cr-config
+        property: config
