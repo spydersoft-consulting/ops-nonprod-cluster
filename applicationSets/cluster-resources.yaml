@@ -1,9 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: production-cluster-resources
+  name: nonproduction-cluster-resources
   labels:
-    spydersoft.io/environment: production
+    spydersoft.io/environment: non-production
     spydersoft.io/category: app
 spec:
   destination:
