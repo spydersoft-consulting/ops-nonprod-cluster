@@ -4,7 +4,7 @@ metadata:
   name: nonproduction-cluster-resources
   labels:
     spydersoft.io/environment: non-production
-    spydersoft.io/category: app
+    spydersoft.io/category: resources
 spec:
   destination:
     namespace: cluster-tools
