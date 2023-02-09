@@ -57,7 +57,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: ha-isy-wrapper
-          image: "proget.mattgerega.com/spydersoft/ha/ha.api.isywrapper:1.0.11"
+          image: "proget.mattgerega.com/spydersoft/ha/ha.api.isywrapper:1.0.12"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Identity__ApiName"
