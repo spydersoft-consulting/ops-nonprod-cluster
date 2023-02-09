@@ -57,9 +57,13 @@ spec:
       enableServiceLinks: true
       containers:
         - name: unifi-ipmanager
-          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.34"
+          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.35"
           imagePullPolicy: IfNotPresent
           env:
+            - name: "DnsService__DefaultZone"
+              value: "gerega.net"
+            - name: "DnsService__Url"
+              value: "http://dc2201.gerega.net:5000"
             - name: "Identity__ApiName"
               value: "unifi.ipmanager"
             - name: "UnifiControllerOptions__Url"
