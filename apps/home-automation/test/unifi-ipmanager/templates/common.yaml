@@ -63,7 +63,7 @@ spec:
             - name: "DnsService__DefaultZone"
               value: "gerega.net"
             - name: "DnsService__Url"
-              value: "http://dc2201.gerega.net:5000"
+              value: "http://dc2203.ad.mattgerega.net:5000"
             - name: "Identity__ApiName"
               value: "unifi.ipmanager"
             - name: "UnifiControllerOptions__Url"
