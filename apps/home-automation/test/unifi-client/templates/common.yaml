@@ -118,7 +118,7 @@ spec:
       volumes:
         - name: config-js
           configMap:
-            name: config-js
+            name: unifi-client-config-js
 ---
 # Source: unifi-client/templates/common.yaml
 apiVersion: networking.k8s.io/v1
