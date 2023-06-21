@@ -11,6 +11,6 @@ metadata:
     app.kubernetes.io/version: "1.16.0"
     app.kubernetes.io/managed-by: Helm
 data:
-  AllowedOrigins__0: https://*.mattgerega.org
+  AllowedOrigins__0: https://uni.mattgerega.org
   Identity__AuthorityUrl: https://auth.mattgerega.org
   Logging__LogLevel__Default: Warning
