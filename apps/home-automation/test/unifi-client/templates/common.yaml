@@ -84,7 +84,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: unifi-client
-          image: proget.mattgerega.com/spydersoft/ha/unifi.client:0.1.17-vite.8
+          image: proget.mattgerega.com/spydersoft/ha/unifi.client:0.1.17-vite.9
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
