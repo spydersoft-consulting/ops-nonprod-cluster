@@ -14,7 +14,7 @@ redis:
 
   master:
     configuration: | 
-      loadmodule /opt/redis-stack/lib/redisearch.so
+      loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
       loadmodule /opt/redis-stack/lib/redistimeseries.so
     # command: 
     # - exec /opt/redis-stack/bin/redis-server --loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000 --loadmodule /opt/redis-stack/lib/rejson.so "${ARGS[@]}" 
