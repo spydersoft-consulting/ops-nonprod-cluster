@@ -1,6 +1,8 @@
 environment: nonproduction
 
 redis:
+  repository: redis/redis-stack-server
+  tag: 6.2.6-v10
   global:
     storageClass: nfs-client
   architecture: standalone
@@ -10,6 +12,10 @@ redis:
     existingSecretPasswordKey: password
 
   master:
+    command: exec /opt/redis-stack/bin/redis-server \
+      --loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000 \ 
+      --loadmodule /opt/redis-stack/lib/rejson.so \ 
+      "${ARGS[@]}" 
     resources:
       requests:
         cpu: 50m
@@ -17,6 +23,11 @@ redis:
       limits:
         cpu: 100m
         memory: 200Mi
+  replica:
+    command: exec /opt/redis-stack/bin/redis-server \ 
+      --loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000 \ 
+      --loadmodule /opt/redis-stack/lib/rejson.so \ 
+      "${ARGS[@]}" 
   metrics:
     enabled: true
     serviceMonitor:
