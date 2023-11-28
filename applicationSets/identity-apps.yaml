@@ -8,7 +8,7 @@
 # spec:
 #   generators:
 #   - git:
-#       repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+#       repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
 #       revision: HEAD
 #       directories:
 #       - path: apps/identity/test/*
@@ -22,7 +22,7 @@
 #     spec:
 #       project: identity-apps
 #       source:
-#         repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+#         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
 #         targetRevision: main
 #         path: '{{ path }}'
 #         directory:

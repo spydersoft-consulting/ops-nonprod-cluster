@@ -12,7 +12,7 @@ spec:
   project: cluster-tools
   source:
     path: cluster-resources
-    repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+    repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
     targetRevision: HEAD
 
     directory:

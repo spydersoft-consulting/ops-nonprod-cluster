@@ -8,7 +8,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+      repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
       revision: HEAD
       directories:
       - path: external/**/*
@@ -26,7 +26,7 @@ spec:
           valueFiles:
           - values.yaml
         path: '{{ path }}'
-        repoURL: https://bitbucket.org/spydersoftteam/ops-nonprod-cluster
+        repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
         targetRevision: main
       destination:
         server: https://cp-nonprod.gerega.net:6443
