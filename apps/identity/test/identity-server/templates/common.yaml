@@ -58,7 +58,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.49-duende-63.4"
+          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.2.49-duende-63.13"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Zipkin__ServiceName"
