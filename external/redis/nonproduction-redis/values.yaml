@@ -24,7 +24,7 @@ redis:
   global:
     storageClass: nfs-client
   image:
-    tag: v7.2.0-v7
+    tag: 7.2.0-v7
     repository: redis/redis-stack-server
 environment: nonproduction
 
