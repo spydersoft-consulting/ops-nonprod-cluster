@@ -10,6 +10,7 @@ spec:
         use-forwarded-headers: "true"
         proxy-buffer-size: "256k"
         proxy-buffer-number: "4"
+        client-header-buffer-size: "256k"
         large-client-header-buffers: "4 16k"
       metrics:
         enabled: true
