@@ -208,3 +208,24 @@ spec:
       command: ['wget']
       args: ['techradar:']
   restartPolicy: Never
+---
+# Source: techradar/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "techradar-test-connection"
+  labels:
+    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/version: "1.0.9"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['techradar:']
+  restartPolicy: Never
