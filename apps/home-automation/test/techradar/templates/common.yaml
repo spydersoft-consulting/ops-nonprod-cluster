@@ -90,7 +90,7 @@ spec:
         - envFrom:
           - secretRef:
               name: techradar-data-api
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.1.3-cicd.12
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.1.3-cicd.13
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -149,15 +149,10 @@ spec:
       imagePullSecrets: 
         - name: spydersoft-proget
       containers: 
-        - env:
-          - name: Logging__LogLevel__Microsoft.AspNetCore
-            value: Debug
-          - name: Logging__LogLevel__Microsoft.AspNetCore.Authentication
-            value: Trace
-          envFrom:
+        - envFrom:
           - secretRef:
               name: techradar-frontend
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:0.1.0-cicd.25
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:0.1.0-cicd.26
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
