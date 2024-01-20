@@ -87,10 +87,7 @@ spec:
       imagePullSecrets: 
         - name: spydersoft-proget
       containers: 
-        - env:
-          - name: DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
-            value: "1"
-          envFrom:
+        - envFrom:
           - secretRef:
               name: techradar-data-api
           image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.1.3-cicd.12
