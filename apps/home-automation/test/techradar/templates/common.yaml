@@ -152,6 +152,8 @@ spec:
         - env:
           - name: Logging__LogLevel__Microsoft.AspNetCore
             value: Debug
+          - name: Logging__LogLevel__Microsoft.AspNetCore.Authentication
+            value: Trace
           envFrom:
           - secretRef:
               name: techradar-frontend
