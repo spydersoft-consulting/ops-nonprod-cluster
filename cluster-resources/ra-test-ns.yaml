@@ -7,7 +7,7 @@ apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: spydersoft-proget
-  namespace: stage
+  namespace: ra-test-techradar
   labels:
     name: proget-cr-secret
 spec:
