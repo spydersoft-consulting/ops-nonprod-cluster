@@ -9,6 +9,9 @@ redis:
       enabled: true
   architecture: standalone
   master:
+    service:
+      annotations:
+        config.linkerd.io/opaque-ports: "6379"
     resources:
       requests:
         cpu: 50m
