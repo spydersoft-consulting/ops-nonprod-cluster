@@ -2,3 +2,28 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: ra-stage-techradar
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: spydersoft-proget
+  namespace: stage
+  labels:
+    name: proget-cr-secret
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    creationPolicy: Owner
+    template:
+      type: kubernetes.io/dockerconfigjson
+      metadata:
+        labels:
+          name: stage
+  data:
+    - secretKey: .dockerconfigjson
+      remoteRef:
+        key: secrets-k8/proget-cr-config
+        property: config
