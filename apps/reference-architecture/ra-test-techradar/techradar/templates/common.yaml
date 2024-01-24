@@ -1,0 +1,198 @@
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-data-api
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/component: data-api
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-frontend
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-frontend
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/component: data-api
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+spec:
+  revisionHistoryLimit: 
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: data-api
+      app.kubernetes.io/name: techradar
+      app.kubernetes.io/instance: techradar
+  template:
+    metadata:
+      labels: 
+        app.kubernetes.io/component: data-api
+        app.kubernetes.io/instance: techradar
+        app.kubernetes.io/name: techradar
+    spec: 
+      enableServiceLinks: true
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: spydersoft-proget
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: techradar-data-api
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.1.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: techradar/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techradar-frontend
+  labels:
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+spec:
+  revisionHistoryLimit: 
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/name: techradar
+      app.kubernetes.io/instance: techradar
+  template:
+    metadata:
+      labels: 
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/instance: techradar
+        app.kubernetes.io/name: techradar
+    spec: 
+      enableServiceLinks: true
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: spydersoft-proget
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: techradar-frontend
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:0.1.0-cicd.28
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: techradar/templates/common.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: techradar
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "techradar.mattgerega.net"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: techradar-frontend
+                port:
+                  number: 80
