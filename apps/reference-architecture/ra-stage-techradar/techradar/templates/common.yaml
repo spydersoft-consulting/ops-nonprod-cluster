@@ -186,7 +186,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: "techradar.mattgerega.net"
+    - host: "techradar.mattgerega.org"
       http:
         paths:
           - path: "/"
