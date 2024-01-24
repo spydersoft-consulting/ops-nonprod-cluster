@@ -22,5 +22,5 @@ spec:
   data:
   - secretKey: connection_string
     remoteRef:
-      key: secrets-k8/techradar/test/data
+      key: secrets-k8/techradar/stage/data
       property: connectionString
