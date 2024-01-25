@@ -22,5 +22,5 @@ spec:
           enabled: true
           additionalLabels:
             cluster: nonproduction
-      extraArgs:
-        v: "3"
+      proxySetHeaders:
+        Connection: "upgrade"
