@@ -25,3 +25,4 @@ spec:
       proxySetHeaders:
         Connection: "$upgrade"
         Upgrade: "$http_upgrade"
+        Origin: ""
