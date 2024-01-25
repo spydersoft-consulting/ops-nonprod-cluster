@@ -8,9 +8,6 @@ spec:
     controller:
       podAnnotations:
         linkerd.io/inject: enabled
-      kind: DaemonSet
-      daemonset:
-        useHostPort: true
       config:
         use-forwarded-headers: "true"
         proxy-buffer-size: "256k"
