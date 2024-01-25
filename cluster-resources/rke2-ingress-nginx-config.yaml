@@ -6,6 +6,8 @@ metadata:
 spec:
   valuesContent: |-
     controller:
+      hostNetwork: false
+      kind: Deployment
       podAnnotations:
         linkerd.io/inject: enabled
       config:
