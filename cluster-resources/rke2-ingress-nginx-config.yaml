@@ -23,4 +23,5 @@ spec:
           additionalLabels:
             cluster: nonproduction
       proxySetHeaders:
-        Connection: "upgrade"
+        Connection: "$upgrade"
+        Upgrade: "$http_upgrade"
