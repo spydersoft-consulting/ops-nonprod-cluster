@@ -8,7 +8,7 @@ spec:
     controller:
       hostNetwork: false
       podAnnotations:
-        linkerd.io/inject: enabled
+        linkerd.io/inject: disabled
       config:
         use-forwarded-headers: "true"
         proxy-buffer-size: "256k"
