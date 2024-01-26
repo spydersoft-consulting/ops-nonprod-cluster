@@ -9,6 +9,7 @@ spec:
       hostNetwork: false
       podAnnotations:
         linkerd.io/inject: enabled
+        config.linkerd.io/enable-debug-sidecar: "true"
       config:
         use-forwarded-headers: "true"
         proxy-buffer-size: "256k"
