@@ -57,7 +57,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: unifi-ipmanager
-          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.33-rename.3"
+          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.33-net8.2"
           imagePullPolicy: IfNotPresent
           env:
             - name: "DnsService__DefaultZone"
