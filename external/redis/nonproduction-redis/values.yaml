@@ -30,4 +30,8 @@ redis:
       loadmodule /opt/redis-stack/lib/redisbloom.so
   global:
     storageClass: nfs-client
+  networkPolicy:
+    extraIngress:
+      - ports:
+        - port: 6379
 
