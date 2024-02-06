@@ -33,5 +33,6 @@ redis:
   networkPolicy:
     extraIngress:
       - ports:
-        - port: 6379
+        - port: 4143
+          protocol: TCP
 
