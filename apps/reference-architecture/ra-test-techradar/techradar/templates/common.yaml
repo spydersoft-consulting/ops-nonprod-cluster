@@ -90,7 +90,7 @@ spec:
         - envFrom:
           - secretRef:
               name: techradar-data-api
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.1.3-sonar.7
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.1.3-sonar.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
