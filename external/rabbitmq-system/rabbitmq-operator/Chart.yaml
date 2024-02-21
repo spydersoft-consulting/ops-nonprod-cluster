@@ -1,0 +1,7 @@
+apiVersion: v2
+appVersion: 2.7.0
+name: rabbitmq-operator
+version: 2.7.0
+type: application
+
+
