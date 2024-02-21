@@ -7,37 +7,36 @@ metadata:
     spydersoft.io/category: app-set
 spec:
   generators:
-  - git:
-      repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
-      revision: HEAD
-      directories:
-      - path: external/**/*
+    - git:
+        repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
+        revision: HEAD
+        directories:
+          - path: external/**/*
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: "{{path.basename}}"
       labels:
         spydersoft.io/environment: non-production
-        spydersoft.io/category: '{{path[1]}}'
+        spydersoft.io/category: "{{path[1]}}"
     spec:
       project: external-apps
       source:
         helm:
           version: v3
           valueFiles:
-          - values.yaml
-        path: '{{ path }}'
+            - values.yaml
+        path: "{{ path }}"
         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
         targetRevision: main
       destination:
         server: https://cp-nonprod.gerega.net:6443
-        namespace: '{{path[1]}}'
+        namespace: "{{path[1]}}"
       ignoreDifferences:
-        - group: '*'
-          kind: '*'
+        - group: "*"
+          kind: "*"
           jqPathExpressions:
-          - '.webhooks[]?.clientConfig.caBundle'
-          - '.webhooks[]?.client'
+            - ".webhooks[]?.clientConfig.caBundle"
+            - ".webhooks[]?.client"
       syncPolicy:
-        syncOptions:     # Sync options which modifies sync behavior
-        - RespectIgnoreDifferences=true
-          
+        syncOptions: # Sync options which modifies sync behavior
+          - RespectIgnoreDifferences=true
