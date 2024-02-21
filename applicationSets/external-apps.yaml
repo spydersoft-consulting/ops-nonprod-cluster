@@ -31,13 +31,13 @@ spec:
       destination:
         server: https://cp-nonprod.gerega.net:6443
         namespace: '{{path[1]}}'
-    ignoreDifferences:
-      - group: '*'
-        kind: '*'
-        jqPathExpressions:
-        - '.webhooks[]?.clientConfig.caBundle'
-        - '.webhooks[]?.client'
-    syncPolicy:
-      syncOptions:     # Sync options which modifies sync behavior
-      - RespectIgnoreDifferences=true
-      
+      ignoreDifferences:
+        - group: '*'
+          kind: '*'
+          jqPathExpressions:
+          - '.webhooks[]?.clientConfig.caBundle'
+          - '.webhooks[]?.client'
+      syncPolicy:
+        syncOptions:     # Sync options which modifies sync behavior
+        - RespectIgnoreDifferences=true
+          
