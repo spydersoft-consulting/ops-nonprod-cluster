@@ -6,7 +6,7 @@ spec:
   replicas: 1
   secretBackend:
     externalSecret:
-      name: test
+      name: "test"
   resources:
     requests:
       cpu: 100m
