@@ -4,9 +4,9 @@ metadata:
   name: {{ .Release.Name }}
 spec:
   replicas: 1
-#   secretBackend:
-#     externalSecret:
-#       name: {{ .Release.Name }}-user-es
+  secretBackend:
+    externalSecret:
+      name: {{ .Release.Name }}-user-es
   resources:
     requests:
       cpu: 100m
