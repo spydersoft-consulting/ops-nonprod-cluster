@@ -6,7 +6,7 @@ spec:
   replicas: 1
   secretBackend:
     externalSecret:
-      name: {{ .Release.Name }}-user
+      name: test
   resources:
     requests:
       cpu: 100m
