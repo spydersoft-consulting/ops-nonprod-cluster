@@ -1,11 +1,11 @@
-version: 3.18.2
-type: application
 name: rabbitmq-cluster-operator
+type: application
 appVersion: 2.7.0
-apiVersion: v2
 dependencies:
-- name: rabbitmq-cluster-operator
+- version: 3.19.0
   repository: https://charts.bitnami.com/bitnami
-  version: 3.18.2
+  name: rabbitmq-cluster-operator
+version: 3.19.0
+apiVersion: v2
 
 
