@@ -22,7 +22,7 @@ spec:
         spydersoft.io/environment: non-production
         spydersoft.io/category: app
     spec:
-      project: '{{ index .path.segments 1 }}-apps'
+      project: "{{ index .path.segments 1 }}-apps"
       source:
         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
         targetRevision: main
