@@ -9,15 +9,15 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  - git:
-      repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
-      revision: HEAD
-      directories:
-      - path: apps/**/**/*
-      
+    - git:
+        repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
+        revision: HEAD
+        directories:
+          - path: apps/**/**/*
+
   template:
     metadata:
-      name: '{{path.basename}}-{{ index .path.segments 2 }}'
+      name: "{{path.basename}}-{{ index .path.segments 2 }}"
       labels:
         spydersoft.io/environment: non-production
         spydersoft.io/category: app
@@ -26,15 +26,13 @@ spec:
       source:
         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
         targetRevision: main
-        path: '{{ path }}'
+        path: "{{ path }}"
         directory:
           recurse: true
       destination:
         server: https://cp-nonprod.gerega.net:6443
-        namespace: '{{ index .path.segments 2 }}'
+        namespace: "{{ index .path.segments 2 }}"
       syncPolicy:
-        automated: 
-          prune: true 
+        automated:
+          prune: true
           selfHeal: false
-
-      

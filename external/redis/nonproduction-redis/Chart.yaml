@@ -4,8 +4,6 @@ type: application
 apiVersion: v2
 appVersion: 7.0.5
 dependencies:
-- version: 19.6.4
-  repository: https://charts.bitnami.com/bitnami
-  name: redis
-
-
+  - version: 19.6.4
+    repository: https://charts.bitnami.com/bitnami
+    name: redis

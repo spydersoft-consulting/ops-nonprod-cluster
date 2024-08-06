@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: rabbitmq
   # annotations:
-  #  linkerd.io/inject: enabled  
+  #  linkerd.io/inject: enabled

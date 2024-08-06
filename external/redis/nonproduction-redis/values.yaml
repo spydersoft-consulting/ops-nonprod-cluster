@@ -11,9 +11,9 @@ redis:
     existingSecret: redis-secrets
   networkPolicy:
     extraIngress:
-    - ports:
-      - protocol: TCP
-        port: 4143
+      - ports:
+          - protocol: TCP
+            port: 4143
   metrics:
     enabled: true
     serviceMonitor:
@@ -35,4 +35,3 @@ redis:
     service:
       annotations:
         config.linkerd.io/opaque-ports: "6379"
-
