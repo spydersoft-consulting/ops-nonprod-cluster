@@ -6,6 +6,8 @@ metadata:
     spydersoft.io/environment: non-production
     spydersoft.io/category: app-set
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
       repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
@@ -15,12 +17,12 @@ spec:
       
   template:
     metadata:
-      name: '{{path.basename}}-{{path[2]}}'
+      name: '{{path.basename}}-{{ index .path.segments 2 }}'
       labels:
         spydersoft.io/environment: non-production
         spydersoft.io/category: app
     spec:
-      project: '{{ path[1] }}-apps'
+      project: '{{ index .path.segments 1 }}-apps'
       source:
         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
         targetRevision: main
@@ -29,10 +31,10 @@ spec:
           recurse: true
       destination:
         server: https://cp-nonprod.gerega.net:6443
-        namespace: '{{ path[2] }}'
+        namespace: '{{ index .path.segments 2 }}'
       syncPolicy:
         automated: 
           prune: true 
-          selfHeal: true
+          selfHeal: false
 
       
