@@ -3,5 +3,3 @@ appVersion: 2.7.0
 name: non-production-rabbitmq
 version: 3.18.1
 type: application
-
-

@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
   name: ra-test-techradar
   annotations:
-    linkerd.io/inject: enabled  
+    linkerd.io/inject: enabled
 ---
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
