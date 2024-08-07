@@ -6,8 +6,6 @@ metadata:
     spydersoft.io/environment: non-production
     spydersoft.io/category: app-set
 spec:
-  goTemplate: true
-  goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
