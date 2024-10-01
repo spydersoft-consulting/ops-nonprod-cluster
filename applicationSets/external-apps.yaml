@@ -29,7 +29,7 @@ spec:
         repoURL: https://github.com/spydersoft-consulting/ops-nonprod-cluster
         targetRevision: main
       destination:
-        server: https://cp-nonprod.gerega.net:6443
+        server: https://cp-nonproduction.gerega.net:6443
         namespace: "{{path[1]}}"
       ignoreDifferences:
         - group: "*"
