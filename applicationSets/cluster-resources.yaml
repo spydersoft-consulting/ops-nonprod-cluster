@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     namespace: cluster-tools
-    server: https://cp-nonprod.gerega.net:6443
+    server: https://cp-nonproduction.gerega.net:6443
   project: cluster-tools
   source:
     path: cluster-resources
