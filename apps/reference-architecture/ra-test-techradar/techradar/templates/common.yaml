@@ -152,7 +152,7 @@ spec:
         - envFrom:
           - secretRef:
               name: techradar-frontend
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:1.0.3-package-updates.11
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:1.0.3-package-updates.13
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
