@@ -1,4 +1,6 @@
 rabbitmq-cluster-operator:
   msgTopologyOperator:
     enabled: false
+    pdb:
+      create: false
   useCertManager: true
