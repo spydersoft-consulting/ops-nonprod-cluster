@@ -22,3 +22,7 @@ spec:
     remoteRef:
       key: secrets-k8/techradar/test/data
       property: connectionString
+  - secretKey: authority
+    remoteRef:
+      key: secrets-k8/techradar/test/auth
+      property: authority
