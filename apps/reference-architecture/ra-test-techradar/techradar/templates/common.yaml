@@ -1,6 +1,40 @@
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+data:
+  Telemetry__Otlp__ActivitySourceName: TechRadar.Data.Test.Activity
+  Telemetry__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+  Telemetry__Otlp__MeterName: TechRadar.Data.Test.Meter
+  Telemetry__Otlp__ServiceName: TechRadar.Data.Test
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techradar-frontend
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+data:
+  Telemetry__Otlp__ActivitySourceName: TechRadar.Frontend.Test.Activity
+  Telemetry__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+  Telemetry__Otlp__MeterName: TechRadar.Frontend.Test.Meter
+  Telemetry__Otlp__ServiceName: TechRadar.Frontend.Test
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
 kind: Service
 metadata:
   name: techradar-data-api
@@ -72,6 +106,8 @@ spec:
       app.kubernetes.io/instance: techradar
   template:
     metadata:
+      annotations: 
+        checksum/configMaps: c0052c25352a35db26bc2c27551b66c510e4b085d9f177a91694dc31f6f5f4bb
       labels: 
         app.kubernetes.io/component: data-api
         app.kubernetes.io/instance: techradar
@@ -90,7 +126,9 @@ spec:
         - envFrom:
           - secretRef:
               name: techradar-data-api
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.39
+          - configMapRef:
+              name: techradar-data-api
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.40
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -134,6 +172,8 @@ spec:
       app.kubernetes.io/instance: techradar
   template:
     metadata:
+      annotations: 
+        checksum/configMaps: c0052c25352a35db26bc2c27551b66c510e4b085d9f177a91694dc31f6f5f4bb
       labels: 
         app.kubernetes.io/component: frontend
         app.kubernetes.io/instance: techradar
@@ -151,6 +191,8 @@ spec:
       containers: 
         - envFrom:
           - secretRef:
+              name: techradar-frontend
+          - configMapRef:
               name: techradar-frontend
           image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:1.0.1-package-updates.25
           imagePullPolicy: IfNotPresent
