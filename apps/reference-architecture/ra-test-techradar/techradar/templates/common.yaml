@@ -3,6 +3,22 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: techradar-common
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+data:
+  Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
+  Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
+  Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: techradar-data-api
   labels:
     app.kubernetes.io/instance: techradar
@@ -13,7 +29,6 @@ metadata:
 data:
   Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
   Telemetry__MeterName: TechRadar.Data.Test.Meter
-  Telemetry__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
   Telemetry__ServiceName: TechRadar.Data.Test
 ---
 # Source: techradar/templates/common.yaml
@@ -30,7 +45,6 @@ metadata:
 data:
   Telemetry__ActivitySourceName: TechRadar.Frontend.Test.Activity
   Telemetry__MeterName: TechRadar.Frontend.Test.Meter
-  Telemetry__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
   Telemetry__ServiceName: TechRadar.Frontend.Test
 ---
 # Source: techradar/templates/common.yaml
@@ -107,7 +121,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b9921bce60a010af103f34a60312babc5cd4bb4a5178dfd05c90130599a3d81e
+        checksum/configMaps: a8d27f6a79a49f39873dee8241058372e2530674fae35f53a0d8a1cb85a09913
       labels: 
         app.kubernetes.io/component: data-api
         app.kubernetes.io/instance: techradar
@@ -126,6 +140,8 @@ spec:
         - envFrom:
           - secretRef:
               name: techradar-data-api
+          - configMapRef:
+              name: techradar-common
           - configMapRef:
               name: techradar-data-api
           image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.41
@@ -173,7 +189,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b9921bce60a010af103f34a60312babc5cd4bb4a5178dfd05c90130599a3d81e
+        checksum/configMaps: a8d27f6a79a49f39873dee8241058372e2530674fae35f53a0d8a1cb85a09913
       labels: 
         app.kubernetes.io/component: frontend
         app.kubernetes.io/instance: techradar
@@ -192,6 +208,8 @@ spec:
         - envFrom:
           - secretRef:
               name: techradar-frontend
+          - configMapRef:
+              name: techradar-common
           - configMapRef:
               name: techradar-frontend
           image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:1.0.1-package-updates.26
