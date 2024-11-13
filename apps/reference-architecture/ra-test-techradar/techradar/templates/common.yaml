@@ -128,7 +128,7 @@ spec:
               name: techradar-data-api
           - configMapRef:
               name: techradar-data-api
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.40
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.41
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
