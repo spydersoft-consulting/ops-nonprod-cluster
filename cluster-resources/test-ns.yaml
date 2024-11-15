@@ -52,6 +52,6 @@ spec:
   data:
     - secretKey: .dockerconfigjson
       remoteRef:
-        key: secrets-k8/gihub-cr-config
+        key: secrets-k8/github-cr-config
         property: config
 
