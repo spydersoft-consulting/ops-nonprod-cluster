@@ -34,7 +34,7 @@ apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: spydersoft-github-es
-  namespace: test
+  namespace: ra-stage-techradar
   labels:
     name: github-cr-secret
 spec:

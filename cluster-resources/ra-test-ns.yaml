@@ -34,7 +34,7 @@ apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: spydersoft-github-es
-  namespace: test
+  namespace: ra-test-techradar
   labels:
     name: github-cr-secret
 spec:
@@ -48,7 +48,7 @@ spec:
       type: kubernetes.io/dockerconfigjson
       metadata:
         labels:
-          name: test
+          name: stage
   data:
     - secretKey: .dockerconfigjson
       remoteRef:
