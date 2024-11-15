@@ -51,14 +51,14 @@ spec:
     spec:
       
       imagePullSecrets:
-        - name: spydersoft-proget
+        - name: cr-spydersoft-github
       serviceAccountName: default
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "proget.mattgerega.com/spydersoft/identity/identity_server:1.4.2"
+          image: "ghcr.io/spyder007/identity_server:1.4.2"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Zipkin__ServiceName"
