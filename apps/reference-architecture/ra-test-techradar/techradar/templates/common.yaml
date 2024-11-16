@@ -144,7 +144,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.41
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.data.api:0.0.1-package-updates.42
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -212,7 +212,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-frontend
-          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:1.0.1-package-updates.30
+          image: proget.mattgerega.com/spydersoft/techradar/techradar.frontend:1.0.1-package-updates.31
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
