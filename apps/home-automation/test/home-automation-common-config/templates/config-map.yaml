@@ -15,3 +15,6 @@ data:
   AllowedOrigins__1: http://localhost:3000
   Identity__AuthorityUrl: https://auth.mattgerega.net
   Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
+  Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
+  Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
