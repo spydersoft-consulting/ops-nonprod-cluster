@@ -50,14 +50,14 @@ spec:
     spec:
       
       imagePullSecrets:
-        - name: spydersoft-proget
+        - name: cr-spydersoft-github
       serviceAccountName: default
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
       containers:
         - name: unifi-ipmanager
-          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.34-package-updates.5"
+          image: "ghcr.io/spyder007/unifi-ipmanager:1.1.34-package-updates.3"
           imagePullPolicy: IfNotPresent
           env:
             - name: "DnsService__DefaultZone"
