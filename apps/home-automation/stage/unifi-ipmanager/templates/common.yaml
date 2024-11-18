@@ -1,38 +1,61 @@
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unifi-ipmanager-ipmanager
+  labels:
+    app.kubernetes.io/instance: unifi-ipmanager
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-ipmanager-0.1.0
+data:
+  DnsService__DefaultZone: gerega.net
+  DnsService__Url: http://dc2203.ad.mattgerega.net:5000
+  Identity__ApiName: unifi.ipmanager
+  Telemetry__ActivitySourceName: Unifi.IpManager.Stage.Activity
+  Telemetry__MeterName: Unifi.IpManager.Stage.Meter
+  Telemetry__ServiceName: Unifi.IpManager.Stage
+  UnifiControllerOptions__Url: https://unifi.mattgerega.com
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: v1
 kind: Service
 metadata:
-  name: unifi-ipmanager
+  name: unifi-ipmanager-main
   labels:
-    helm.sh/chart: unifi-ipmanager-0.1.0
-    app.kubernetes.io/name: unifi-ipmanager
     app.kubernetes.io/instance: unifi-ipmanager
-    app.kubernetes.io/version: "1.0.9"
     app.kubernetes.io/managed-by: Helm
-  annotations:
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/service: unifi-ipmanager-main
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-ipmanager-0.1.0
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
   selector:
-    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/component: main
     app.kubernetes.io/instance: unifi-ipmanager
+    app.kubernetes.io/name: unifi-ipmanager
 ---
 # Source: unifi-ipmanager/templates/common.yaml
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: unifi-ipmanager
   labels:
-    helm.sh/chart: unifi-ipmanager-0.1.0
-    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/component: main
     app.kubernetes.io/instance: unifi-ipmanager
-    app.kubernetes.io/version: "1.0.9"
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-ipmanager-0.1.0
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -40,66 +63,61 @@ spec:
     type: Recreate
   selector:
     matchLabels:
+      app.kubernetes.io/component: main
       app.kubernetes.io/name: unifi-ipmanager
       app.kubernetes.io/instance: unifi-ipmanager
   template:
     metadata:
-      labels:
-        app.kubernetes.io/name: unifi-ipmanager
+      annotations: 
+        checksum/configMaps: 7e121512169363d1b51a89627ef7929198a7d5cc6e8210988f0d34a37694e024
+      labels: 
+        app.kubernetes.io/component: main
         app.kubernetes.io/instance: unifi-ipmanager
-    spec:
-      
-      imagePullSecrets:
-        - name: spydersoft-proget
+        app.kubernetes.io/name: unifi-ipmanager
+    spec: 
+      enableServiceLinks: true
       serviceAccountName: default
       automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
       dnsPolicy: ClusterFirst
-      enableServiceLinks: true
-      containers:
-        - name: unifi-ipmanager
-          image: "proget.mattgerega.com/spydersoft/ha/unifi.ipmanager:1.1.50"
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: home-automation-common-config
+          - configMapRef:
+              name: unifi-ipmanager-ipmanager
+          - secretRef:
+              name: unifi-secrets
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.51
           imagePullPolicy: IfNotPresent
-          env:
-            - name: "DnsService__DefaultZone"
-              value: "gerega.net"
-            - name: "DnsService__Url"
-              value: "http://dc2203.ad.mattgerega.net:5000"
-            - name: "Identity__ApiName"
-              value: "unifi.ipmanager"
-            - name: "UnifiControllerOptions__Url"
-              value: "https://unifi.mattgerega.com"
-          envFrom:
-            - configMapRef:
-                name: home-automation-common-config
-            - secretRef:
-                name: unifi-secrets
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /healthz
+              path: /livez
               port: 8080
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
+          name: main
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /healthz
+              path: /readyz
               port: 8080
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
           startupProbe:
+            failureThreshold: 30
+            initialDelaySeconds: 0
+            periodSeconds: 5
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 0
-            failureThreshold: 30
             timeoutSeconds: 1
-            periodSeconds: 5
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: networking.k8s.io/v1
@@ -107,16 +125,15 @@ kind: Ingress
 metadata:
   name: unifi-ipmanager
   labels:
-    helm.sh/chart: unifi-ipmanager-0.1.0
-    app.kubernetes.io/name: unifi-ipmanager
     app.kubernetes.io/instance: unifi-ipmanager
-    app.kubernetes.io/version: "1.0.9"
     app.kubernetes.io/managed-by: Helm
-    ingressClassName: nginx
+    app.kubernetes.io/name: unifi-ipmanager
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: unifi-ipmanager-0.1.0
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
+  ingressClassName: nginx
   rules:
     - host: "api.mattgerega.org"
       http:
@@ -125,6 +142,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: unifi-ipmanager
+                name: unifi-ipmanager-main
                 port:
                   number: 80

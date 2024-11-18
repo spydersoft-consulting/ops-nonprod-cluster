@@ -77,14 +77,14 @@ spec:
     spec:
       
       imagePullSecrets:
-        - name: spydersoft-proget
+        - name: cr-spydersoft-github
       serviceAccountName: default
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
       containers:
         - name: unifi-client
-          image: proget.mattgerega.com/spydersoft/ha/unifi.client:0.1.19
+          image: ghcr.io/spyder007/unifi-client:0.1.19
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
