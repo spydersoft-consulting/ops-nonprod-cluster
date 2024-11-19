@@ -12,7 +12,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 data:
   AllowedOrigins__0: https://uni.mattgerega.org
-  Identity__AuthorityUrl: https://auth.mattgerega.org
+  Identity__Authority: https://auth.mattgerega.org
+  Identity__AuthorityUrl: ""
   Logging__LogLevel__Default: Warning
   Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
   Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
