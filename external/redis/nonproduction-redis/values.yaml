@@ -1,5 +1,6 @@
 environment: nonproduction
 redis:
+
   architecture: standalone
   auth:
     existingSecret: redis-secrets
@@ -11,6 +12,8 @@ redis:
     enabled: true
   global:
     storageClass: nfs-client
+    security:
+      allowInsecureImages: true
   master:
     configuration: |
       loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
