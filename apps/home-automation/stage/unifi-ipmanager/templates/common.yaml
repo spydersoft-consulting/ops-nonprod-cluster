@@ -17,7 +17,7 @@ data:
   Telemetry__ActivitySourceName: Unifi.IpManager.Stage.Activity
   Telemetry__MeterName: Unifi.IpManager.Stage.Meter
   Telemetry__ServiceName: Unifi.IpManager.Stage
-  UnifiControllerOptions__Url: https://unifi.mattgerega.com
+  UnifiControllerOptions__Url: https://unifi.gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -69,7 +69,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 7e121512169363d1b51a89627ef7929198a7d5cc6e8210988f0d34a37694e024
+        checksum/configMaps: a9f0699a614009ab8f5cdb240890c419145bd568f4fc40fa318297f98d176543
       labels: 
         app.kubernetes.io/component: main
         app.kubernetes.io/instance: unifi-ipmanager
