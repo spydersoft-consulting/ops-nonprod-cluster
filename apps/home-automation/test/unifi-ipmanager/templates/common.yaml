@@ -17,7 +17,7 @@ data:
   Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
   Telemetry__MeterName: Unifi.IpManager.Test.Meter
   Telemetry__ServiceName: Unifi.IpManager.Test
-  UnifiControllerOptions__Url: https://unifi.mattgerega.com
+  UnifiControllerOptions__Url: https://unifi.gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -69,7 +69,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: c1adbad54f84721be2e4ec2c187e951bb617f43592063b2098dc06c1c4ceff32
+        checksum/configMaps: 2ac20811f1a952248c92d70822003413ae3e97e1d3600301561e68bd0cb9d3d1
       labels: 
         app.kubernetes.io/component: main
         app.kubernetes.io/instance: unifi-ipmanager
@@ -92,7 +92,7 @@ spec:
               name: unifi-ipmanager-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-revert-nswag-changes.101
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-unifi-cloud-support.103
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
