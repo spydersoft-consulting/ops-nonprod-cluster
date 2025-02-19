@@ -84,7 +84,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: unifi-client
-          image: ghcr.io/spyder007/unifi-client:0.1.19
+          image: ghcr.io/spyder007/unifi-client:0.1.19-package-updates.1
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
