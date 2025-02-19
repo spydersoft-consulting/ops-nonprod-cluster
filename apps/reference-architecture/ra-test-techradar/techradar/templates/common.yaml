@@ -212,7 +212,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:1.0.1-package-updates.31
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:1.1.1-package-updates.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
