@@ -14,7 +14,13 @@ data:
   AllowedOrigins__0: https://*.mattgerega.net
   AllowedOrigins__1: http://localhost:3000
   Identity__AuthorityUrl: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Debug
+  Serilog__MinimumLevel__Default: Information
   Serilog__MinimumLevel__Override__Microsoft: Information
   Serilog__MinimumLevel__Override__System: Information
-  Zipkin__Host: https://tempo.mattgerega.net/zipkin/spans
+  Telemetry__ActivitySourceName: Identity.Test.Activity
+  Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
+  Telemetry__MeterName: Identity.Test.Meter
+  Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
+  Telemetry__ServiceName: Identity.Test
+  Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+  Zipkin__Host: ""
