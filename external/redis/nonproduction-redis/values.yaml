@@ -35,6 +35,8 @@ redis:
       scrapeTimeout: 30s
       enabled: true
   auth:
+    usePasswordFiles: false
+    usePasswordFileFromSecret: false
     existingSecretPasswordKey: redis-password
     existingSecret: redis-secrets
 
