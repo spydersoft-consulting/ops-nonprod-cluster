@@ -1,11 +1,11 @@
+version: 20.11.3
 type: application
+apiVersion: v2
 dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 20.11.2
-apiVersion: v2
+  version: 20.11.3
 appVersion: 7.0.5
-version: 20.11.2
 name: nonproduction-redis
 
 
