@@ -1,0 +1,34 @@
+---
+# Source: ha-dashboard/templates/ha-frontend-es.yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: ha-dashboard-frontend-es
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: ha-dashboard-frontend
+    template:
+      type: kubernetes.io/secret
+      engineVersion: v2
+      data:
+        Bff__Oidc__Authority: "{{ .authority }}"
+        Bff__Oidc__ClientId: "{{ .client_id }}"
+        Bff__Oidc__ClientSecret: "{{ .client_secret }}"
+        
+  data:
+  - secretKey: authority
+    remoteRef:
+      key: secrets-k8/ha-dashboard/dev/auth
+      property: authority
+  - secretKey: client_id
+    remoteRef:
+      key: secrets-k8/ha-dashboard/dev/auth
+      property: client_id
+  - secretKey: client_secret
+    remoteRef:
+      key: secrets-k8/ha-dashboard/dev/auth
+      property: client_secret
