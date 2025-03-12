@@ -22,13 +22,13 @@ spec:
   data:
   - secretKey: authority
     remoteRef:
-      key: secrets-k8/ha-dashboard/dev/auth
+      key: secrets-k8/ha-dashboard/test/auth
       property: authority
   - secretKey: client_id
     remoteRef:
-      key: secrets-k8/ha-dashboard/dev/auth
+      key: secrets-k8/ha-dashboard/test/auth
       property: client_id
   - secretKey: client_secret
     remoteRef:
-      key: secrets-k8/ha-dashboard/dev/auth
+      key: secrets-k8/ha-dashboard/test/auth
       property: client_secret
