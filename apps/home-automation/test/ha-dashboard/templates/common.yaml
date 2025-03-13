@@ -27,6 +27,7 @@ metadata:
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: ha-dashboard-0.1.0
 data:
+  Bff__ReverseProxy__Clusters__unifiIpManager__Destinations__api__Address: unifi-ipmanager-main.test
   Telemetry__ActivitySourceName: HA.Frontend.Test.Activity
   Telemetry__MeterName: HA.Frontend.Test.Meter
   Telemetry__ServiceName: HA.Frontend.Test
@@ -81,7 +82,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: bb458971c8f933543ae652755c7f4fb5f4daaa70eb087118e00128b8d3fe1bc5
+        checksum/configMaps: 0adea0add50c40f852cc038230c888e20be3be8e352a6317e16e9730a6570c53
       labels: 
         app.kubernetes.io/component: frontend
         app.kubernetes.io/instance: ha-dashboard
