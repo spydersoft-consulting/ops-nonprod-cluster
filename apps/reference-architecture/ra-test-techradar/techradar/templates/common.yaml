@@ -144,7 +144,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.1.1-package-updates.3
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -212,7 +212,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:1.1.1-package-updates.5
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:1.2.1-TR-1-icon.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
