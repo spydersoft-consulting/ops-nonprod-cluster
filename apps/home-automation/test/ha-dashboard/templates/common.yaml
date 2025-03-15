@@ -105,7 +105,7 @@ spec:
               name: ha-dashboard-common
           - configMapRef:
               name: ha-dashboard-frontend
-          image: ghcr.io/spyder007/ha-frontend:0.0.1-bff-client-conversion.11
+          image: ghcr.io/spyder007/ha-frontend:0.0.1-bff-client-conversion.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
