@@ -1,5 +1,5 @@
 {
     "repository": "redis-stack/redis-stack",
-    "stripVFromVersion": true,
+    "imagePrefix": "v",
     "tagPath": "redis.image.tag"
 }
