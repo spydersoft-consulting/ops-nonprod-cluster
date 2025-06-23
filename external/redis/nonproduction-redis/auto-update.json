@@ -1,5 +1,9 @@
 {
-    "repository": "redis-stack/redis-stack",
-    "imagePrefix": "v",
-    "tagPath": "redis.image.tag"
+    "repositories": [
+        {
+            "repository": "redis-stack/redis-stack",
+            "imagePrefix": "v",
+            "tagPath": "redis.image.tag"
+        }
+    ]
 }
