@@ -58,7 +58,7 @@ spec:
       enableServiceLinks: true
       containers:
         - name: identity-server
-          image: "ghcr.io/spyder007/identity_server:1.4.2-platform-reference-change.5"
+          image: "ghcr.io/spyder007/identity_server:1.4.3-july-25-upgrades.7"
           imagePullPolicy: IfNotPresent
           env:
             - name: "Zipkin__ServiceName"
