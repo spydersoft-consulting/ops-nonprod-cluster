@@ -100,6 +100,31 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-data-api
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
   name: techradar-frontend
   labels:
     app.kubernetes.io/instance: techradar
@@ -147,31 +172,6 @@ spec:
     app.kubernetes.io/name: techradar
 ---
 # Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: techradar-data-api
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-data-api
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
----
-# Source: techradar/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -188,7 +188,7 @@ spec:
   revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/controller: data-api
@@ -283,7 +283,7 @@ spec:
   revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/controller: frontend
@@ -427,6 +427,10 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 500M
+    nginx.ingress.kubernetes.io/rewrite-target: /
   namespace: ra-test-techradar
 spec:
   ingressClassName: nginx
@@ -438,6 +442,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: techradar-frontend
                 port:
-                  number: 0
+                  number: 80
