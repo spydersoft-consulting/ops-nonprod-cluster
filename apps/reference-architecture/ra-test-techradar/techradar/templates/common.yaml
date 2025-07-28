@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 data:
   Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
   Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
@@ -26,6 +27,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
   Telemetry__MeterName: TechRadar.Data.Test.Meter
@@ -42,6 +44,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Frontend.Test.Activity
   Telemetry__MeterName: TechRadar.Frontend.Test.Meter
@@ -58,6 +61,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 data:
   init-data.sh: |
     #!/bin/bash
@@ -76,13 +80,14 @@ data:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: techradar-postgres-data
+  name: techradar
   labels:
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
   accessModes:
     - "ReadWriteMany"
@@ -90,30 +95,6 @@ spec:
     requests:
       storage: "300Gi"
   storageClassName: "nfs-client"
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: techradar-data-api
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-data-api
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/component: data-api
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
@@ -127,6 +108,7 @@ metadata:
     app.kubernetes.io/service: techradar-frontend
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
   type: ClusterIP
   ports:
@@ -135,7 +117,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/component: frontend
+    app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/name: techradar
 ---
@@ -151,6 +133,7 @@ metadata:
     app.kubernetes.io/service: techradar-postgres
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
   type: ClusterIP
   ports:
@@ -159,7 +142,32 @@ spec:
       protocol: TCP
       name: postgres
   selector:
-    app.kubernetes.io/component: postgres
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-data-api
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/name: techradar
 ---
@@ -169,20 +177,21 @@ kind: Deployment
 metadata:
   name: techradar-data-api
   labels:
-    app.kubernetes.io/component: data-api
+    app.kubernetes.io/controller: data-api
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
-  revisionHistoryLimit: 
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/component: data-api
+      app.kubernetes.io/controller: data-api
       app.kubernetes.io/name: techradar
       app.kubernetes.io/instance: techradar
   template:
@@ -190,11 +199,11 @@ spec:
       annotations: 
         checksum/configMaps: dba27d5085f2b9ad1f584aeffbe053c6deb9731b6225dd2ab6bb4419597239d1
       labels: 
-        app.kubernetes.io/component: data-api
+        app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: techradar
         app.kubernetes.io/name: techradar
     spec: 
-      enableServiceLinks: true
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
       hostIPC: false
@@ -263,20 +272,21 @@ kind: Deployment
 metadata:
   name: techradar-frontend
   labels:
-    app.kubernetes.io/component: frontend
+    app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
-  revisionHistoryLimit: 
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/component: frontend
+      app.kubernetes.io/controller: frontend
       app.kubernetes.io/name: techradar
       app.kubernetes.io/instance: techradar
   template:
@@ -284,11 +294,11 @@ spec:
       annotations: 
         checksum/configMaps: dba27d5085f2b9ad1f584aeffbe053c6deb9731b6225dd2ab6bb4419597239d1
       labels: 
-        app.kubernetes.io/component: frontend
+        app.kubernetes.io/controller: frontend
         app.kubernetes.io/instance: techradar
         app.kubernetes.io/name: techradar
     spec: 
-      enableServiceLinks: true
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
       hostIPC: false
@@ -338,12 +348,13 @@ kind: Deployment
 metadata:
   name: techradar-postgres
   labels:
-    app.kubernetes.io/component: postgres
+    app.kubernetes.io/controller: postgres
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -351,7 +362,7 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/component: postgres
+      app.kubernetes.io/controller: postgres
       app.kubernetes.io/name: techradar
       app.kubernetes.io/instance: techradar
   template:
@@ -359,11 +370,11 @@ spec:
       annotations: 
         checksum/configMaps: dba27d5085f2b9ad1f584aeffbe053c6deb9731b6225dd2ab6bb4419597239d1
       labels: 
-        app.kubernetes.io/component: postgres
+        app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: techradar
         app.kubernetes.io/name: techradar
     spec: 
-      enableServiceLinks: true
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
       hostIPC: false
@@ -397,9 +408,9 @@ spec:
       volumes: 
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: techradar-postgres-data
+            claimName: techradar
         - configMap:
-            name: postgres-init-data
+            name: techradar-postgres-init-data
           name: postgres-init-data
         - name: postgres-secrets
           secret:
@@ -416,6 +427,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
 spec:
   ingressClassName: nginx
   rules:
@@ -426,6 +438,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: techradar-frontend
+                name: frontend
                 port:
-                  number: 80
+                  number: 0
