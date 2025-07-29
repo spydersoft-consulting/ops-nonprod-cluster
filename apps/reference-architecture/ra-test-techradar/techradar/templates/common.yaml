@@ -239,7 +239,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.1-postgres.3
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.1-postgres.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
