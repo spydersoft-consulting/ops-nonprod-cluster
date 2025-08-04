@@ -1,11 +1,11 @@
 appVersion: 7.0.5
-version: 21.2.13
-name: nonproduction-redis
-type: application
 apiVersion: v2
+type: application
 dependencies:
-- version: 21.2.13
+- repository: https://charts.bitnami.com/bitnami
   name: redis
-  repository: https://charts.bitnami.com/bitnami
+  version: 21.2.13
+name: nonproduction-redis
+version: 21.2.13
 
 
