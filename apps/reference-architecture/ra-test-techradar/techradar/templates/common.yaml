@@ -3,6 +3,40 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+data:
+  Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
+  Telemetry__MeterName: TechRadar.Data.Test.Meter
+  Telemetry__ServiceName: TechRadar.Data.Test
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techradar-frontend
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+data:
+  Telemetry__ActivitySourceName: TechRadar.Frontend.Test.Activity
+  Telemetry__MeterName: TechRadar.Frontend.Test.Meter
+  Telemetry__ServiceName: TechRadar.Frontend.Test
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: techradar-postgres-init-data
   labels:
     app.kubernetes.io/instance: techradar
@@ -41,40 +75,6 @@ data:
   Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
   Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
   Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: techradar-data-api
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-data:
-  Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
-  Telemetry__MeterName: TechRadar.Data.Test.Meter
-  Telemetry__ServiceName: TechRadar.Data.Test
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: techradar-frontend
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-data:
-  Telemetry__ActivitySourceName: TechRadar.Frontend.Test.Activity
-  Telemetry__MeterName: TechRadar.Frontend.Test.Meter
-  Telemetry__ServiceName: TechRadar.Frontend.Test
 ---
 # Source: techradar/templates/common.yaml
 ---
@@ -316,7 +316,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:1.2.1-postgres.2
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:1.2.1-postgres.7
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
