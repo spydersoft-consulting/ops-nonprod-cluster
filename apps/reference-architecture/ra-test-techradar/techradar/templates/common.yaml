@@ -101,6 +101,31 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: techradar-postgres
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-postgres
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
   name: techradar-data-api
   labels:
     app.kubernetes.io/instance: techradar
@@ -144,31 +169,6 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: frontend
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: techradar-postgres
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-postgres
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: postgres
-  selector:
-    app.kubernetes.io/controller: postgres
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/name: techradar
 ---
@@ -240,7 +240,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.1-postgres.6
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.1-postgres.7
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
