@@ -176,80 +176,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: techradar-postgres
-  labels:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-spec:
-  revisionHistoryLimit: 3
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: postgres
-      app.kubernetes.io/name: techradar
-      app.kubernetes.io/instance: techradar
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: 25107aa7e34109fc5427a7c7c2064fa30a8fdb0173f34ce1b7b78a88f38b7e00
-      labels: 
-        app.kubernetes.io/controller: postgres
-        app.kubernetes.io/instance: techradar
-        app.kubernetes.io/name: techradar
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - env:
-          - name: POSTGRES_PORT
-            value: "5432"
-          - name: POSTGRES_HOST
-            value: postgres-service
-          - name: POSTGRES_DB
-            value: techradar
-          envFrom:
-          - secretRef:
-              name: postgres-secrets
-          image: postgres:17
-          imagePullPolicy: IfNotPresent
-          name: main
-          volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: postgres-data
-          - mountPath: /docker-entrypoint-initdb.d/init-techradar-user.sh
-            name: postgres-init-data
-            subPath: init-data.sh
-          - mountPath: /postgres-secrets
-            name: postgres-secrets
-      volumes: 
-        - name: postgres-data
-          persistentVolumeClaim:
-            claimName: techradar
-        - configMap:
-            name: techradar-postgres-init-data
-          name: postgres-init-data
-        - name: postgres-secrets
-          secret:
-            secretName: postgres-secrets
----
-# Source: techradar/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: techradar-data-api
   labels:
     app.kubernetes.io/controller: data-api
@@ -314,7 +240,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.1-postgres.5
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:1.2.1-postgres.6
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -413,6 +339,80 @@ spec:
           - mountPath: /postgres-secrets
             name: postgres-secrets
       volumes: 
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
+---
+# Source: techradar/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techradar-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/name: techradar
+      app.kubernetes.io/instance: techradar
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 25107aa7e34109fc5427a7c7c2064fa30a8fdb0173f34ce1b7b78a88f38b7e00
+      labels: 
+        app.kubernetes.io/controller: postgres
+        app.kubernetes.io/instance: techradar
+        app.kubernetes.io/name: techradar
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_DB
+            value: techradar
+          envFrom:
+          - secretRef:
+              name: postgres-secrets
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          name: main
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /docker-entrypoint-initdb.d/init-techradar-user.sh
+            name: postgres-init-data
+            subPath: init-data.sh
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: techradar
+        - configMap:
+            name: techradar-postgres-init-data
+          name: postgres-init-data
         - name: postgres-secrets
           secret:
             secretName: postgres-secrets
