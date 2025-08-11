@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
 data:
   Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
   Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
@@ -26,6 +27,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Data.Stage.Activity
   Telemetry__MeterName: TechRadar.Data.Stage.Meter
@@ -42,6 +44,7 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Frontend.Stage.Activity
   Telemetry__MeterName: TechRadar.Frontend.Stage.Meter
@@ -49,27 +52,50 @@ data:
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: techradar-data-api
+  name: techradar-postgres-init-data
   labels:
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-data-api
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/component: data-api
+  namespace: ra-stage-techradar
+data:
+  init-data.sh: |
+    #!/bin/bash
+    set -e;
+    if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
+        GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
+        ALTER DATABASE ${POSTGRES_DB} OWNER TO "${POSTGRES_NON_ROOT_USER}";
+    EOSQL
+    else
+      echo "SETUP INFO: No Environment variables given!"
+    fi
+---
+# Source: techradar/templates/common.yaml
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: techradar
+  labels:
     app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "300Gi"
+  storageClassName: "nfs-client"
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
@@ -83,6 +109,7 @@ metadata:
     app.kubernetes.io/service: techradar-frontend
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
 spec:
   type: ClusterIP
   ports:
@@ -91,43 +118,93 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/component: frontend
+    app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/name: techradar
 ---
 # Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-postgres
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-postgres
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
 ---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-data-api
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: techradar-data-api
   labels:
-    app.kubernetes.io/component: data-api
+    app.kubernetes.io/controller: data-api
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
 spec:
-  revisionHistoryLimit: 
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/component: data-api
+      app.kubernetes.io/controller: data-api
       app.kubernetes.io/name: techradar
       app.kubernetes.io/instance: techradar
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b91c25150a3f5ce786f03a3a24fcda2feea91d45a8c4ff6832669112269e1415
+        checksum/configMaps: 55ab95852e3b9e676ba47dbe9250515e72178a3b915940fa766e11763746d7ad
       labels: 
-        app.kubernetes.io/component: data-api
+        app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: techradar
         app.kubernetes.io/name: techradar
     spec: 
-      enableServiceLinks: true
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
       hostIPC: false
@@ -137,7 +214,26 @@ spec:
       imagePullSecrets: 
         - name: cr-spydersoft-github
       containers: 
-        - envFrom:
+        - env:
+          - name: DB_TYPE
+            value: postgresdb
+          - name: DB_POSTGRESDB_HOST
+            value: techradar-postgres
+          - name: DB_POSTGRESDB_PORT
+            value: "5432"
+          - name: DB_POSTGRESDB_DATABASE
+            value: techradar
+          - name: DB_POSTGRESDB_USER
+            valueFrom:
+              secretKeyRef:
+                key: POSTGRES_NON_ROOT_USER
+                name: postgres-secrets
+          - name: DB_POSTGRESDB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: POSTGRES_NON_ROOT_PASSWORD
+                name: postgres-secrets
+          envFrom:
           - secretRef:
               name: techradar-data-api
           - configMapRef:
@@ -163,6 +259,13 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
+          volumeMounts:
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: apps/v1
@@ -170,32 +273,33 @@ kind: Deployment
 metadata:
   name: techradar-frontend
   labels:
-    app.kubernetes.io/component: frontend
+    app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: techradar
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
 spec:
-  revisionHistoryLimit: 
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/component: frontend
+      app.kubernetes.io/controller: frontend
       app.kubernetes.io/name: techradar
       app.kubernetes.io/instance: techradar
   template:
     metadata:
       annotations: 
-        checksum/configMaps: b91c25150a3f5ce786f03a3a24fcda2feea91d45a8c4ff6832669112269e1415
+        checksum/configMaps: 55ab95852e3b9e676ba47dbe9250515e72178a3b915940fa766e11763746d7ad
       labels: 
-        app.kubernetes.io/component: frontend
+        app.kubernetes.io/controller: frontend
         app.kubernetes.io/instance: techradar
         app.kubernetes.io/name: techradar
     spec: 
-      enableServiceLinks: true
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
       hostIPC: false
@@ -231,6 +335,87 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
+          volumeMounts:
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
+---
+# Source: techradar/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techradar-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/name: techradar
+      app.kubernetes.io/instance: techradar
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 55ab95852e3b9e676ba47dbe9250515e72178a3b915940fa766e11763746d7ad
+      labels: 
+        app.kubernetes.io/controller: postgres
+        app.kubernetes.io/instance: techradar
+        app.kubernetes.io/name: techradar
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_DB
+            value: techradar
+          envFrom:
+          - secretRef:
+              name: postgres-secrets
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          name: main
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /docker-entrypoint-initdb.d/init-techradar-user.sh
+            name: postgres-init-data
+            subPath: init-data.sh
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: techradar
+        - configMap:
+            name: techradar-postgres-init-data
+          name: postgres-init-data
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: networking.k8s.io/v1
@@ -243,6 +428,11 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 500M
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: ra-stage-techradar
 spec:
   ingressClassName: nginx
   rules:
