@@ -139,7 +139,7 @@ spec:
       http:
         paths:
           - path: "/unifi/ipmanager(/|$)(.*)"
-            pathType: Prefix
+            pathType: Exact
             backend:
               service:
                 name: unifi-ipmanager-main
