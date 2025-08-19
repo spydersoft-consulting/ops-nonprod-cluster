@@ -91,7 +91,7 @@ spec:
               name: unifi-ipmanager-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-unifi-dns.119
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-unifi-dns.121
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
