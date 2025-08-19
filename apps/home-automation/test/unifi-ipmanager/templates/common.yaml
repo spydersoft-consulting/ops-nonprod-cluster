@@ -15,8 +15,8 @@ data:
   Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
   Telemetry__MeterName: Unifi.IpManager.Test.Meter
   Telemetry__ServiceName: Unifi.IpManager.Test
+  UnifiControllerOptions__DnsZone: gerega.net
   UnifiControllerOptions__Url: https://unifi.gerega.net
-  UnifiOptions__DnsZone: gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -68,7 +68,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: fa63d6a4087eb11264fb34a98fbf2220efeeb5ac73e30b2752bb674314035e09
+        checksum/configMaps: 0a761b7aee01e5ca9a6eafbcfe1a788c91b0c5004dd03da6425e5e26553291fc
       labels: 
         app.kubernetes.io/component: main
         app.kubernetes.io/instance: unifi-ipmanager
