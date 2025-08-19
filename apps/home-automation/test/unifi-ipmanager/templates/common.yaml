@@ -11,13 +11,12 @@ metadata:
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: unifi-ipmanager-0.1.0
 data:
-  DnsService__DefaultZone: gerega.net
-  DnsService__Url: http://dc2203.ad.mattgerega.net:5000
   Identity__ApiName: unifi.ipmanager
   Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
   Telemetry__MeterName: Unifi.IpManager.Test.Meter
   Telemetry__ServiceName: Unifi.IpManager.Test
   UnifiControllerOptions__Url: https://unifi.gerega.net
+  UnifiOptions__DnsZone: gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -69,7 +68,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 2ac20811f1a952248c92d70822003413ae3e97e1d3600301561e68bd0cb9d3d1
+        checksum/configMaps: fa63d6a4087eb11264fb34a98fbf2220efeeb5ac73e30b2752bb674314035e09
       labels: 
         app.kubernetes.io/component: main
         app.kubernetes.io/instance: unifi-ipmanager
