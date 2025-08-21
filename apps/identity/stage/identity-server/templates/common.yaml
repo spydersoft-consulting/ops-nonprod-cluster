@@ -1,38 +1,140 @@
 ---
 # Source: identity-server/templates/common.yaml
 apiVersion: v1
-kind: Service
+kind: ConfigMap
+metadata:
+  name: identity-server-postgres-init-data
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
+data:
+  init-data.sh: |
+    #!/bin/bash
+    set -e;
+    if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
+        GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
+        ALTER DATABASE ${POSTGRES_DB} OWNER TO "${POSTGRES_NON_ROOT_USER}";
+    EOSQL
+    else
+      echo "SETUP INFO: No Environment variables given!"
+    fi
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-server-identity
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
+data:
+  AllowedOrigins__0: https://*.mattgerega.org
+  Identity__AuthorityUrl: https://auth.mattgerega.org
+  Serilog__MinimumLevel__Default: Warning
+  Telemetry__ActivitySourceName: Identity.Stage.Activity
+  Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
+  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__MeterName: Identity.Stage.Meter
+  Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
+  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__ServiceName: Identity.Stage
+  Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: nonproduction
+---
+# Source: identity-server/templates/common.yaml
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
   name: identity-server
   labels:
-    helm.sh/chart: identity-server-0.1.0
-    app.kubernetes.io/name: identity-server
     app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/version: "1.0.9"
     app.kubernetes.io/managed-by: Helm
-  annotations:
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "300Gi"
+  storageClassName: "nfs-client"
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-server-main
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/service: identity-server-main
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
   selector:
-    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/name: identity-server
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-server-postgres
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/service: identity-server-postgres
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/name: identity-server
 ---
 # Source: identity-server/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity-server
+  name: identity-server-main
   labels:
-    helm.sh/chart: identity-server-0.1.0
-    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/version: "1.0.9"
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
 spec:
   revisionHistoryLimit: 3
   replicas: 1
@@ -40,59 +142,133 @@ spec:
     type: Recreate
   selector:
     matchLabels:
+      app.kubernetes.io/controller: main
       app.kubernetes.io/name: identity-server
       app.kubernetes.io/instance: identity-server
   template:
     metadata:
-      labels:
-        app.kubernetes.io/name: identity-server
+      annotations: 
+        checksum/configMaps: da6e034fdea28152227bec053ba0a9f5fa75690abe93bf936ad7070a29c25cb4
+      labels: 
+        app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server
-        spydersoft.io/log: dotnet-serilog
-    spec:
-      
-      imagePullSecrets:
-        - name: cr-spydersoft-github
+        app.kubernetes.io/name: identity-server
+    spec: 
+      enableServiceLinks: false
       serviceAccountName: default
       automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
       dnsPolicy: ClusterFirst
-      enableServiceLinks: true
-      containers:
-        - name: identity-server
-          image: "ghcr.io/spyder007/identity_server:1.4.3"
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: identity-server-identity
+          - secretRef:
+              name: identity-server-secrets
+          image: ghcr.io/spyder007/identity_server:2.0.0
           imagePullPolicy: IfNotPresent
-          env:
-            - name: "Zipkin__ServiceName"
-              value: "identity-server-stage"
-          envFrom:
-            - configMapRef:
-                name: identity-common-config
-            - secretRef:
-                name: identity-server-secrets
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
           livenessProbe:
-            tcpSocket:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
               port: 8080
             initialDelaySeconds: 0
-            failureThreshold: 3
-            timeoutSeconds: 1
             periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
           readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 0
             failureThreshold: 3
-            timeoutSeconds: 1
-            periodSeconds: 10
-          startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /readyz
               port: 8080
             initialDelaySeconds: 0
-            failureThreshold: 30
+            periodSeconds: 10
             timeoutSeconds: 1
-            periodSeconds: 5
+          volumeMounts:
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-server-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: stage
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/name: identity-server
+      app.kubernetes.io/instance: identity-server
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: da6e034fdea28152227bec053ba0a9f5fa75690abe93bf936ad7070a29c25cb4
+      labels: 
+        app.kubernetes.io/controller: postgres
+        app.kubernetes.io/instance: identity-server
+        app.kubernetes.io/name: identity-server
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_DB
+            value: identity
+          envFrom:
+          - secretRef:
+              name: postgres-secrets
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          name: main
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /docker-entrypoint-initdb.d/init-identity-user.sh
+            name: postgres-init-data
+            subPath: init-data.sh
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: identity-server
+        - configMap:
+            name: identity-server-postgres-init-data
+          name: postgres-init-data
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
 ---
 # Source: identity-server/templates/common.yaml
 apiVersion: networking.k8s.io/v1
@@ -100,16 +276,18 @@ kind: Ingress
 metadata:
   name: identity-server
   labels:
-    helm.sh/chart: identity-server-0.1.0
-    app.kubernetes.io/name: identity-server
     app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/version: "1.0.9"
     app.kubernetes.io/managed-by: Helm
-    ingressClassName: nginx
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 500M
     nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: stage
 spec:
+  ingressClassName: nginx
   rules:
     - host: "auth.mattgerega.org"
       http:
@@ -118,6 +296,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: identity-server
+                name: identity-server-main
                 port:
                   number: 80
