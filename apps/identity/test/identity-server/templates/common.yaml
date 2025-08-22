@@ -19,14 +19,11 @@ data:
   Serilog__MinimumLevel__Override__Microsoft: Information
   Serilog__MinimumLevel__Override__System: Information
   Telemetry__ActivitySourceName: Identity.Test.Activity
-  Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
-  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Identity.Test.Meter
-  Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
-  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Test
-  Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
-  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
 ---
 # Source: identity-server/templates/common.yaml
 apiVersion: v1
@@ -151,7 +148,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: e712318f3dd30edacff93e2b9c2b29c42569d1185fe6c098f8391d68f1a0c4b2
+        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server
@@ -225,7 +222,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: e712318f3dd30edacff93e2b9c2b29c42569d1185fe6c098f8391d68f1a0c4b2
+        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: identity-server
