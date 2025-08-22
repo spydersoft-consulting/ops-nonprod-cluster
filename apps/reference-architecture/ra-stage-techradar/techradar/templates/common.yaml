@@ -13,8 +13,11 @@ metadata:
   namespace: ra-stage-techradar
 data:
   Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
+  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: nonproduction
   Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
+  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: nonproduction
   Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: nonproduction
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
@@ -101,31 +104,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: techradar-data-api
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-data-api
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-stage-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: techradar-frontend
   labels:
     app.kubernetes.io/instance: techradar
@@ -173,6 +151,31 @@ spec:
     app.kubernetes.io/name: techradar
 ---
 # Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/service: techradar-data-api
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/name: techradar
+---
+# Source: techradar/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -198,7 +201,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 55ab95852e3b9e676ba47dbe9250515e72178a3b915940fa766e11763746d7ad
+        checksum/configMaps: 8c687aff8768460ca45f72f274ac54148d53c77a9e0c32ccd8b1948b0b4ddfad
       labels: 
         app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: techradar
@@ -293,7 +296,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 55ab95852e3b9e676ba47dbe9250515e72178a3b915940fa766e11763746d7ad
+        checksum/configMaps: 8c687aff8768460ca45f72f274ac54148d53c77a9e0c32ccd8b1948b0b4ddfad
       labels: 
         app.kubernetes.io/controller: frontend
         app.kubernetes.io/instance: techradar
@@ -369,7 +372,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 55ab95852e3b9e676ba47dbe9250515e72178a3b915940fa766e11763746d7ad
+        checksum/configMaps: 8c687aff8768460ca45f72f274ac54148d53c77a9e0c32ccd8b1948b0b4ddfad
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: techradar
