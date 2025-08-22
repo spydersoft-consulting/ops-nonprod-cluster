@@ -91,7 +91,7 @@ spec:
               name: unifi-ipmanager-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-unifi-dns.124
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.1-trace-config-update.126
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
