@@ -169,7 +169,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:2.0.2-postgres-trace.1
+          image: ghcr.io/spyder007/identity_server:2.0.3-ui-conversion.2
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
