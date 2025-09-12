@@ -1,20 +1,17 @@
 environment: nonproduction
 redis:
-  architecture: standalone
-  image:
-    repository: redis/redis-stack-server
-    tag: 7.4.0-v6
-  auth:
-    usePasswordFiles: false
-    existingSecretPasswordKey: redis-password
-    existingSecret: redis-secrets
-    usePasswordFileFromSecret: false
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      scrapeTimeout: 30s
+  global:
+    storageClass: nfs-client
+    security:
+      allowInsecureImages: true
   master:
+    resources:
+      limits:
+        memory: 200Mi
+        cpu: 100m
+      requests:
+        memory: 100Mi
+        cpu: 50m
     configuration: |
       loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
       loadmodule /opt/redis-stack/lib/redistimeseries.so
@@ -23,20 +20,23 @@ redis:
     service:
       annotations:
         config.linkerd.io/opaque-ports: "6379"
-    resources:
-      requests:
-        cpu: 50m
-        memory: 100Mi
-      limits:
-        cpu: 100m
-        memory: 200Mi
+  architecture: standalone
+  auth:
+    existingSecretPasswordKey: redis-password
+    existingSecret: redis-secrets
+    usePasswordFiles: false
+    usePasswordFileFromSecret: false
+  image:
+    repository: redis/redis-stack-server
+    tag: 7.4.0-v6
+  metrics:
+    serviceMonitor:
+      scrapeTimeout: 30s
+      enabled: true
+    enabled: true
   networkPolicy:
     extraIngress:
     - ports:
       - port: 4143
         protocol: TCP
-  global:
-    security:
-      allowInsecureImages: true
-    storageClass: nfs-client
 
