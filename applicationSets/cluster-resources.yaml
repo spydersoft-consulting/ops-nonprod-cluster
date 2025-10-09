@@ -18,7 +18,8 @@ spec:
     directory:
       recurse: true
       jsonnet: {}
-      exclude: 'auto-pull.json'
+      include: '*.yaml'
+      exclude: '{auto-pull.json}'
   syncPolicy:
     # automated:
     #   selfHeal: true
