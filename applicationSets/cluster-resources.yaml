@@ -17,8 +17,6 @@ spec:
 
     directory:
       recurse: true
-      jsonnet: {}
-      include: '*.yaml'
       exclude: '{auto-pull.json}'
   syncPolicy:
     # automated:
