@@ -1,39 +1,185 @@
-redis:
-  auth:
-    usePasswordFiles: false
-    existingSecretPasswordKey: redis-password
-    usePasswordFileFromSecret: false
-    existingSecret: redis-secrets
-  architecture: standalone
-  image:
-    repository: redis/redis-stack-server
-    tag: 7.4.0-v7
-  master:
-    resources:
-      limits:
-        cpu: 100m
-        memory: 200Mi
-      requests:
-        cpu: 50m
-        memory: 100Mi
-    configuration: |
-      loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
-      loadmodule /opt/redis-stack/lib/redistimeseries.so
-      loadmodule /opt/redis-stack/lib/rejson.so
-      loadmodule /opt/redis-stack/lib/redisbloom.so
-    service:
-      annotations:
-        config.linkerd.io/opaque-ports: "6379"
-  global:
-    storageClass: nfs-client
-    security:
-      allowInsecureImages: true
-  metrics:
-    enabled: false
-  networkPolicy:
-    extraIngress:
-    - ports:
-      - port: 4143
-        protocol: TCP
 environment: nonproduction
+
+controllers:
+  main:
+    enabled: true
+    type: statefulset
+    replicas: 1
+    revisionHistoryLimit: 10
+    containers:
+      main:
+        image:
+          repository: redis/redis-stack-server
+          tag: 7.4.0-v7
+          pullPolicy: IfNotPresent
+        env:
+          TZ: "UTC"
+          REDIS_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: redis-secrets
+                key: redis-password
+        command:
+          - redis-server
+        args:
+          - --port
+          - "6379"
+          - --requirepass
+          - "$(REDIS_PASSWORD)"
+          - --masterauth
+          - "$(REDIS_PASSWORD)"
+          - --loadmodule
+          - "/opt/redis-stack/lib/redisearch.so"
+          - "MAXSEARCHRESULTS"
+          - "10000"
+          - "MAXAGGREGATERESULTS"
+          - "10000"
+          - --loadmodule
+          - "/opt/redis-stack/lib/redistimeseries.so"
+          - --loadmodule
+          - "/opt/redis-stack/lib/rejson.so"
+          - --loadmodule
+          - "/opt/redis-stack/lib/redisbloom.so"
+          - --appendonly
+          - "yes"
+          - --save
+          - ""
+          - --rename-command
+          - "FLUSHDB"
+          - ""
+          - --rename-command
+          - "FLUSHALL"
+          - ""
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 20
+              periodSeconds: 5
+              timeoutSeconds: 6
+              successThreshold: 1
+              failureThreshold: 5
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - "redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping"
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 20
+              periodSeconds: 5
+              timeoutSeconds: 2
+              successThreshold: 1
+              failureThreshold: 5
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - "redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping"
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              timeoutSeconds: 1
+              failureThreshold: 30
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - "redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping"
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 50m
+          limits:
+            memory: 200Mi
+            cpu: 100m
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 999
+          runAsGroup: 1000
+          capabilities:
+            drop:
+              - ALL
+
+service:
+  main:
+    controller: main
+    primary: true
+    type: ClusterIP
+    annotations:
+      config.linkerd.io/opaque-ports: "6379"
+    ports:
+      redis:
+        enabled: true
+        primary: true
+        protocol: TCP
+        port: 6379
+        targetPort: 6379
+  headless:
+    controller: main
+    enabled: true
+    type: ClusterIP
+    clusterIP: None
+    ports:
+      redis:
+        enabled: true
+        protocol: TCP
+        port: 6379
+        targetPort: 6379
+
+persistence:
+  data:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: nfs-client
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    retain: true
+    advancedMounts:
+      main:
+        main:
+          - path: /data
+            readOnly: false
+
+networkPolicies:
+  main:
+    enabled: true
+    controller: main
+    policyTypes:
+      - Ingress
+      - Egress
+    rules:
+      ingress:
+        - from: []
+          ports:
+            - protocol: TCP
+              port: 6379
+        - from: []
+          ports:
+            - protocol: TCP
+              port: 4143
+      egress:
+        - to: []
+
+serviceAccount:
+  create: true
+  automount: false
+  name: "nonproduction-redis-master"
+
+podDisruptionBudget:
+  main:
+    enabled: true
+    controller: main
+    maxUnavailable: 1
+
+# NetworkPolicy needs to be added manually as bjw-s common doesn't support it
+# We'll create this as a separate template file
 
