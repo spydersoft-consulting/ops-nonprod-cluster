@@ -160,6 +160,19 @@ persistence:
         main:
           - path: /data
             readOnly: false
+  aof:
+    enabled: true
+    type: persistentVolumeClaim
+    storageClass: nfs-client
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    retain: true
+    advancedMounts:
+      main:
+        init-permissions:
+          - path: /aof
+            readOnly: false
+        main:
           - path: /aof
             readOnly: false
 
