@@ -6,6 +6,34 @@ controllers:
     type: statefulset
     replicas: 1
     revisionHistoryLimit: 10
+    pod:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        fsGroupChangePolicy: "Always"
+    initContainers:
+      init-permissions:
+        image:
+          repository: busybox
+          tag: 1.36
+          pullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - |
+            chown -R 999:999 /data
+            chmod -R 755 /data
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        resources:
+          requests:
+            memory: 10Mi
+            cpu: 10m
+          limits:
+            memory: 20Mi
+            cpu: 20m
     containers:
       main:
         image:
@@ -104,7 +132,7 @@ controllers:
           readOnlyRootFilesystem: false
           runAsNonRoot: true
           runAsUser: 999
-          runAsGroup: 1000
+          runAsGroup: 999
           capabilities:
             drop:
               - ALL
@@ -145,6 +173,9 @@ persistence:
     retain: true
     advancedMounts:
       main:
+        init-permissions:
+          - path: /data
+            readOnly: false
         main:
           - path: /data
             readOnly: false
