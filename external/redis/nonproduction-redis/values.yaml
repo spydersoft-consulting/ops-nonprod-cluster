@@ -20,9 +20,10 @@ controllers:
           - /bin/sh
           - -c
           - |
-            mkdir -p /data/appendonlydir
             chown -R 1001:1001 /data
             chmod -R 755 /data
+            chown -R 1001:1001 /aof
+            chmod -R 755 /aof
         securityContext:
           runAsUser: 0
           runAsGroup: 0
@@ -50,14 +51,13 @@ controllers:
           - /bin/sh
           - -c
           - |
-            mkdir -p /data/appendonlydir
             exec redis-server \
               --port 6379 \
               --requirepass "$REDIS_PASSWORD" \
               --masterauth "$REDIS_PASSWORD" \
               --dir /data \
               --appendonly yes \
-              --appendonlydir /data/appendonlydir \
+              --appendonlydir /aof \
               --save "" \
               --rename-command FLUSHDB "" \
               --rename-command FLUSHALL "" \
@@ -159,6 +159,8 @@ persistence:
             readOnly: false
         main:
           - path: /data
+            readOnly: false
+          - path: /aof
             readOnly: false
 
 networkPolicies:
