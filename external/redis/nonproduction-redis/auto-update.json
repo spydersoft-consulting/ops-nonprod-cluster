@@ -3,7 +3,7 @@
         {
             "repository": "redis-stack/redis-stack",
             "imagePrefix": "v",
-            "tagPath": "redis.image.tag"
+            "tagPath": "controllers.main.containers.main.image.tag"
         }
     ]
 }
