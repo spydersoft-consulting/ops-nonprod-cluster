@@ -1,5 +1,34 @@
 environment: nonproduction
 
+configMaps:
+  redis-config:
+    enabled: true
+    data:
+      redis.conf: |
+        # Network
+        port 6379
+        bind 0.0.0.0
+        
+        # Authentication - will be overridden by environment variables
+        # requirepass will be set via REDISCLI_AUTH environment variable
+        # masterauth will be set via REDISCLI_AUTH environment variable
+        
+        # Persistence
+        dir /data
+        appendonly yes
+        appendonlydir appendonlydir
+        save ""
+        
+        # Security - disable dangerous commands
+        rename-command FLUSHDB ""
+        rename-command FLUSHALL ""
+        
+        # Redis Stack Modules
+        loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000
+        loadmodule /opt/redis-stack/lib/redistimeseries.so
+        loadmodule /opt/redis-stack/lib/rejson.so
+        loadmodule /opt/redis-stack/lib/redisbloom.so
+
 controllers:
   main:
     enabled: true
@@ -20,6 +49,7 @@ controllers:
           - /bin/sh
           - -c
           - |
+            mkdir -p /data/appendonlydir
             chown -R 1001:1001 /data
             chmod -R 755 /data
         securityContext:
@@ -49,19 +79,10 @@ controllers:
           - /bin/sh
           - -c
           - |
-            exec redis-server \
-              --port 6379 \
+            mkdir -p /data/appendonlydir
+            exec redis-server /etc/redis/redis.conf \
               --requirepass "$REDIS_PASSWORD" \
-              --masterauth "$REDIS_PASSWORD" \
-              --dir /data \
-              --appendonly yes \
-              --save "" \
-              --rename-command FLUSHDB "" \
-              --rename-command FLUSHALL "" \
-              --loadmodule /opt/redis-stack/lib/redisearch.so MAXSEARCHRESULTS 10000 MAXAGGREGATERESULTS 10000 \
-              --loadmodule /opt/redis-stack/lib/redistimeseries.so \
-              --loadmodule /opt/redis-stack/lib/rejson.so \
-              --loadmodule /opt/redis-stack/lib/redisbloom.so
+              --masterauth "$REDIS_PASSWORD"
         probes:
           liveness:
             enabled: true
@@ -157,6 +178,15 @@ persistence:
         main:
           - path: /data
             readOnly: false
+  redis-config:
+    enabled: true
+    type: configMap
+    name: "{{ .Release.Name }}-redis-config"
+    advancedMounts:
+      main:
+        main:
+          - path: /etc/redis
+            readOnly: true
 
 networkPolicies:
   main:
