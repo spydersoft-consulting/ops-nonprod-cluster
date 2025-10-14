@@ -16,7 +16,6 @@ configMaps:
         # Persistence
         dir /data
         appendonly yes
-        appendonlydir appendonlydir
         save ""
         
         # Security - disable dangerous commands
