@@ -181,7 +181,7 @@ persistence:
   redis-config:
     enabled: true
     type: configMap
-    name: "{{ .Release.Name }}-redis-config"
+    identifier: redis-config
     advancedMounts:
       main:
         main:
