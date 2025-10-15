@@ -1,11 +1,11 @@
 type: application
-appVersion: 7.4.0-v7
 apiVersion: v2
 name: nonproduction-redis
-version: 7.4.0
 dependencies:
 - version: 4.3.0
   repository: https://bjw-s-labs.github.io/helm-charts
   name: common
+appVersion: 7.4.0-v7
+version: 7.4.0
 
 
