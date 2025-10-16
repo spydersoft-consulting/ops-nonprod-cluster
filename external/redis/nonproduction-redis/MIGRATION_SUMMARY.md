@@ -7,11 +7,13 @@ This document summarizes the migration from the Bitnami Redis chart to the bjw-s
 ## Files Updated
 
 ### 1. Chart.yaml
+
 - **Changed dependency**: From `redis: 23.1.1` (Bitnami) to `common: 4.3.0` (bjw-s)
 - **Updated version**: From `23.1.1` to `7.4.0`
 - **Updated appVersion**: From `7.0.5` to `7.4.0-v7`
 
 ### 2. values.yaml
+
 - **Complete restructure**: Migrated from Bitnami Redis chart format to bjw-s common chart format
 - **Controllers**: Configured StatefulSet with Redis Stack server container
 - **Services**: Added both main service and headless service
@@ -21,15 +23,19 @@ This document summarizes the migration from the Bitnami Redis chart to the bjw-s
 - **Environment**: Maintained environment variable `nonproduction`
 
 ### 3. templates/common.yaml (NEW)
+
 - **Added**: bjw-s common chart loader template
 
 ### 4. templates/_helpers.tpl (NEW)
+
 - **Added**: Template helper functions for bjw-s common chart
 
 ### 5. templates/networkpolicy.yaml (NEW)
+
 - **Added**: Custom NetworkPolicy template since bjw-s common doesn't support it natively
 
 ### 6. templates/redis-secrets.yaml (EXISTING)
+
 - **Unchanged**: ExternalSecret configuration maintained
 
 ## Generated Resources Comparison
