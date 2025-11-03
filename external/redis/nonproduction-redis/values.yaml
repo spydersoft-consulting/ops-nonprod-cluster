@@ -1,24 +1,61 @@
-networkPolicies:
+service:
   main:
-    policyTypes:
-    - Ingress
-    - Egress
-    rules:
-      egress:
-      - to: []
-      ingress:
-      - ports:
-        - protocol: TCP
-          port: 6379
-        from: []
-      - ports:
-        - protocol: TCP
-          port: 4143
-        from: []
+    type: ClusterIP
     controller: main
+    annotations:
+      config.linkerd.io/opaque-ports: "6379"
+    primary: true
+    ports:
+      redis:
+        port: 6379
+        protocol: TCP
+        primary: true
+        targetPort: 6379
+        enabled: true
+  headless:
+    controller: main
+    clusterIP: None
+    type: ClusterIP
+    ports:
+      redis:
+        port: 6379
+        enabled: true
+        protocol: TCP
+        targetPort: 6379
+    enabled: true
+podDisruptionBudget:
+  main:
+    enabled: true
+    maxUnavailable: 1
+    controller: main
+persistence:
+  redis-config:
+    type: configMap
+    advancedMounts:
+      main:
+        main:
+        - readOnly: true
+          path: /etc/redis
+    enabled: true
+    identifier: redis-config
+  data:
+    storageClass: nfs-client
+    size: 8Gi
+    type: persistentVolumeClaim
+    retain: true
+    accessMode: ReadWriteOnce
+    advancedMounts:
+      main:
+        init-permissions:
+        - readOnly: false
+          path: /data
+        main:
+        - readOnly: false
+          path: /data
     enabled: true
 configMaps:
   redis-config:
+    enabled: true
     data:
       redis.conf: |
         # Network
@@ -43,85 +80,42 @@ configMaps:
         loadmodule /opt/redis-stack/lib/redistimeseries.so
         loadmodule /opt/redis-stack/lib/rejson.so
         loadmodule /opt/redis-stack/lib/redisbloom.so
-    enabled: true
-environment: nonproduction
-service:
-  headless:
-    controller: main
-    clusterIP: None
-    enabled: true
-    ports:
-      redis:
-        protocol: TCP
-        port: 6379
-        enabled: true
-        targetPort: 6379
-    type: ClusterIP
-  main:
-    controller: main
-    type: ClusterIP
-    primary: true
-    annotations:
-      config.linkerd.io/opaque-ports: "6379"
-    ports:
-      redis:
-        enabled: true
-        protocol: TCP
-        targetPort: 6379
-        primary: true
-        port: 6379
-podDisruptionBudget:
-  main:
-    maxUnavailable: 1
-    controller: main
-    enabled: true
 serviceAccount:
-  automount: false
   name: nonproduction-redis-master
   create: true
-persistence:
-  redis-config:
-    type: configMap
-    advancedMounts:
-      main:
-        main:
-        - readOnly: true
-          path: /etc/redis
+  automount: false
+environment: nonproduction
+networkPolicies:
+  main:
     enabled: true
-    identifier: redis-config
-  data:
-    accessMode: ReadWriteOnce
-    advancedMounts:
-      main:
-        init-permissions:
-        - readOnly: false
-          path: /data
-        main:
-        - readOnly: false
-          path: /data
-    enabled: true
-    type: persistentVolumeClaim
-    retain: true
-    size: 8Gi
-    storageClass: nfs-client
+    policyTypes:
+    - Ingress
+    - Egress
+    rules:
+      ingress:
+      - ports:
+        - port: 6379
+          protocol: TCP
+        from: []
+      - ports:
+        - port: 4143
+          protocol: TCP
+        from: []
+      egress:
+      - to: []
+    controller: main
 controllers:
   main:
+    pod:
+      securityContext:
+        fsGroupChangePolicy: Always
+        fsGroup: 1001
+    revisionHistoryLimit: 10
+    enabled: true
+    replicas: 1
+    type: statefulset
     initContainers:
       init-permissions:
-        securityContext:
-          runAsUser: 0
-          runAsGroup: 0
-        image:
-          tag: 1.36
-          repository: busybox
-          pullPolicy: IfNotPresent
-        resources:
-          requests:
-            cpu: 10m
-            memory: 10Mi
-          limits:
-            cpu: 20m
-            memory: 20Mi
         command:
         - /bin/sh
         - -c
@@ -129,26 +123,22 @@ controllers:
           mkdir -p /data/appendonlydir
           chown -R 1001:1001 /data
           chmod -R 755 /data
-    containers:
-      main:
-        image:
-          tag: 7.4.0-v7
-          repository: redis/redis-stack-server
-          pullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: 50m
-            memory: 100Mi
+            memory: 10Mi
+            cpu: 10m
           limits:
-            cpu: 100m
-            memory: 200Mi
-        env:
-          TZ: UTC
-          REDIS_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                name: redis-secrets
-                key: redis-password
+            memory: 20Mi
+            cpu: 20m
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        image:
+          pullPolicy: IfNotPresent
+          repository: busybox
+          tag: 1.36
+    containers:
+      main:
         command:
         - /bin/sh
         - -c
@@ -157,57 +147,67 @@ controllers:
           exec redis-server /etc/redis/redis.conf \
             --requirepass "$REDIS_PASSWORD" \
             --masterauth "$REDIS_PASSWORD"
-        securityContext:
-          readOnlyRootFilesystem: false
-          allowPrivilegeEscalation: false
         probes:
-          startup:
-            custom: true
-            spec:
-              failureThreshold: 30
-              periodSeconds: 5
-              initialDelaySeconds: 0
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              timeoutSeconds: 1
-            enabled: true
-          liveness:
-            custom: true
-            spec:
-              failureThreshold: 5
-              periodSeconds: 5
-              successThreshold: 1
-              initialDelaySeconds: 20
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              timeoutSeconds: 6
-            enabled: true
           readiness:
+            enabled: true
             custom: true
             spec:
               failureThreshold: 5
-              periodSeconds: 5
-              successThreshold: 1
               initialDelaySeconds: 20
+              successThreshold: 1
+              periodSeconds: 5
               exec:
                 command:
                 - /bin/bash
                 - -c
                 - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
               timeoutSeconds: 2
+          startup:
             enabled: true
-    replicas: 1
-    pod:
-      securityContext:
-        fsGroupChangePolicy: Always
-        fsGroup: 1001
-    enabled: true
-    type: statefulset
-    revisionHistoryLimit: 10
+            custom: true
+            spec:
+              failureThreshold: 30
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              timeoutSeconds: 1
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              failureThreshold: 5
+              initialDelaySeconds: 20
+              successThreshold: 1
+              periodSeconds: 5
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              timeoutSeconds: 6
+        env:
+          REDIS_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: redis-secrets
+                key: redis-password
+          TZ: UTC
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 50m
+          limits:
+            memory: 200Mi
+            cpu: 100m
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+        image:
+          pullPolicy: IfNotPresent
+          repository: redis/redis-stack-server
+          tag: 7.4.0-v7
 
