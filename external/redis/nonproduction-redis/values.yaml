@@ -1,30 +1,5 @@
-networkPolicies:
-  main:
-    enabled: true
-    controller: main
-    policyTypes:
-    - Ingress
-    - Egress
-    rules:
-      ingress:
-      - ports:
-        - protocol: TCP
-          port: 6379
-        from: []
-      - ports:
-        - protocol: TCP
-          port: 4143
-        from: []
-      egress:
-      - to: []
-podDisruptionBudget:
-  main:
-    enabled: true
-    controller: main
-    maxUnavailable: 1
 configMaps:
   redis-config:
-    enabled: true
     data:
       redis.conf: |
         # Network
@@ -49,44 +24,79 @@ configMaps:
         loadmodule /opt/redis-stack/lib/redistimeseries.so
         loadmodule /opt/redis-stack/lib/rejson.so
         loadmodule /opt/redis-stack/lib/redisbloom.so
-environment: nonproduction
-persistence:
-  data:
     enabled: true
-    type: persistentVolumeClaim
-    accessMode: ReadWriteOnce
-    size: 8Gi
-    storageClass: nfs-client
-    retain: true
-    advancedMounts:
-      main:
-        main:
-        - path: /data
-          readOnly: false
-        init-permissions:
-        - path: /data
-          readOnly: false
-  redis-config:
-    identifier: redis-config
-    advancedMounts:
-      main:
-        main:
-        - path: /etc/redis
-          readOnly: true
-    type: configMap
+podDisruptionBudget:
+  main:
+    maxUnavailable: 1
+    controller: main
     enabled: true
 controllers:
   main:
-    enabled: true
     containers:
       main:
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              failureThreshold: 30
+              timeoutSeconds: 1
+              initialDelaySeconds: 0
+              periodSeconds: 5
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              failureThreshold: 5
+              timeoutSeconds: 6
+              successThreshold: 1
+              initialDelaySeconds: 20
+              periodSeconds: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              failureThreshold: 5
+              timeoutSeconds: 2
+              successThreshold: 1
+              initialDelaySeconds: 20
+              periodSeconds: 5
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        securityContext:
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+        image:
+          repository: redis/redis-stack-server
+          tag: 7.4.0-v8
+          pullPolicy: IfNotPresent
         env:
+          TZ: UTC
           REDIS_PASSWORD:
             valueFrom:
               secretKeyRef:
                 key: redis-password
                 name: redis-secrets
-          TZ: UTC
         command:
         - /bin/sh
         - -c
@@ -95,85 +105,27 @@ controllers:
           exec redis-server /etc/redis/redis.conf \
             --requirepass "$REDIS_PASSWORD" \
             --masterauth "$REDIS_PASSWORD"
-        probes:
-          startup:
-            enabled: true
-            spec:
-              timeoutSeconds: 1
-              failureThreshold: 30
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              initialDelaySeconds: 0
-              periodSeconds: 5
-            custom: true
-          liveness:
-            enabled: true
-            spec:
-              successThreshold: 1
-              timeoutSeconds: 6
-              failureThreshold: 5
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              initialDelaySeconds: 20
-              periodSeconds: 5
-            custom: true
-          readiness:
-            enabled: true
-            spec:
-              successThreshold: 1
-              timeoutSeconds: 2
-              failureThreshold: 5
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              initialDelaySeconds: 20
-              periodSeconds: 5
-            custom: true
-        image:
-          tag: 7.4.0-v8
-          pullPolicy: IfNotPresent
-          repository: redis/redis-stack-server
-        resources:
-          limits:
-            memory: 200Mi
-            cpu: 100m
-          requests:
-            memory: 100Mi
-            cpu: 50m
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-    replicas: 1
-    type: statefulset
-    revisionHistoryLimit: 10
+    enabled: true
     pod:
       securityContext:
         fsGroupChangePolicy: Always
         fsGroup: 1001
+    type: statefulset
+    replicas: 1
+    revisionHistoryLimit: 10
     initContainers:
       init-permissions:
         image:
+          repository: busybox
           tag: 1.36
           pullPolicy: IfNotPresent
-          repository: busybox
-        securityContext:
-          runAsUser: 0
-          runAsGroup: 0
         resources:
           limits:
-            memory: 20Mi
             cpu: 20m
+            memory: 20Mi
           requests:
-            memory: 10Mi
             cpu: 10m
+            memory: 10Mi
         command:
         - /bin/sh
         - -c
@@ -181,33 +133,81 @@ controllers:
           mkdir -p /data/appendonlydir
           chown -R 1001:1001 /data
           chmod -R 755 /data
-service:
+        securityContext:
+          runAsGroup: 0
+          runAsUser: 0
+networkPolicies:
   main:
-    primary: true
-    type: ClusterIP
-    ports:
-      redis:
-        enabled: true
-        targetPort: 6379
-        primary: true
-        port: 6379
-        protocol: TCP
-    annotations:
-      config.linkerd.io/opaque-ports: "6379"
+    policyTypes:
+    - Ingress
+    - Egress
+    rules:
+      egress:
+      - to: []
+      ingress:
+      - from: []
+        ports:
+        - port: 6379
+          protocol: TCP
+      - from: []
+        ports:
+        - port: 4143
+          protocol: TCP
     controller: main
-  headless:
     enabled: true
-    type: ClusterIP
-    ports:
-      redis:
-        enabled: true
-        protocol: TCP
-        targetPort: 6379
-        port: 6379
-    controller: main
-    clusterIP: None
 serviceAccount:
   name: nonproduction-redis-master
   create: true
   automount: false
+environment: nonproduction
+service:
+  headless:
+    enabled: true
+    controller: main
+    type: ClusterIP
+    clusterIP: None
+    ports:
+      redis:
+        targetPort: 6379
+        protocol: TCP
+        enabled: true
+        port: 6379
+  main:
+    ports:
+      redis:
+        protocol: TCP
+        enabled: true
+        port: 6379
+        targetPort: 6379
+        primary: true
+    annotations:
+      config.linkerd.io/opaque-ports: "6379"
+    controller: main
+    type: ClusterIP
+    primary: true
+persistence:
+  redis-config:
+    type: configMap
+    advancedMounts:
+      main:
+        main:
+        - path: /etc/redis
+          readOnly: true
+    identifier: redis-config
+    enabled: true
+  data:
+    storageClass: nfs-client
+    enabled: true
+    size: 8Gi
+    type: persistentVolumeClaim
+    advancedMounts:
+      main:
+        init-permissions:
+        - path: /data
+          readOnly: false
+        main:
+        - path: /data
+          readOnly: false
+    accessMode: ReadWriteOnce
+    retain: true
 
