@@ -16,7 +16,7 @@ spec:
         linkerd.io/inject: enabled
     ports:
       web:
-        port: 8080
+        port: 8000
         exposedPort: 80
       websecure:
         port: 8443
