@@ -294,7 +294,7 @@ spec:
     - backendRefs:
       - group: ""
         kind: Service
-        name: main
+        name: identity-server-main
         namespace: test
         port: 80
         weight: 1
