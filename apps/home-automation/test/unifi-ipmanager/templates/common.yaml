@@ -115,7 +115,7 @@ spec:
             timeoutSeconds: 1
 ---
 # Source: unifi-ipmanager/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1alpha2
+apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: unifi-ipmanager
