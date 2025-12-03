@@ -128,7 +128,7 @@ spec:
         kind: Service
         name: unifi-client
         namespace: test
-        port: 8080
+        port: 80
         weight: 1
       matches:
         - path:
