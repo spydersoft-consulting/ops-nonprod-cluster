@@ -3,6 +3,43 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: techradar-common
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+data:
+  Telemetry__Log__Otlp__Endpoint: https://loki.mattgerega.net/otlp/v1/logs
+  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Metrics__Otlp__Endpoint: https://mimir.mattgerega.net/otlp
+  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: nonproduction
+  Telemetry__Trace__Otlp__Endpoint: http://tfx-internal.gerega.net:32326
+  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: nonproduction
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techradar-data-api
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-test-techradar
+data:
+  Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
+  Telemetry__MeterName: TechRadar.Data.Test.Meter
+  Telemetry__ServiceName: TechRadar.Data.Test
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: techradar-frontend
   labels:
     app.kubernetes.io/instance: techradar
@@ -41,40 +78,6 @@ data:
     else
       echo "SETUP INFO: No Environment variables given!"
     fi
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: techradar-common
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-data:
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: techradar-data-api
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-test-techradar
-data:
-  Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
-  Telemetry__MeterName: TechRadar.Data.Test.Meter
-  Telemetry__ServiceName: TechRadar.Data.Test
 ---
 # Source: techradar/templates/common.yaml
 ---
@@ -198,7 +201,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 738d184387d8d8956dad5f0d8729665c7e5d75ef118f70b75ebda94e18577852
+        checksum/configMaps: 8fc15ad99297df6f1cca9f2de1269062ed048cf9f23c4f9ec2c01a272a845beb
       labels: 
         app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: techradar
@@ -240,7 +243,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.0.2-postgres-trace.2
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.0.1-trace-config-update.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -293,7 +296,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 738d184387d8d8956dad5f0d8729665c7e5d75ef118f70b75ebda94e18577852
+        checksum/configMaps: 8fc15ad99297df6f1cca9f2de1269062ed048cf9f23c4f9ec2c01a272a845beb
       labels: 
         app.kubernetes.io/controller: frontend
         app.kubernetes.io/instance: techradar
@@ -316,7 +319,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.0.2-postgres-trace.1
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.0.1-trace-config-update.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -369,7 +372,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 738d184387d8d8956dad5f0d8729665c7e5d75ef118f70b75ebda94e18577852
+        checksum/configMaps: 8fc15ad99297df6f1cca9f2de1269062ed048cf9f23c4f9ec2c01a272a845beb
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: techradar
@@ -418,8 +421,8 @@ spec:
             secretName: postgres-secrets
 ---
 # Source: techradar/templates/common.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: HTTPRoute
 metadata:
   name: techradar
   labels:
@@ -428,21 +431,24 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: 500M
-    nginx.ingress.kubernetes.io/rewrite-target: /
   namespace: ra-test-techradar
 spec:
-  ingressClassName: nginx
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "techradar.mattgerega.net"
   rules:
-    - host: "techradar.mattgerega.net"
-      http:
-        paths:
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
-                name: techradar-frontend
-                port:
-                  number: 80
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: techradar-frontend
+        namespace: ra-test-techradar
+        port: http
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
