@@ -119,33 +119,6 @@ spec:
             timeoutSeconds: 1
 ---
 # Source: unifi-ipmanager/templates/common.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: unifi-ipmanager
-  labels:
-    app.kubernetes.io/instance: unifi-ipmanager
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: unifi-ipmanager
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: unifi-ipmanager-0.1.0
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: "api.mattgerega.net"
-      http:
-        paths:
-          - path: "/unifi/ipmanager(/|$)(.*)"
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: unifi-ipmanager-main
-                port:
-                  number: 80
----
-# Source: unifi-ipmanager/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1alpha2
 kind: HTTPRoute
 metadata:
@@ -163,7 +136,7 @@ spec:
       name: main
       namespace: envoy-gateway-system
   hostnames:
-    - "test.mattgerega.net"
+    - "api.mattgerega.net"
   rules:
   - backendRefs:
       
