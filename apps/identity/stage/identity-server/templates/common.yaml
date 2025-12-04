@@ -268,8 +268,8 @@ spec:
             secretName: postgres-secrets
 ---
 # Source: identity-server/templates/common.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
 metadata:
   name: identity-server
   labels:
@@ -278,21 +278,24 @@ metadata:
     app.kubernetes.io/name: identity-server
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: identity-server-0.1.0
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: 500M
-    nginx.ingress.kubernetes.io/rewrite-target: /
   namespace: stage
 spec:
-  ingressClassName: nginx
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "auth.mattgerega.org"
   rules:
-    - host: "auth.mattgerega.org"
-      http:
-        paths:
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
-                name: identity-server-main
-                port:
-                  number: 80
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: identity-server-main
+        namespace: stage
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
