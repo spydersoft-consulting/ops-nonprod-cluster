@@ -18,7 +18,7 @@ spec:
     directory:
       recurse: true
       exclude: '{auto-pull.json}'
-  syncPolicy:
+  syncPolicy: {}
     # automated:
     #   selfHeal: true
     #   prune: true
