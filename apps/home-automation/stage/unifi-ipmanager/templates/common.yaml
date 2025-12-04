@@ -133,7 +133,7 @@ spec:
       name: main
       namespace: envoy-gateway-system
   hostnames:
-    - "test.mattgerega.net"
+    - "api.mattgerega.org"
   rules:
     - backendRefs:
       - group: ""
