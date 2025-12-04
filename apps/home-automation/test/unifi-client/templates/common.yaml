@@ -99,7 +99,7 @@ spec:
             subPath: config.js
       volumes: 
         - configMap:
-            name: unifi-client-config-js
+            name: unifi-client
           name: config-js
 ---
 # Source: unifi-client/templates/common.yaml
