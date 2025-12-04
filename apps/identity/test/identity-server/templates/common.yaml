@@ -169,7 +169,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:2.0.3-ui-conversion.11
+          image: ghcr.io/spyder007/identity_server:2.0.3-ui-conversion.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
