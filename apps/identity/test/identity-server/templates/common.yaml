@@ -3,32 +3,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: identity-server-identity
-  labels:
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: test
-data:
-  AllowedOrigins__0: https://*.mattgerega.net
-  AllowedOrigins__1: http://localhost:3000
-  Identity__AuthorityUrl: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Information
-  Serilog__MinimumLevel__Override__Microsoft: Information
-  Serilog__MinimumLevel__Override__System: Information
-  Telemetry__ActivitySourceName: Identity.Test.Activity
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__MeterName: Identity.Test.Meter
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__ServiceName: Identity.Test
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: identity-server/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: identity-server-postgres-init-data
   labels:
     app.kubernetes.io/instance: identity-server
@@ -50,6 +24,34 @@ data:
     else
       echo "SETUP INFO: No Environment variables given!"
     fi
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-server-identity
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: test
+data:
+  AllowedOrigins__0: https://*.mattgerega.net
+  AllowedOrigins__1: http://localhost:3000
+  Identity__AuthorityUrl: https://auth.mattgerega.net
+  IdentityServer__IssuerUri: https://auth.mattgerega.net
+  IdentityServer__PublicOrigin: https://auth.mattgerega.net
+  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Override__Microsoft: Information
+  Serilog__MinimumLevel__Override__System: Information
+  Telemetry__ActivitySourceName: Identity.Test.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: Identity.Test.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: Identity.Test
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
 ---
 # Source: identity-server/templates/common.yaml
 ---
@@ -76,31 +78,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: identity-server-postgres
-  labels:
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/service: identity-server-postgres
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: postgres
-  selector:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/name: identity-server
----
-# Source: identity-server/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: identity-server-main
   labels:
     app.kubernetes.io/instance: identity-server
@@ -119,6 +96,31 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/name: identity-server
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-server-postgres
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/service: identity-server-postgres
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
     app.kubernetes.io/instance: identity-server
     app.kubernetes.io/name: identity-server
 ---
@@ -148,7 +150,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
+        checksum/configMaps: cfaeab29ba974e1e5ea778afaf8547a83f964e8045ba7935ca5748bfe85fc2a2
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server
@@ -169,7 +171,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:2.0.3-ui-conversion.14
+          image: ghcr.io/spyder007/identity_server:2.0.2-postgres-trace.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -222,7 +224,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
+        checksum/configMaps: cfaeab29ba974e1e5ea778afaf8547a83f964e8045ba7935ca5748bfe85fc2a2
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: identity-server
