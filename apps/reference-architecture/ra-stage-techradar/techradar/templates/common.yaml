@@ -3,23 +3,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar-frontend
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-stage-techradar
-data:
-  Telemetry__ActivitySourceName: TechRadar.Frontend.Stage.Activity
-  Telemetry__MeterName: TechRadar.Frontend.Stage.Meter
-  Telemetry__ServiceName: TechRadar.Frontend.Stage
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: techradar-postgres-init-data
   labels:
     app.kubernetes.io/instance: techradar
@@ -78,6 +61,23 @@ data:
   Telemetry__ActivitySourceName: TechRadar.Data.Stage.Activity
   Telemetry__MeterName: TechRadar.Data.Stage.Meter
   Telemetry__ServiceName: TechRadar.Data.Stage
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techradar-frontend
+  labels:
+    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-0.1.0
+  namespace: ra-stage-techradar
+data:
+  Telemetry__ActivitySourceName: TechRadar.Frontend.Stage.Activity
+  Telemetry__MeterName: TechRadar.Frontend.Stage.Meter
+  Telemetry__ServiceName: TechRadar.Frontend.Stage
 ---
 # Source: techradar/templates/common.yaml
 ---
@@ -421,8 +421,8 @@ spec:
             secretName: postgres-secrets
 ---
 # Source: techradar/templates/common.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
 metadata:
   name: techradar
   labels:
@@ -431,21 +431,24 @@ metadata:
     app.kubernetes.io/name: techradar
     app.kubernetes.io/version: 1.0.9
     helm.sh/chart: techradar-0.1.0
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: 500M
-    nginx.ingress.kubernetes.io/rewrite-target: /
   namespace: ra-stage-techradar
 spec:
-  ingressClassName: nginx
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "techradar.mattgerega.org"
   rules:
-    - host: "techradar.mattgerega.org"
-      http:
-        paths:
-          - path: "/"
-            pathType: Prefix
-            backend:
-              service:
-                name: techradar-frontend
-                port:
-                  number: 80
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: techradar-frontend
+        namespace: ra-stage-techradar
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
