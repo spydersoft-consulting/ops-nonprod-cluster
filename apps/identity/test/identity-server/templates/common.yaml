@@ -76,31 +76,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: identity-server-main
-  labels:
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/service: identity-server-main
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: main
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/name: identity-server
----
-# Source: identity-server/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: identity-server-postgres
   labels:
     app.kubernetes.io/instance: identity-server
@@ -119,6 +94,31 @@ spec:
       name: postgres
   selector:
     app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/name: identity-server
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-server-main
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/service: identity-server-main
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: identity-server
     app.kubernetes.io/name: identity-server
 ---
@@ -169,7 +169,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:2.0.3-ui-conversion.12
+          image: ghcr.io/spyder007/identity_server:2.0.3-ui-conversion.14
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
