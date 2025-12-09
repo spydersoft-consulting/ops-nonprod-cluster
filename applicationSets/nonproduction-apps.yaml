@@ -16,6 +16,8 @@ spec:
   template:
     metadata:
       name: "{{path.basename}}-{{path[2]}}"
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
       labels:
         spydersoft.io/environment: non-production
         spydersoft.io/category: app
