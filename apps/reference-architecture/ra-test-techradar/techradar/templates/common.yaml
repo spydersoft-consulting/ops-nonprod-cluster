@@ -393,7 +393,7 @@ spec:
               name: techradar-common
           - configMapRef:
               name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.0.2-postgres-trace.5
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.0.2-postgres-trace.6
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
