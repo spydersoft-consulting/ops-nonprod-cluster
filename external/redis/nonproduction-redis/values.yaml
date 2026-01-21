@@ -149,6 +149,25 @@ controllers:
           exec redis-server /etc/redis/redis.conf \
             --requirepass "$REDIS_PASSWORD" \
             --masterauth "$REDIS_PASSWORD"
+      redis-exporter:
+        image:
+          repository: oliver006/redis_exporter
+          tag: v1.62.0
+          pullPolicy: IfNotPresent
+        env:
+          REDIS_ADDR: redis://localhost:6379
+          REDIS_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                key: redis-password
+                name: redis-secrets
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: 50m
+          requests:
+            memory: 25Mi
+            cpu: 25m
     revisionHistoryLimit: 10
     replicas: 1
     type: statefulset
@@ -207,7 +226,15 @@ service:
         primary: true
         port: 6379
         enabled: true
+      metrics:
+        enabled: true
+        port: 9121
+        protocol: TCP
+        targetPort: 9121
     type: ClusterIP
     annotations:
+      metrics.spydersoft.io/scrape: "true"
+      metrics.spydersoft.io/port: "9121"
+      metrics.spydersoft.io/path: "/metrics"
       config.linkerd.io/opaque-ports: "6379"
 
