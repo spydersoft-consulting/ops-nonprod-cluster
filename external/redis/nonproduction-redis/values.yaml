@@ -1,182 +1,29 @@
 environment: nonproduction
-controllers:
-  main:
-    enabled: true
-    revisionHistoryLimit: 10
-    replicas: 1
-    containers:
-      redis-exporter:
-        env:
-          REDIS_ADDR: redis://localhost:6379
-          REDIS_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                key: redis-password
-                name: redis-secrets
-        image:
-          pullPolicy: IfNotPresent
-          tag: v1.62.0
-          repository: oliver006/redis_exporter
-        resources:
-          limits:
-            cpu: 50m
-            memory: 50Mi
-          requests:
-            cpu: 25m
-            memory: 25Mi
-      main:
-        command:
-        - /bin/sh
-        - -c
-        - |
-          mkdir -p /data/appendonlydir
-          exec redis-server /etc/redis/redis.conf \
-            --requirepass "$REDIS_PASSWORD" \
-            --masterauth "$REDIS_PASSWORD"
-        probes:
-          readiness:
-            spec:
-              periodSeconds: 5
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              successThreshold: 1
-              timeoutSeconds: 2
-              failureThreshold: 5
-              initialDelaySeconds: 20
-            enabled: true
-            custom: true
-          startup:
-            spec:
-              periodSeconds: 5
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              timeoutSeconds: 1
-              failureThreshold: 30
-              initialDelaySeconds: 0
-            enabled: true
-            custom: true
-          liveness:
-            spec:
-              periodSeconds: 5
-              exec:
-                command:
-                - /bin/bash
-                - -c
-                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
-              successThreshold: 1
-              timeoutSeconds: 6
-              failureThreshold: 5
-              initialDelaySeconds: 20
-            enabled: true
-            custom: true
-        securityContext:
-          readOnlyRootFilesystem: false
-          allowPrivilegeEscalation: false
-        resources:
-          limits:
-            cpu: 100m
-            memory: 200Mi
-          requests:
-            cpu: 50m
-            memory: 100Mi
-        env:
-          TZ: UTC
-          REDIS_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                key: redis-password
-                name: redis-secrets
-        image:
-          pullPolicy: IfNotPresent
-          tag: 7.4.0-v8
-          repository: redis/redis-stack-server
-    initContainers:
-      init-permissions:
-        command:
-        - /bin/sh
-        - -c
-        - |
-          mkdir -p /data/appendonlydir
-          chown -R 1001:1001 /data
-          chmod -R 755 /data
-        image:
-          pullPolicy: IfNotPresent
-          tag: 1.36
-          repository: busybox
-        securityContext:
-          runAsUser: 0
-          runAsGroup: 0
-        resources:
-          limits:
-            cpu: 20m
-            memory: 20Mi
-          requests:
-            cpu: 10m
-            memory: 10Mi
-    pod:
-      securityContext:
-        fsGroupChangePolicy: Always
-        fsGroup: 1001
-    type: statefulset
-networkPolicies:
-  main:
-    enabled: true
-    policyTypes:
-    - Ingress
-    - Egress
-    rules:
-      egress:
-      - to: []
-      ingress:
-      - from: []
-        ports:
-        - protocol: TCP
-          port: 6379
-      - from: []
-        ports:
-        - protocol: TCP
-          port: 4143
-    controller: main
-podDisruptionBudget:
-  main:
-    enabled: true
-    controller: main
-    maxUnavailable: 1
 persistence:
-  data:
-    accessMode: ReadWriteOnce
-    enabled: true
-    size: 8Gi
-    advancedMounts:
-      main:
-        init-permissions:
-        - path: /data
-          readOnly: false
-        main:
-        - path: /data
-          readOnly: false
-    retain: true
-    storageClass: nfs-client
-    type: persistentVolumeClaim
   redis-config:
     identifier: redis-config
-    type: configMap
     enabled: true
+    type: configMap
     advancedMounts:
       main:
         main:
         - path: /etc/redis
           readOnly: true
-serviceAccount:
-  create: true
-  automount: false
-  name: nonproduction-redis-master
+  data:
+    advancedMounts:
+      main:
+        main:
+        - path: /data
+          readOnly: false
+        init-permissions:
+        - path: /data
+          readOnly: false
+    type: persistentVolumeClaim
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 8Gi
+    storageClass: nfs-client
+    retain: true
 configMaps:
   redis-config:
     data:
@@ -204,37 +51,190 @@ configMaps:
         loadmodule /opt/redis-stack/lib/rejson.so
         loadmodule /opt/redis-stack/lib/redisbloom.so
     enabled: true
-service:
-  headless:
-    enabled: true
-    ports:
-      redis:
-        protocol: TCP
-        port: 6379
-        enabled: true
-        targetPort: 6379
-    clusterIP: None
-    controller: main
-    type: ClusterIP
+podDisruptionBudget:
   main:
-    primary: true
+    controller: main
+    maxUnavailable: 1
+    enabled: true
+service:
+  main:
+    type: ClusterIP
     ports:
       redis:
         targetPort: 6379
         enabled: true
-        protocol: TCP
         port: 6379
         primary: true
+        protocol: TCP
       metrics:
         protocol: TCP
         port: 9121
         enabled: true
         targetPort: 9121
     annotations:
-      config.linkerd.io/opaque-ports: "6379"
       metrics.spydersoft.io/path: /metrics
       metrics.spydersoft.io/scrape: "true"
       metrics.spydersoft.io/port: "9121"
+      config.linkerd.io/opaque-ports: "6379"
+    primary: true
     controller: main
+  headless:
     type: ClusterIP
+    ports:
+      redis:
+        protocol: TCP
+        port: 6379
+        enabled: true
+        targetPort: 6379
+    enabled: true
+    clusterIP: None
+    controller: main
+serviceAccount:
+  name: nonproduction-redis-master
+  automount: false
+  create: true
+controllers:
+  main:
+    type: statefulset
+    initContainers:
+      init-permissions:
+        image:
+          repository: busybox
+          tag: 1.36
+          pullPolicy: IfNotPresent
+        securityContext:
+          runAsGroup: 0
+          runAsUser: 0
+        resources:
+          limits:
+            cpu: 20m
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+        command:
+        - /bin/sh
+        - -c
+        - |
+          mkdir -p /data/appendonlydir
+          chown -R 1001:1001 /data
+          chmod -R 755 /data
+    enabled: true
+    containers:
+      main:
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        image:
+          repository: redis/redis-stack-server
+          tag: 7.4.0-v8
+          pullPolicy: IfNotPresent
+        probes:
+          liveness:
+            custom: true
+            enabled: true
+            spec:
+              successThreshold: 1
+              periodSeconds: 5
+              failureThreshold: 5
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              initialDelaySeconds: 20
+              timeoutSeconds: 6
+          startup:
+            custom: true
+            enabled: true
+            spec:
+              periodSeconds: 5
+              failureThreshold: 30
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+          readiness:
+            custom: true
+            enabled: true
+            spec:
+              successThreshold: 1
+              periodSeconds: 5
+              failureThreshold: 5
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - redis-cli -h localhost -p 6379 -a $REDIS_PASSWORD ping
+              initialDelaySeconds: 20
+              timeoutSeconds: 2
+        env:
+          TZ: UTC
+          REDIS_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                key: redis-password
+                name: redis-secrets
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+        command:
+        - /bin/sh
+        - -c
+        - |
+          mkdir -p /data/appendonlydir
+          exec redis-server /etc/redis/redis.conf \
+            --requirepass "$REDIS_PASSWORD" \
+            --masterauth "$REDIS_PASSWORD"
+      redis-exporter:
+        image:
+          repository: oliver006/redis_exporter
+          tag: v1.62.0
+          pullPolicy: IfNotPresent
+        env:
+          REDIS_ADDR: redis://localhost:6379
+          REDIS_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                key: redis-password
+                name: redis-secrets
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 25m
+            memory: 25Mi
+    pod:
+      securityContext:
+        fsGroupChangePolicy: Always
+        fsGroup: 1001
+    revisionHistoryLimit: 10
+    replicas: 1
+networkPolicies:
+  main:
+    controller: main
+    rules:
+      egress:
+      - to: []
+      ingress:
+      - from: []
+        ports:
+        - protocol: TCP
+          port: 6379
+      - from: []
+        ports:
+        - protocol: TCP
+          port: 4143
+    policyTypes:
+    - Ingress
+    - Egress
+    enabled: true
 
