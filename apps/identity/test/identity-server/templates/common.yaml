@@ -15,8 +15,6 @@ data:
   AllowedOrigins__0: https://*.mattgerega.net
   AllowedOrigins__1: http://localhost:3000
   Identity__AuthorityUrl: https://auth.mattgerega.net
-  IdentityServer__IssuerUri: https://auth.mattgerega.net
-  IdentityServer__PublicOrigin: https://auth.mattgerega.net
   Serilog__MinimumLevel__Default: Information
   Serilog__MinimumLevel__Override__Microsoft: Information
   Serilog__MinimumLevel__Override__System: Information
@@ -150,7 +148,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: cfaeab29ba974e1e5ea778afaf8547a83f964e8045ba7935ca5748bfe85fc2a2
+        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server
@@ -171,7 +169,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.0.1-fix-origin.1
+          image: ghcr.io/spyder007/identity_server:3.0.2-upgrade.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -224,7 +222,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: cfaeab29ba974e1e5ea778afaf8547a83f964e8045ba7935ca5748bfe85fc2a2
+        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: identity-server
