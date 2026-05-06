@@ -85,7 +85,7 @@ controllers:
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: Always
-    revisionHistoryLimit: 10
+    revisionHistoryLimit: 3
     type: statefulset
     containers:
       main:
