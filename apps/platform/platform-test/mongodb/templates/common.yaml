@@ -1,0 +1,167 @@
+---
+# Source: mongodb/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb
+  labels:
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/version: "7.0"
+    helm.sh/chart: mongodb-0.1.0
+  namespace: platform-test
+data:
+  init-audit-user.js: |
+    // Runs once on first boot, when the data directory is empty.
+    // Creates an audit-scoped user with readWrite on the audit database.
+    const auditUser = process.env.MONGO_NON_ROOT_USER;
+    const auditPassword = process.env.MONGO_NON_ROOT_PASSWORD;
+    if (auditUser && auditPassword) {
+      db = db.getSiblingDB('audit');
+      db.createUser({
+        user: auditUser,
+        pwd: auditPassword,
+        roles: [{ role: 'readWrite', db: 'audit' }],
+      });
+    } else {
+      print('SETUP INFO: MONGO_NON_ROOT_USER/PASSWORD not provided; skipping audit user creation');
+    }
+---
+# Source: mongodb/templates/common.yaml
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mongodb
+  labels:
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/version: "7.0"
+    helm.sh/chart: mongodb-0.1.0
+  namespace: platform-test
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "50Gi"
+  storageClassName: "nfs-client"
+---
+# Source: mongodb/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/service: mongodb
+    app.kubernetes.io/version: "7.0"
+    helm.sh/chart: mongodb-0.1.0
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
+      name: mongodb
+  selector:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/name: mongodb
+---
+# Source: mongodb/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  labels:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: mongodb
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/version: "7.0"
+    helm.sh/chart: mongodb-0.1.0
+  namespace: platform-test
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: main
+      app.kubernetes.io/name: mongodb
+      app.kubernetes.io/instance: mongodb
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: ff3eaac0bfbf772a9b1893b30fb9bcc7e5cd130df83572276d0eb32809b009d7
+      labels: 
+        app.kubernetes.io/controller: main
+        app.kubernetes.io/instance: mongodb
+        app.kubernetes.io/name: mongodb
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: MONGO_INITDB_DATABASE
+            value: audit
+          envFrom:
+          - secretRef:
+              name: mongodb-secrets
+          image: mongo:7
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+              - mongosh
+              - --quiet
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+          name: main
+          readinessProbe:
+            exec:
+              command:
+              - mongosh
+              - --quiet
+              - --eval
+              - db.adminCommand('ping')
+            failureThreshold: 3
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+          - mountPath: /data/db
+            name: mongo-data
+          - mountPath: /docker-entrypoint-initdb.d/init-audit-user.js
+            name: mongo-init-data
+            subPath: init-audit-user.js
+          - mountPath: /mongodb-secrets
+            name: mongodb-secrets
+      volumes: 
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: mongodb
+        - configMap:
+            name: mongodb
+          name: mongo-init-data
+        - name: mongodb-secrets
+          secret:
+            secretName: mongodb-secrets
