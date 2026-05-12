@@ -1,0 +1,44 @@
+---
+# Source: mongodb/templates/mongo-express-security-policy.yaml
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: mongo-express-auth
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: mongodb-mongo-express
+  oidc:
+    provider:
+      issuer: https://auth.mattgerega.com
+    clientID: platform-tools
+    clientSecret:
+      name: mongo-express-oidc-secret
+      key: client_secret
+    scopes:
+      - openid
+      - profile
+      - roles
+    redirectURL: "https://mongo.mattgerega.net/oauth2/callback"
+  jwt:
+    providers:
+      - name: identity-server
+        issuer: https://auth.mattgerega.com
+        remoteJWKS:
+          uri: https://auth.mattgerega.com/.well-known/openid-configuration/jwks
+        claimToHeaders:
+          - claim: role
+            header: x-user-role
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: require-developer
+        action: Allow
+        principal:
+          jwt:
+            provider: identity-server
+            claims:
+              - name: role
+                values:
+                  - developer
