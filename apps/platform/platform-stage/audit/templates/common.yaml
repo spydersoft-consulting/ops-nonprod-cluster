@@ -1,0 +1,221 @@
+---
+# Source: audit/templates/common.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: audit
+  labels:
+    app.kubernetes.io/instance: audit
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: audit
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: audit-0.1.0
+  namespace: platform-stage
+data:
+  Auth__Audience: audit-api
+  Auth__Authority: https://auth.mattgerega.org
+  RabbitMq__Exchange: spydersoft.messaging
+  RabbitMq__ExchangeType: topic
+  RabbitMq__Host: rabbitmq
+  RabbitMq__Port: "5672"
+  RabbitMq__VirtualHost: /
+  Serilog__MinimumLevel__Default: Warning
+  Telemetry__ActivitySourceName: Audit.Stage.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: Audit.Stage.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: Audit.Stage
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+---
+# Source: audit/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit
+  labels:
+    app.kubernetes.io/instance: audit
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: audit
+    app.kubernetes.io/service: audit
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: audit-0.1.0
+  namespace: platform-stage
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: audit-api
+    app.kubernetes.io/instance: audit
+    app.kubernetes.io/name: audit
+---
+# Source: audit/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-audit-api
+  labels:
+    app.kubernetes.io/controller: audit-api
+    app.kubernetes.io/instance: audit
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: audit
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: audit-0.1.0
+  namespace: platform-stage
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: audit-api
+      app.kubernetes.io/name: audit
+      app.kubernetes.io/instance: audit
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: c86cfc0eb4207b5b010ee1ea1e58a92bc9b269582ecb6f844d6ae308ec738c8e
+      labels: 
+        app.kubernetes.io/controller: audit-api
+        app.kubernetes.io/instance: audit
+        app.kubernetes.io/name: audit
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: audit
+          - secretRef:
+              name: audit-secrets
+          image: ghcr.io/spydersoft-consulting/audit-api:0.1.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: audit/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-audit-processor
+  labels:
+    app.kubernetes.io/controller: audit-processor
+    app.kubernetes.io/instance: audit
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: audit
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: audit-0.1.0
+  namespace: platform-stage
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: audit-processor
+      app.kubernetes.io/name: audit
+      app.kubernetes.io/instance: audit
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: c86cfc0eb4207b5b010ee1ea1e58a92bc9b269582ecb6f844d6ae308ec738c8e
+      labels: 
+        app.kubernetes.io/controller: audit-processor
+        app.kubernetes.io/instance: audit
+        app.kubernetes.io/name: audit
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: audit
+          - secretRef:
+              name: audit-secrets
+          image: ghcr.io/spydersoft-consulting/audit-processor:0.1.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: audit/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: audit
+  labels:
+    app.kubernetes.io/instance: audit
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: audit
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: audit-0.1.0
+  namespace: platform-stage
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "audit.mattgerega.org"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: audit
+        namespace: platform-stage
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
