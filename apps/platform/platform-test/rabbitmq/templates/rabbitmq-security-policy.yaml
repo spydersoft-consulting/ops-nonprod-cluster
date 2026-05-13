@@ -15,7 +15,6 @@ spec:
     clientID: platform-tools
     clientSecret:
       name: rabbitmq-oidc-secret
-      key: client_secret
     scopes:
       - openid
       - profile

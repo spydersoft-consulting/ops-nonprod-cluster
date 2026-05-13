@@ -15,30 +15,8 @@ spec:
     clientID: platform-tools
     clientSecret:
       name: mongo-express-oidc-secret
-      key: client_secret
     scopes:
       - openid
       - profile
       - roles
     redirectURL: "https://mongo.mattgerega.net/oauth2/callback"
-  jwt:
-    providers:
-      - name: identity-server
-        issuer: https://auth.mattgerega.com
-        remoteJWKS:
-          uri: https://auth.mattgerega.com/.well-known/openid-configuration/jwks
-        claimToHeaders:
-          - claim: role
-            header: x-user-role
-  authorization:
-    defaultAction: Deny
-    rules:
-      - name: require-developer
-        action: Allow
-        principal:
-          jwt:
-            provider: identity-server
-            claims:
-              - name: role
-                values:
-                  - developer
