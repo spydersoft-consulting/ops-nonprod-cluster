@@ -8,7 +8,7 @@ spec:
   targetRef:
     group: gateway.networking.k8s.io
     kind: HTTPRoute
-    name: mongo-express-main
+    name: mongo-express
   oidc:
     provider:
       issuer: https://auth.mattgerega.com
