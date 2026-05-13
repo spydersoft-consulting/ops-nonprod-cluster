@@ -53,12 +53,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb-main
+  name: mongodb
   labels:
     app.kubernetes.io/instance: mongodb
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mongodb
-    app.kubernetes.io/service: mongodb-main
+    app.kubernetes.io/service: mongodb
     app.kubernetes.io/version: "7.0"
     helm.sh/chart: mongodb-0.1.0
   namespace: platform-test
@@ -75,35 +75,10 @@ spec:
     app.kubernetes.io/name: mongodb
 ---
 # Source: mongodb/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongodb-mongo-express
-  labels:
-    app.kubernetes.io/instance: mongodb
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: mongodb
-    app.kubernetes.io/service: mongodb-mongo-express
-    app.kubernetes.io/version: "7.0"
-    helm.sh/chart: mongodb-0.1.0
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 8081
-      targetPort: 8081
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: mongo-express
-    app.kubernetes.io/instance: mongodb
-    app.kubernetes.io/name: mongodb
----
-# Source: mongodb/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongodb-main
+  name: mongodb
   labels:
     app.kubernetes.io/controller: main
     app.kubernetes.io/instance: mongodb
@@ -182,94 +157,3 @@ spec:
         - name: mongodb-secrets
           secret:
             secretName: mongodb-secrets
----
-# Source: mongodb/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mongodb-mongo-express
-  labels:
-    app.kubernetes.io/controller: mongo-express
-    app.kubernetes.io/instance: mongodb
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: mongodb
-    app.kubernetes.io/version: "7.0"
-    helm.sh/chart: mongodb-0.1.0
-  namespace: platform-test
-spec:
-  revisionHistoryLimit: 3
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: mongo-express
-      app.kubernetes.io/name: mongodb
-      app.kubernetes.io/instance: mongodb
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: ff3eaac0bfbf772a9b1893b30fb9bcc7e5cd130df83572276d0eb32809b009d7
-      labels: 
-        app.kubernetes.io/controller: mongo-express
-        app.kubernetes.io/instance: mongodb
-        app.kubernetes.io/name: mongodb
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - env:
-          - name: ME_CONFIG_MONGODB_SERVER
-            value: mongodb
-          - name: ME_CONFIG_MONGODB_PORT
-            value: "27017"
-          - name: ME_CONFIG_BASICAUTH
-            value: "false"
-          envFrom:
-          - secretRef:
-              name: mongodb-secrets
-          image: mongo-express:1.0.2
-          name: main
-          volumeMounts:
-          - mountPath: /mongodb-secrets
-            name: mongodb-secrets
-      volumes: 
-        - name: mongodb-secrets
-          secret:
-            secretName: mongodb-secrets
----
-# Source: mongodb/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: HTTPRoute
-metadata:
-  name: mongodb
-  labels:
-    app.kubernetes.io/instance: mongodb
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: mongodb
-    app.kubernetes.io/version: "7.0"
-    helm.sh/chart: mongodb-0.1.0
-  namespace: platform-test
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "mongo.mattgerega.net"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: mongodb-mongo-express
-        namespace: platform-test
-        port: 8081
-        weight: 1

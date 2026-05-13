@@ -1,5 +1,5 @@
 ---
-# Source: mongodb/templates/mongo-express-security-policy.yaml
+# Source: mongo-express/templates/mongo-express-security-policy.yaml
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
@@ -8,7 +8,7 @@ spec:
   targetRef:
     group: gateway.networking.k8s.io
     kind: HTTPRoute
-    name: mongodb-mongo-express
+    name: mongo-express-main
   oidc:
     provider:
       issuer: https://auth.mattgerega.com
