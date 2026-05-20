@@ -3,11 +3,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pitstop-common
+  name: data-api-common
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -23,11 +23,11 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pitstop-data-api
+  name: data-api
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -40,11 +40,11 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pitstop-postgres-init-data
+  name: data-api-postgres-init-data
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -67,11 +67,11 @@ data:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: pitstop
+  name: data-api
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -87,12 +87,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pitstop-data-api
+  name: data-api
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
-    app.kubernetes.io/service: pitstop-data-api
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/service: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -105,19 +105,19 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: pitstop
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/name: data-api
 ---
 # Source: pitstop/templates/common.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: pitstop-postgres
+  name: data-api-postgres
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
-    app.kubernetes.io/service: pitstop-postgres
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/service: data-api-postgres
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -130,19 +130,19 @@ spec:
       name: postgres
   selector:
     app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: pitstop
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/name: data-api
 ---
 # Source: pitstop/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pitstop-data-api
+  name: data-api
   labels:
     app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -154,16 +154,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/controller: data-api
-      app.kubernetes.io/name: pitstop
-      app.kubernetes.io/instance: pitstop
+      app.kubernetes.io/name: data-api
+      app.kubernetes.io/instance: data-api
   template:
     metadata:
       annotations: 
         checksum/configMaps: 74865497b4a25921de0929dd9f208da0eb40d349945b8b6767b69343f65503ea
       labels: 
         app.kubernetes.io/controller: data-api
-        app.kubernetes.io/instance: pitstop
-        app.kubernetes.io/name: pitstop
+        app.kubernetes.io/instance: data-api
+        app.kubernetes.io/name: data-api
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -179,9 +179,9 @@ spec:
           - secretRef:
               name: data-api-secrets
           - configMapRef:
-              name: pitstop-common
+              name: data-api-common
           - configMapRef:
-              name: pitstop-data-api
+              name: data-api
           image: ghcr.io/spydersoft-consulting/pitstop-data-api:0.0.1-api-polish.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -206,12 +206,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pitstop-postgres
+  name: data-api-postgres
   labels:
     app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -223,16 +223,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/controller: postgres
-      app.kubernetes.io/name: pitstop
-      app.kubernetes.io/instance: pitstop
+      app.kubernetes.io/name: data-api
+      app.kubernetes.io/instance: data-api
   template:
     metadata:
       annotations: 
         checksum/configMaps: 74865497b4a25921de0929dd9f208da0eb40d349945b8b6767b69343f65503ea
       labels: 
         app.kubernetes.io/controller: postgres
-        app.kubernetes.io/instance: pitstop
-        app.kubernetes.io/name: pitstop
+        app.kubernetes.io/instance: data-api
+        app.kubernetes.io/name: data-api
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -266,20 +266,20 @@ spec:
       volumes: 
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: pitstop
+            claimName: data-api
         - configMap:
-            name: pitstop-postgres-init-data
+            name: data-api-postgres-init-data
           name: postgres-init-data
 ---
 # Source: pitstop/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: pitstop
+  name: data-api
   labels:
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -295,7 +295,7 @@ spec:
     - backendRefs:
       - group: ""
         kind: Service
-        name: pitstop-data-api
+        name: data-api
         namespace: pitstop-test
         port: 80
         weight: 1

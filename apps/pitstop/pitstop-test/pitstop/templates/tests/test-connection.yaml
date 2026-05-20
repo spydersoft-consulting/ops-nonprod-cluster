@@ -3,11 +3,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "pitstop-test-connection"
+  name: "data-api-pitstop-test-connection"
   labels:
     helm.sh/chart: pitstop-0.1.0
     app.kubernetes.io/name: pitstop
-    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/instance: data-api
     app.kubernetes.io/version: "0.0.0"
     app.kubernetes.io/managed-by: Helm
   annotations:
@@ -17,5 +17,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['pitstop-data-api:80/livez']
+      args: ['data-api-pitstop-data-api:80/livez']
   restartPolicy: Never
