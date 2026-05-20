@@ -67,10 +67,10 @@ metadata:
     helm.sh/chart: audit-0.1.0
   namespace: platform-test
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/controller: audit-api
@@ -100,7 +100,7 @@ spec:
               name: audit
           - secretRef:
               name: audit-secrets
-          image: ghcr.io/spydersoft-consulting/audit-api:0.0.1-audit-infra.9
+          image: ghcr.io/spydersoft-consulting/audit-api:0.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -134,10 +134,10 @@ metadata:
     helm.sh/chart: audit-0.1.0
   namespace: platform-test
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/controller: audit-processor
@@ -167,7 +167,7 @@ spec:
               name: audit
           - secretRef:
               name: audit-secrets
-          image: ghcr.io/spydersoft-consulting/audit-processor:0.0.1-audit-infra.9
+          image: ghcr.io/spydersoft-consulting/audit-processor:0.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
