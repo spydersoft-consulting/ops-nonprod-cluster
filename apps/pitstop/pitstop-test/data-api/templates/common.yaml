@@ -1,5 +1,42 @@
 ---
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-api-common
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-test
+data:
+  Auth__Audience: data-api
+  Auth__Authority: https://auth.mattgerega.net
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-api
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-test
+data:
+  Telemetry__ActivitySourceName: PitStop.Test.Activity
+  Telemetry__MeterName: PitStop.Test.Meter
+  Telemetry__ServiceName: PitStop.Test
+---
+# Source: data-api/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,7 +46,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 data:
   init-data.sh: |
@@ -25,44 +62,7 @@ data:
       echo "SETUP INFO: No environment variables given!"
     fi
 ---
-# Source: pitstop/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: data-api-common
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
-  namespace: pitstop-test
-data:
-  Auth__Audience: data-api
-  Auth__Authority: https://auth.mattgerega.net
-  Logging__LogLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
----
-# Source: pitstop/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: data-api
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
-  namespace: pitstop-test
-data:
-  Telemetry__ActivitySourceName: PitStop.Test.Activity
-  Telemetry__MeterName: PitStop.Test.Meter
-  Telemetry__ServiceName: PitStop.Test
----
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -73,7 +73,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
   accessModes:
@@ -83,7 +83,7 @@ spec:
       storage: "10Gi"
   storageClassName: "nfs-client"
 ---
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -94,7 +94,7 @@ metadata:
     app.kubernetes.io/name: data-api
     app.kubernetes.io/service: data-api
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
   type: ClusterIP
@@ -108,7 +108,7 @@ spec:
     app.kubernetes.io/instance: data-api
     app.kubernetes.io/name: data-api
 ---
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -119,7 +119,7 @@ metadata:
     app.kubernetes.io/name: data-api
     app.kubernetes.io/service: data-api-postgres
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
   type: ClusterIP
@@ -133,7 +133,7 @@ spec:
     app.kubernetes.io/instance: data-api
     app.kubernetes.io/name: data-api
 ---
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -144,7 +144,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
   revisionHistoryLimit: 3
@@ -202,7 +202,7 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 1
 ---
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -213,7 +213,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
   revisionHistoryLimit: 3
@@ -271,7 +271,7 @@ spec:
             name: data-api-postgres-init-data
           name: postgres-init-data
 ---
-# Source: pitstop/templates/common.yaml
+# Source: data-api/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -281,7 +281,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: data-api
     app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
+    helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
   parentRefs:
