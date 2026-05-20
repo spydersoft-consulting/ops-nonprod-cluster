@@ -147,7 +147,7 @@ metadata:
     helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate
@@ -216,7 +216,7 @@ metadata:
     helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate
