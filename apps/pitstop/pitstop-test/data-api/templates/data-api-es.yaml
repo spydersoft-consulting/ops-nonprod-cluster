@@ -1,16 +1,16 @@
 ---
-# Source: pitstop/templates/pitstop-api-es.yaml
+# Source: data-api/templates/data-api-es.yaml
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: pitstop-api-es
+  name: data-api-es
 spec:
   refreshInterval: 1h0m0s
   secretStoreRef:
     name: vault-backend
     kind: ClusterSecretStore
   target:
-    name: pitstop-api-secrets
+    name: data-api-secrets
     template:
       type: kubernetes.io/secret
       engineVersion: v2
