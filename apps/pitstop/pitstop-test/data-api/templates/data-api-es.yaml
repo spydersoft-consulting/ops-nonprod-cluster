@@ -15,7 +15,7 @@ spec:
       type: kubernetes.io/secret
       engineVersion: v2
       data:
-        ConnectionStrings__pitstop-db: "Host=pitstop-postgres;Database=pitstop;Username={{ .db_user }};Password={{ .db_password }}"
+        ConnectionStrings__pitstop-db: "Host=data-api-postgres;Database=pitstop;Username={{ .db_user }};Password={{ .db_password }}"
   data:
   - secretKey: db_user
     remoteRef:
