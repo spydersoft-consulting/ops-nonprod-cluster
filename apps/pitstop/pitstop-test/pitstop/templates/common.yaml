@@ -3,6 +3,43 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: pitstop-common
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+data:
+  Auth__Audience: data-api
+  Auth__Authority: https://auth.mattgerega.net
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-data-api
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+data:
+  Telemetry__ActivitySourceName: PitStop.Test.Activity
+  Telemetry__MeterName: PitStop.Test.Meter
+  Telemetry__ServiceName: PitStop.Test
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: pitstop-postgres-init-data
   labels:
     app.kubernetes.io/instance: pitstop
@@ -24,43 +61,6 @@ data:
     else
       echo "SETUP INFO: No environment variables given!"
     fi
----
-# Source: pitstop/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pitstop-common
-  labels:
-    app.kubernetes.io/instance: pitstop
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
-  namespace: pitstop-test
-data:
-  Auth__Audience: pitstop-api
-  Auth__Authority: https://auth.mattgerega.net
-  Logging__LogLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
----
-# Source: pitstop/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pitstop-pitstop-api
-  labels:
-    app.kubernetes.io/instance: pitstop
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: pitstop-0.1.0
-  namespace: pitstop-test
-data:
-  Telemetry__ActivitySourceName: PitStop.Test.Activity
-  Telemetry__MeterName: PitStop.Test.Meter
-  Telemetry__ServiceName: PitStop.Test
 ---
 # Source: pitstop/templates/common.yaml
 ---
@@ -87,12 +87,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pitstop-pitstop-api
+  name: pitstop-data-api
   labels:
     app.kubernetes.io/instance: pitstop
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop
-    app.kubernetes.io/service: pitstop-pitstop-api
+    app.kubernetes.io/service: pitstop-data-api
     app.kubernetes.io/version: 0.0.0
     helm.sh/chart: pitstop-0.1.0
   namespace: pitstop-test
@@ -104,7 +104,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/controller: pitstop-api
+    app.kubernetes.io/controller: data-api
     app.kubernetes.io/instance: pitstop
     app.kubernetes.io/name: pitstop
 ---
@@ -137,9 +137,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pitstop-pitstop-api
+  name: pitstop-data-api
   labels:
-    app.kubernetes.io/controller: pitstop-api
+    app.kubernetes.io/controller: data-api
     app.kubernetes.io/instance: pitstop
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop
@@ -153,15 +153,15 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/controller: pitstop-api
+      app.kubernetes.io/controller: data-api
       app.kubernetes.io/name: pitstop
       app.kubernetes.io/instance: pitstop
   template:
     metadata:
       annotations: 
-        checksum/configMaps: f8ac14ba399028e97bbf5c4bc3bcec3a1a1e184295470de70660faed1d0c9d2c
+        checksum/configMaps: 74865497b4a25921de0929dd9f208da0eb40d349945b8b6767b69343f65503ea
       labels: 
-        app.kubernetes.io/controller: pitstop-api
+        app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: pitstop
         app.kubernetes.io/name: pitstop
     spec: 
@@ -177,12 +177,12 @@ spec:
       containers: 
         - envFrom:
           - secretRef:
-              name: pitstop-api-secrets
+              name: data-api-secrets
           - configMapRef:
               name: pitstop-common
           - configMapRef:
-              name: pitstop-pitstop-api
-          image: ghcr.io/spyder007/pitstop-api:0.0.1-api-polish.11
+              name: pitstop-data-api
+          image: ghcr.io/spydersoft-consulting/pitstop-data-api:0.0.1-api-polish.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -228,7 +228,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: f8ac14ba399028e97bbf5c4bc3bcec3a1a1e184295470de70660faed1d0c9d2c
+        checksum/configMaps: 74865497b4a25921de0929dd9f208da0eb40d349945b8b6767b69343f65503ea
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: pitstop
@@ -295,7 +295,7 @@ spec:
     - backendRefs:
       - group: ""
         kind: Service
-        name: pitstop-pitstop-api
+        name: pitstop-data-api
         namespace: pitstop-test
         port: 80
         weight: 1

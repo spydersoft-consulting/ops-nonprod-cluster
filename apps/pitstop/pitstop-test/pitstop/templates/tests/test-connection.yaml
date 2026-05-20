@@ -17,5 +17,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['pitstop-pitstop-api:80/livez']
+      args: ['pitstop-data-api:80/livez']
   restartPolicy: Never
