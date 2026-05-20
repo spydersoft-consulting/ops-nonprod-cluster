@@ -63,7 +63,7 @@ metadata:
     helm.sh/chart: rabbitmq-0.1.0
   namespace: platform-test
 spec:
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 3
   replicas: 1
   strategy:
     type: Recreate
@@ -136,32 +136,3 @@ spec:
         - name: rabbitmq-secrets
           secret:
             secretName: rabbitmq-secrets
----
-# Source: rabbitmq/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: rabbitmq
-  labels:
-    app.kubernetes.io/instance: rabbitmq
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: rabbitmq
-    app.kubernetes.io/version: "3.13"
-    helm.sh/chart: rabbitmq-0.1.0
-  namespace: platform-test
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "rabbitmq.mattgerega.net"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: rabbitmq
-        namespace: platform-test
-        port: 15672
-        weight: 1
