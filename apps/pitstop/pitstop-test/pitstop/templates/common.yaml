@@ -1,0 +1,305 @@
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-postgres-init-data
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+data:
+  init-data.sh: |
+    #!/bin/bash
+    set -e;
+    if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
+        GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
+        ALTER DATABASE ${POSTGRES_DB} OWNER TO "${POSTGRES_NON_ROOT_USER}";
+    EOSQL
+    else
+      echo "SETUP INFO: No environment variables given!"
+    fi
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-common
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+data:
+  Auth__Audience: pitstop-api
+  Auth__Authority: https://auth.mattgerega.net
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-pitstop-api
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+data:
+  Telemetry__ActivitySourceName: PitStop.Test.Activity
+  Telemetry__MeterName: PitStop.Test.Meter
+  Telemetry__ServiceName: PitStop.Test
+---
+# Source: pitstop/templates/common.yaml
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pitstop
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "10Gi"
+  storageClassName: "nfs-client"
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pitstop-pitstop-api
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/service: pitstop-pitstop-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: pitstop-api
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/name: pitstop
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pitstop-postgres
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/service: pitstop-postgres
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/name: pitstop
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pitstop-pitstop-api
+  labels:
+    app.kubernetes.io/controller: pitstop-api
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: pitstop-api
+      app.kubernetes.io/name: pitstop
+      app.kubernetes.io/instance: pitstop
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: f8ac14ba399028e97bbf5c4bc3bcec3a1a1e184295470de70660faed1d0c9d2c
+      labels: 
+        app.kubernetes.io/controller: pitstop-api
+        app.kubernetes.io/instance: pitstop
+        app.kubernetes.io/name: pitstop
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: pitstop-api-secrets
+          - configMapRef:
+              name: pitstop-common
+          - configMapRef:
+              name: pitstop-pitstop-api
+          image: ghcr.io/spyder007/pitstop-api:0.0.1-api-polish.11
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pitstop-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/name: pitstop
+      app.kubernetes.io/instance: pitstop
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: f8ac14ba399028e97bbf5c4bc3bcec3a1a1e184295470de70660faed1d0c9d2c
+      labels: 
+        app.kubernetes.io/controller: postgres
+        app.kubernetes.io/instance: pitstop
+        app.kubernetes.io/name: pitstop
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_DB
+            value: pitstop
+          envFrom:
+          - secretRef:
+              name: postgres-secrets
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          name: main
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /docker-entrypoint-initdb.d/init-pitstop-user.sh
+            name: postgres-init-data
+            subPath: init-data.sh
+      volumes: 
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: pitstop
+        - configMap:
+            name: pitstop-postgres-init-data
+          name: postgres-init-data
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pitstop
+  labels:
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-0.1.0
+  namespace: pitstop-test
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "pitstop.mattgerega.net"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: pitstop-pitstop-api
+        namespace: pitstop-test
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

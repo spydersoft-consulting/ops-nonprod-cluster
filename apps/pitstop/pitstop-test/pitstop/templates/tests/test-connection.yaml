@@ -1,0 +1,21 @@
+---
+# Source: pitstop/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "pitstop-test-connection"
+  labels:
+    helm.sh/chart: pitstop-0.1.0
+    app.kubernetes.io/name: pitstop
+    app.kubernetes.io/instance: pitstop
+    app.kubernetes.io/version: "0.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['pitstop-pitstop-api:80/livez']
+  restartPolicy: Never

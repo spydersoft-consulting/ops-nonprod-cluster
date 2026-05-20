@@ -1,0 +1,27 @@
+---
+# Source: pitstop/templates/pitstop-api-es.yaml
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: pitstop-api-es
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: pitstop-api-secrets
+    template:
+      type: kubernetes.io/secret
+      engineVersion: v2
+      data:
+        ConnectionStrings__pitstop-db: "Host=pitstop-postgres;Database=pitstop;Username={{ .db_user }};Password={{ .db_password }}"
+  data:
+  - secretKey: db_user
+    remoteRef:
+      key: secrets-k8/pitstop/test/postgres
+      property: user
+  - secretKey: db_password
+    remoteRef:
+      key: secrets-k8/pitstop/test/postgres
+      property: password
