@@ -87,31 +87,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: data-api
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/service: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: data-api-0.1.0
-  namespace: pitstop-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/name: data-api
----
-# Source: data-api/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: data-api-postgres
   labels:
     app.kubernetes.io/instance: data-api
@@ -130,6 +105,31 @@ spec:
       name: postgres
   selector:
     app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/name: data-api
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-api
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/service: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
     app.kubernetes.io/instance: data-api
     app.kubernetes.io/name: data-api
 ---
@@ -270,36 +270,3 @@ spec:
         - configMap:
             name: data-api-postgres-init-data
           name: postgres-init-data
----
-# Source: data-api/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: data-api
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: data-api-0.1.0
-  namespace: pitstop-test
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "pitstop.mattgerega.net"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: data-api
-        namespace: pitstop-test
-        port: 80
-        weight: 1
-      matches:
-        - path:
-            type: PathPrefix
-            value: /
