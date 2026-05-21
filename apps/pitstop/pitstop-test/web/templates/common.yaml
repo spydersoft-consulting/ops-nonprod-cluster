@@ -4,6 +4,24 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: web-common
+  labels:
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-test
+data:
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+---
+# Source: web/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: web
   labels:
     app.kubernetes.io/instance: web
@@ -16,26 +34,6 @@ data:
   Telemetry__ActivitySourceName: PitStop.Test.Activity
   Telemetry__MeterName: PitStop.Test.Meter
   Telemetry__ServiceName: PitStop.Test
----
-# Source: web/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: web-common
-  labels:
-    app.kubernetes.io/instance: web
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: web
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: web-0.1.0
-  namespace: pitstop-test
-data:
-  Auth__Audience: data-api
-  Auth__Authority: https://auth.mattgerega.net
-  Logging__LogLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
 ---
 # Source: web/templates/common.yaml
 apiVersion: v1
@@ -88,7 +86,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: edc4fcb3984fac43cb9d5f5e4f77950f72d635d239f5ef06bb68ed956dc691d7
+        checksum/configMaps: 2a1deab88c82624712131056b147c8663fbd5be6df21ed6fb86cae773398672a
       labels: 
         app.kubernetes.io/controller: web
         app.kubernetes.io/instance: web

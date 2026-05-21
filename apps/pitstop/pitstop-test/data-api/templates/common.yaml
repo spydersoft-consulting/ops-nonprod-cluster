@@ -12,7 +12,7 @@ metadata:
     helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 data:
-  Auth__Audience: data-api
+  Auth__Audience: pitstop-data-api
   Auth__Authority: https://auth.mattgerega.net
   Logging__LogLevel__Default: Warning
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
@@ -159,7 +159,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 74865497b4a25921de0929dd9f208da0eb40d349945b8b6767b69343f65503ea
+        checksum/configMaps: 2a95748635a27e6180813c96a689692fd40497f45fa757ccc6fc9d52cbcb3a17
       labels: 
         app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: data-api
@@ -228,7 +228,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 74865497b4a25921de0929dd9f208da0eb40d349945b8b6767b69343f65503ea
+        checksum/configMaps: 2a95748635a27e6180813c96a689692fd40497f45fa757ccc6fc9d52cbcb3a17
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: data-api
