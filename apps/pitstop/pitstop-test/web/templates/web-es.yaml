@@ -15,13 +15,20 @@ spec:
       type: kubernetes.io/secret
       engineVersion: v2
       data:
-        ConnectionStrings__pitstop-db: "Host=data-api-postgres;Database=pitstop;Username={{ .db_user }};Password={{ .db_password }}"
+        OidcProxySettings__Oidc__Authority: "{{ .authority }}"
+        OidcProxySettings__Oidc__ClientId: "{{ .client_id }}"
+        OidcProxySettings__Oidc__ClientSecret: "{{ .client_secret }}"
+
   data:
-  - secretKey: db_user
+  - secretKey: authority
     remoteRef:
-      key: secrets-k8/pitstop/test/postgres
-      property: user
-  - secretKey: db_password
+      key: secrets-k8/pitstop/test/auth
+      property: authority
+  - secretKey: client_id
     remoteRef:
-      key: secrets-k8/pitstop/test/postgres
-      property: password
+      key: secrets-k8/pitstop/test/auth
+      property: client_id
+  - secretKey: client_secret
+    remoteRef:
+      key: secrets-k8/pitstop/test/auth
+      property: client_secret
