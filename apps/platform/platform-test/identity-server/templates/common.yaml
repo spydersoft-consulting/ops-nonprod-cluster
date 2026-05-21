@@ -136,10 +136,10 @@ metadata:
     helm.sh/chart: identity-server-0.1.0
   namespace: platform-test
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
-    type: Recreate
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/controller: main
@@ -210,7 +210,7 @@ metadata:
     helm.sh/chart: identity-server-0.1.0
   namespace: platform-test
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate

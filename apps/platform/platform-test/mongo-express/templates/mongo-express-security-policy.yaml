@@ -1,0 +1,22 @@
+---
+# Source: mongo-express/templates/mongo-express-security-policy.yaml
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: mongo-express-auth
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: mongo-express
+  oidc:
+    provider:
+      issuer: https://auth.mattgerega.com
+    clientID: platform-tools
+    clientSecret:
+      name: mongo-express-oidc-secret
+    scopes:
+      - openid
+      - profile
+      - roles
+    redirectURL: "https://mongo.mattgerega.net/oauth2/callback"
