@@ -67,10 +67,10 @@ metadata:
     helm.sh/chart: audit-0.1.0
   namespace: platform-stage
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
-    type: Recreate
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/controller: audit-api
@@ -134,10 +134,10 @@ metadata:
     helm.sh/chart: audit-0.1.0
   namespace: platform-stage
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
-    type: Recreate
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/controller: audit-processor
