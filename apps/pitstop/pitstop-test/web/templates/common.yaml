@@ -1,0 +1,165 @@
+---
+# Source: web/templates/common.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-common
+  labels:
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-test
+data:
+  Auth__Audience: data-api
+  Auth__Authority: https://auth.mattgerega.net
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+---
+# Source: web/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-test
+data:
+  Telemetry__ActivitySourceName: PitStop.Test.Activity
+  Telemetry__MeterName: PitStop.Test.Meter
+  Telemetry__ServiceName: PitStop.Test
+---
+# Source: web/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/service: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: web
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/name: web
+---
+# Source: web/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/controller: web
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: web
+      app.kubernetes.io/name: web
+      app.kubernetes.io/instance: web
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: edc4fcb3984fac43cb9d5f5e4f77950f72d635d239f5ef06bb68ed956dc691d7
+      labels: 
+        app.kubernetes.io/controller: web
+        app.kubernetes.io/instance: web
+        app.kubernetes.io/name: web
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: web-secrets
+          - configMapRef:
+              name: web-common
+          - configMapRef:
+              name: web
+          image: ghcr.io/spydersoft-consulting/pitstop-web:0.0.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: web/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-test
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "pitstop.mattgerega.net"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: web
+        namespace: pitstop-test
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

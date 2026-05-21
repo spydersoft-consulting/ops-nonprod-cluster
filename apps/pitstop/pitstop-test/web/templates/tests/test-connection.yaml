@@ -1,0 +1,21 @@
+---
+# Source: web/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "web-test-connection"
+  labels:
+    helm.sh/chart: web-0.1.0
+    app.kubernetes.io/name: web
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/version: "0.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['web-data-api:80/livez']
+  restartPolicy: Never
