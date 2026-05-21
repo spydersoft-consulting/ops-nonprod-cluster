@@ -182,7 +182,7 @@ spec:
               name: data-api-common
           - configMapRef:
               name: data-api
-          image: ghcr.io/spydersoft-consulting/pitstop-data-api:0.0.1-api-polish.12
+          image: ghcr.io/spydersoft-consulting/pitstop-data-api:0.0.1-api-polish.13
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
