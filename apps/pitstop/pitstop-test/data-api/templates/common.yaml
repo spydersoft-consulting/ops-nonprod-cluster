@@ -32,9 +32,9 @@ metadata:
     helm.sh/chart: data-api-0.1.0
   namespace: pitstop-test
 data:
-  Telemetry__ActivitySourceName: PitStop.Test.Activity
-  Telemetry__MeterName: PitStop.Test.Meter
-  Telemetry__ServiceName: PitStop.Test
+  Telemetry__ActivitySourceName: PitStop.Data.Test.Activity
+  Telemetry__MeterName: PitStop.Data.Test.Meter
+  Telemetry__ServiceName: PitStop.Data.Test
 ---
 # Source: data-api/templates/common.yaml
 apiVersion: v1
@@ -159,7 +159,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 8ca43a3d77d0b8b6b23a3b6cc360cad3c72b016fc3fd814b7686742c5dca3c07
+        checksum/configMaps: 6d8da8817ccb0ed4538530a2fdbace5e5d385399cdabcc1170ab4b61b8f66aa4
       labels: 
         app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: data-api
@@ -228,7 +228,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 8ca43a3d77d0b8b6b23a3b6cc360cad3c72b016fc3fd814b7686742c5dca3c07
+        checksum/configMaps: 6d8da8817ccb0ed4538530a2fdbace5e5d385399cdabcc1170ab4b61b8f66aa4
         linkerd.io/inject: disabled
       labels: 
         app.kubernetes.io/controller: postgres

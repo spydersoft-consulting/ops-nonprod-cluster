@@ -31,9 +31,9 @@ metadata:
     helm.sh/chart: web-0.1.0
   namespace: pitstop-test
 data:
-  Telemetry__ActivitySourceName: PitStop.Test.Activity
-  Telemetry__MeterName: PitStop.Test.Meter
-  Telemetry__ServiceName: PitStop.Test
+  Telemetry__ActivitySourceName: PitStop.Web.Test.Activity
+  Telemetry__MeterName: PitStop.Web.Test.Meter
+  Telemetry__ServiceName: PitStop.Web.Test
 ---
 # Source: web/templates/common.yaml
 apiVersion: v1
@@ -86,7 +86,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 2640f2a0ef2942d65d3e31ff10a29c549593e7c5fbc64bd9749e59f45536335a
+        checksum/configMaps: 67e08bd812d5214ccd7b72c96dfaeba394df42d4f06dcefd05bc559e38af0b3c
       labels: 
         app.kubernetes.io/controller: web
         app.kubernetes.io/instance: web
