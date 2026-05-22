@@ -14,9 +14,9 @@ metadata:
   namespace: pitstop-test
 data:
   Logging__LogLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
 ---
 # Source: web/templates/common.yaml
 apiVersion: v1
@@ -86,7 +86,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 2a1deab88c82624712131056b147c8663fbd5be6df21ed6fb86cae773398672a
+        checksum/configMaps: 2640f2a0ef2942d65d3e31ff10a29c549593e7c5fbc64bd9749e59f45536335a
       labels: 
         app.kubernetes.io/controller: web
         app.kubernetes.io/instance: web
