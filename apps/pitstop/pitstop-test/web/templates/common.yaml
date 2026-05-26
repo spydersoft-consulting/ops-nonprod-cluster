@@ -109,7 +109,7 @@ spec:
               name: web-common
           - configMapRef:
               name: web
-          image: ghcr.io/spydersoft-consulting/pitstop-web:0.0.1-api-polish.26
+          image: ghcr.io/spydersoft-consulting/pitstop-web:1.0.1-api-polish.26
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
