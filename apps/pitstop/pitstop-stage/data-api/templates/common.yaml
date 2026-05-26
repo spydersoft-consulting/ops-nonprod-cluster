@@ -1,0 +1,273 @@
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-api-common
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+data:
+  Auth__Audience: pitstop-data-api
+  Auth__Authority: https://auth.mattgerega.org
+  Logging__LogLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-api
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+data:
+  Telemetry__ActivitySourceName: PitStop.Data.Stage.Activity
+  Telemetry__MeterName: PitStop.Data.Stage.Meter
+  Telemetry__ServiceName: PitStop.Data.Stage
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-api-postgres-init-data
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+data:
+  init-data.sh: |
+    #!/bin/bash
+    set -e;
+    if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+        CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
+        GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
+        ALTER DATABASE ${POSTGRES_DB} OWNER TO "${POSTGRES_NON_ROOT_USER}";
+    EOSQL
+    else
+      echo "SETUP INFO: No environment variables given!"
+    fi
+---
+# Source: data-api/templates/common.yaml
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: data-api
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "10Gi"
+  storageClassName: "nfs-client"
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-api
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/service: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/name: data-api
+---
+# Source: data-api/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-api-postgres
+  labels:
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/service: data-api-postgres
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/name: data-api
+---
+# Source: data-api/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-api
+  labels:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: data-api
+      app.kubernetes.io/name: data-api
+      app.kubernetes.io/instance: data-api
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 25ef1c9435ec35880730b045854516a2058ac42355a01eb39ae01a2233045d28
+      labels: 
+        app.kubernetes.io/controller: data-api
+        app.kubernetes.io/instance: data-api
+        app.kubernetes.io/name: data-api
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: data-api-secrets
+          - configMapRef:
+              name: data-api-common
+          - configMapRef:
+              name: data-api
+          image: ghcr.io/spydersoft-consulting/pitstop-data-api:0.0.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: data-api/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-api-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: data-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: data-api
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: data-api-0.1.0
+  namespace: pitstop-stage
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/name: data-api
+      app.kubernetes.io/instance: data-api
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 25ef1c9435ec35880730b045854516a2058ac42355a01eb39ae01a2233045d28
+        linkerd.io/inject: disabled
+      labels: 
+        app.kubernetes.io/controller: postgres
+        app.kubernetes.io/instance: data-api
+        app.kubernetes.io/name: data-api
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_DB
+            value: pitstop
+          envFrom:
+          - secretRef:
+              name: postgres-secrets
+          image: postgres:17
+          imagePullPolicy: IfNotPresent
+          name: main
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /docker-entrypoint-initdb.d/init-pitstop-user.sh
+            name: postgres-init-data
+            subPath: init-data.sh
+      volumes: 
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: data-api
+        - configMap:
+            name: data-api-postgres-init-data
+          name: postgres-init-data

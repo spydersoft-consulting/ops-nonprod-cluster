@@ -1,0 +1,34 @@
+---
+# Source: web/templates/web-es.yaml
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: web-es
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: web-secrets
+    template:
+      type: kubernetes.io/secret
+      engineVersion: v2
+      data:
+        OidcProxySettings__Oidc__Authority: "{{ .authority }}"
+        OidcProxySettings__Oidc__ClientId: "{{ .client_id }}"
+        OidcProxySettings__Oidc__ClientSecret: "{{ .client_secret }}"
+
+  data:
+  - secretKey: authority
+    remoteRef:
+      key: secrets-k8/pitstop/stage/auth
+      property: authority
+  - secretKey: client_id
+    remoteRef:
+      key: secrets-k8/pitstop/stage/auth
+      property: client_id
+  - secretKey: client_secret
+    remoteRef:
+      key: secrets-k8/pitstop/stage/auth
+      property: client_secret
