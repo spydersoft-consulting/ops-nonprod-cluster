@@ -100,7 +100,7 @@ spec:
               name: audit
           - secretRef:
               name: audit-secrets
-          image: ghcr.io/spydersoft-consulting/audit-api:0.0.1-audit-infra.9
+          image: ghcr.io/spydersoft-consulting/audit-api:0.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
