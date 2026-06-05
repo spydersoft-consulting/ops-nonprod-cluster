@@ -94,7 +94,7 @@ spec:
               name: identity-server-admin-api
           - secretRef:
               name: identity-server-admin-api-secrets
-          image: ghcr.io/spyder007/identity_admin_api:3.1.5-admin-split.16
+          image: ghcr.io/spyder007/identity_admin_api:3.1.5-admin-split.17
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
