@@ -4,6 +4,23 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: web
+  labels:
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: web
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: web-0.1.0
+  namespace: pitstop-stage
+data:
+  Telemetry__ActivitySourceName: PitStop.Web.Stage.Activity
+  Telemetry__MeterName: PitStop.Web.Stage.Meter
+  Telemetry__ServiceName: PitStop.Web.Stage
+---
+# Source: web/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: web-common
   labels:
     app.kubernetes.io/instance: web
@@ -17,23 +34,6 @@ data:
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
----
-# Source: web/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: web
-  labels:
-    app.kubernetes.io/instance: web
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: web
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: web-0.1.0
-  namespace: pitstop-stage
-data:
-  Telemetry__ActivitySourceName: PitStop.Web.Stage.Activity
-  Telemetry__MeterName: PitStop.Web.Stage.Meter
-  Telemetry__ServiceName: PitStop.Web.Stage
 ---
 # Source: web/templates/common.yaml
 apiVersion: v1
@@ -109,7 +109,7 @@ spec:
               name: web-common
           - configMapRef:
               name: web
-          image: ghcr.io/spydersoft-consulting/pitstop-web:1.0.0
+          image: ghcr.io/spydersoft-consulting/pitstop-web:1.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
