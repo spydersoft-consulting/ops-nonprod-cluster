@@ -3,6 +3,32 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: identity-server-identity
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: platform-test
+data:
+  AllowedOrigins__0: https://*.mattgerega.net
+  AllowedOrigins__1: http://localhost:3000
+  Identity__AuthorityUrl: https://auth.mattgerega.net
+  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Override__Microsoft: Information
+  Serilog__MinimumLevel__Override__System: Information
+  Telemetry__ActivitySourceName: Identity.Test.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: Identity.Test.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: Identity.Test
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: identity-server-postgres-init-data
   labels:
     app.kubernetes.io/instance: identity-server
@@ -26,33 +52,6 @@ data:
     fi
 ---
 # Source: identity-server/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: identity-server-identity
-  labels:
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: platform-test
-data:
-  AllowedOrigins__0: https://*.mattgerega.net
-  AllowedOrigins__1: http://localhost:3000
-  Identity__AuthorityUrl: https://auth.mattgerega.net
-  Resend__EmailFrom: Spydersoft Test
-  Serilog__MinimumLevel__Default: Information
-  Serilog__MinimumLevel__Override__Microsoft: Information
-  Serilog__MinimumLevel__Override__System: Information
-  Telemetry__ActivitySourceName: Identity.Test.Activity
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__MeterName: Identity.Test.Meter
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__ServiceName: Identity.Test
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: identity-server/templates/common.yaml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -72,31 +71,6 @@ spec:
     requests:
       storage: "300Gi"
   storageClassName: "nfs-client"
----
-# Source: identity-server/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: identity-server-postgres
-  labels:
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/service: identity-server-postgres
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: postgres
-  selector:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/name: identity-server
 ---
 # Source: identity-server/templates/common.yaml
 apiVersion: v1
@@ -124,6 +98,105 @@ spec:
     app.kubernetes.io/name: identity-server
 ---
 # Source: identity-server/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-server-postgres
+  labels:
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/service: identity-server-postgres
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/name: identity-server
+---
+# Source: identity-server/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-server-main
+  labels:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: identity-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: identity-server-0.1.0
+  namespace: platform-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: main
+      app.kubernetes.io/name: identity-server
+      app.kubernetes.io/instance: identity-server
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
+      labels: 
+        app.kubernetes.io/controller: main
+        app.kubernetes.io/instance: identity-server
+        app.kubernetes.io/name: identity-server
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: identity-server-identity
+          - secretRef:
+              name: identity-server-secrets
+          image: ghcr.io/spyder007/identity_server:3.1.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+          - mountPath: /postgres-secrets
+            name: postgres-secrets
+      volumes: 
+        - name: postgres-secrets
+          secret:
+            secretName: postgres-secrets
+---
+# Source: identity-server/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -149,7 +222,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: a981ba9828b3b7caf8fec18d822565df5607287bc6803fe29d2921ef141750f9
+        checksum/configMaps: df133e40353ab8540d9f5d1b42aecefd3a00eb86d0f2bb0b91a31cef0d472a27
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: identity-server
@@ -193,80 +266,6 @@ spec:
         - configMap:
             name: identity-server-postgres-init-data
           name: postgres-init-data
-        - name: postgres-secrets
-          secret:
-            secretName: postgres-secrets
----
-# Source: identity-server/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: identity-server-main
-  labels:
-    app.kubernetes.io/controller: main
-    app.kubernetes.io/instance: identity-server
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: identity-server-0.1.0
-  namespace: platform-test
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: main
-      app.kubernetes.io/name: identity-server
-      app.kubernetes.io/instance: identity-server
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: a981ba9828b3b7caf8fec18d822565df5607287bc6803fe29d2921ef141750f9
-      labels: 
-        app.kubernetes.io/controller: main
-        app.kubernetes.io/instance: identity-server
-        app.kubernetes.io/name: identity-server
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - envFrom:
-          - configMapRef:
-              name: identity-server-identity
-          - secretRef:
-              name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.1.5-admin-split.17
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /livez
-              port: 8080
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            timeoutSeconds: 1
-          name: main
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /readyz
-              port: 8080
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            timeoutSeconds: 1
-          volumeMounts:
-          - mountPath: /postgres-secrets
-            name: postgres-secrets
-      volumes: 
         - name: postgres-secrets
           secret:
             secretName: postgres-secrets
