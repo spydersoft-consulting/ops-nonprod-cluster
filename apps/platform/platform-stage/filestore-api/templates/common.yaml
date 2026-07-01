@@ -1,0 +1,152 @@
+---
+# Source: filestore-api/templates/common.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filestore-api
+  labels:
+    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: filestore-api
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: filestore-api-0.1.0
+  namespace: platform-stage
+data:
+  Auth__Audience: filestore-api
+  Auth__Authority: https://auth.mattgerega.org
+  Serilog__MinimumLevel__Default: Warning
+  Storage__BucketName: filestore
+  Storage__Region: us-east-1
+  Storage__ServiceUrl: https://gs3.mattgerega.net
+  Telemetry__ActivitySourceName: FileStore.Stage.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: FileStore.Stage.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: FileStore.Stage
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+---
+# Source: filestore-api/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: filestore-api
+  labels:
+    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: filestore-api
+    app.kubernetes.io/service: filestore-api
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: filestore-api-0.1.0
+  namespace: platform-stage
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: filestore-api
+    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/name: filestore-api
+---
+# Source: filestore-api/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filestore-api
+  labels:
+    app.kubernetes.io/controller: filestore-api
+    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: filestore-api
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: filestore-api-0.1.0
+  namespace: platform-stage
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: filestore-api
+      app.kubernetes.io/name: filestore-api
+      app.kubernetes.io/instance: filestore-api
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: d0a8073df2d97e273802f99db0c6916a55ee9b952cc25f120ea6c588eabcff22
+      labels: 
+        app.kubernetes.io/controller: filestore-api
+        app.kubernetes.io/instance: filestore-api
+        app.kubernetes.io/name: filestore-api
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: filestore-api
+          - secretRef:
+              name: filestore-secrets
+          image: ghcr.io/spydersoft-consulting/filestore-api:0.1.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+---
+# Source: filestore-api/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: filestore-api
+  labels:
+    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: filestore-api
+    app.kubernetes.io/version: 0.1.0
+    helm.sh/chart: filestore-api-0.1.0
+  namespace: platform-stage
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "filestore.mattgerega.org"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: filestore-api
+        namespace: platform-stage
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
