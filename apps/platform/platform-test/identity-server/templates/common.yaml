@@ -170,7 +170,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.1.5-admin-split.22
+          image: ghcr.io/spyder007/identity_server:3.1.5-admin-split.24
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
