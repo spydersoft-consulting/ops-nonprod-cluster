@@ -13,6 +13,7 @@ metadata:
     helm.sh/chart: identity-server-admin-ui-0.1.0
   namespace: platform-test
 data:
+  ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
   OidcProxySettings__Oidc__Authority: https://auth.mattgerega.net
   OidcProxySettings__Oidc__ClientId: identity.admin.frontend
   OidcProxySettings__ReverseProxy__Clusters__adminApi__Destinations__destination1__Address: http://identity-server-admin-api/
@@ -75,7 +76,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 441004d4760fe6729c59eaa5d54379b31beb07b2b517363d70177f44fd7d8711
+        checksum/configMaps: b76bc8ea9d00fb68a6332024aa451dda6cbcd1dea55074e46635478c4df196ed
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server-admin-ui
