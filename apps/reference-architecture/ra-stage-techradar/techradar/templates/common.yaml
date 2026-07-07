@@ -4,26 +4,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar-app-common
-  labels:
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
-  namespace: ra-stage-techradar
-data:
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: stage
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: stage
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: stage
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: techradar-app-data-api
   labels:
     app.kubernetes.io/instance: techradar-app
@@ -53,6 +33,26 @@ data:
   Telemetry__ActivitySourceName: TechRadar.Frontend.Stage.Activity
   Telemetry__MeterName: TechRadar.Frontend.Stage.Meter
   Telemetry__ServiceName: TechRadar.Frontend.Stage
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techradar-app-common
+  labels:
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
+  namespace: ra-stage-techradar
+data:
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: stage
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: stage
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: stage
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
