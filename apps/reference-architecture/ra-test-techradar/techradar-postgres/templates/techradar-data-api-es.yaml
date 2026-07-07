@@ -1,5 +1,5 @@
 ---
-# Source: techradar/templates/techradar-data-api-es.yaml
+# Source: techradar-postgres/templates/techradar-data-api-es.yaml
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
