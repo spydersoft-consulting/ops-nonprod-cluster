@@ -1,15 +1,16 @@
 ---
 # Source: techradar/templates/common.yaml
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar-common
+  name: techradar-app-common
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 data:
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
@@ -23,13 +24,13 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar-data-api
+  name: techradar-app-data-api
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Data.Stage.Activity
@@ -40,13 +41,13 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar-frontend
+  name: techradar-app-frontend
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Frontend.Stage.Activity
@@ -55,63 +56,16 @@ data:
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: techradar-postgres-init-data
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-stage-techradar
-data:
-  init-data.sh: |
-    #!/bin/bash
-    set -e;
-    if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}" ]; then
-      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-        CREATE USER "${POSTGRES_NON_ROOT_USER}" WITH PASSWORD '${POSTGRES_NON_ROOT_PASSWORD}';
-        GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO "${POSTGRES_NON_ROOT_USER}";
-        ALTER DATABASE ${POSTGRES_DB} OWNER TO "${POSTGRES_NON_ROOT_USER}";
-    EOSQL
-    else
-      echo "SETUP INFO: No Environment variables given!"
-    fi
----
-# Source: techradar/templates/common.yaml
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: techradar
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-stage-techradar
-spec:
-  accessModes:
-    - "ReadWriteMany"
-  resources:
-    requests:
-      storage: "300Gi"
-  storageClassName: "nfs-client"
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
 kind: Service
 metadata:
-  name: techradar-data-api
+  name: techradar-app-data-api
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-data-api
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/service: techradar-app-data-api
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 spec:
   type: ClusterIP
@@ -122,21 +76,21 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/name: techradar-app
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: techradar-frontend
+  name: techradar-app-frontend
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-frontend
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/service: techradar-app-frontend
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 spec:
   type: ClusterIP
@@ -147,120 +101,21 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: frontend
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: techradar-postgres
-  labels:
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-postgres
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-stage-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
-      targetPort: 5432
-      protocol: TCP
-      name: postgres
-  selector:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/name: techradar-app
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: techradar-postgres
-  labels:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
-  namespace: ra-stage-techradar
-spec:
-  revisionHistoryLimit: 3
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: postgres
-      app.kubernetes.io/name: techradar
-      app.kubernetes.io/instance: techradar
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: f3734f50471ab309e1d32520463027d4854e20efa299f08e06b3d3dff56db8e5
-      labels: 
-        app.kubernetes.io/controller: postgres
-        app.kubernetes.io/instance: techradar
-        app.kubernetes.io/name: techradar
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - env:
-          - name: POSTGRES_PORT
-            value: "5432"
-          - name: POSTGRES_HOST
-            value: postgres-service
-          - name: POSTGRES_DB
-            value: techradar
-          envFrom:
-          - secretRef:
-              name: postgres-secrets
-          image: postgres:17
-          imagePullPolicy: IfNotPresent
-          name: main
-          volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: postgres-data
-          - mountPath: /docker-entrypoint-initdb.d/init-techradar-user.sh
-            name: postgres-init-data
-            subPath: init-data.sh
-          - mountPath: /postgres-secrets
-            name: postgres-secrets
-      volumes: 
-        - name: postgres-data
-          persistentVolumeClaim:
-            claimName: techradar
-        - configMap:
-            name: techradar-postgres-init-data
-          name: postgres-init-data
-        - name: postgres-secrets
-          secret:
-            secretName: postgres-secrets
----
-# Source: techradar/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: techradar-data-api
+  name: techradar-app-data-api
   labels:
     app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 spec:
   revisionHistoryLimit: 3
@@ -270,16 +125,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/controller: data-api
-      app.kubernetes.io/name: techradar
-      app.kubernetes.io/instance: techradar
+      app.kubernetes.io/name: techradar-app
+      app.kubernetes.io/instance: techradar-app
   template:
     metadata:
       annotations: 
-        checksum/configMaps: f3734f50471ab309e1d32520463027d4854e20efa299f08e06b3d3dff56db8e5
+        checksum/configMaps: 715267cb2b0c4eda2b1766e47c59c4b32421860969fada54bd99fe27cb06ffa6
       labels: 
         app.kubernetes.io/controller: data-api
-        app.kubernetes.io/instance: techradar
-        app.kubernetes.io/name: techradar
+        app.kubernetes.io/instance: techradar-app
+        app.kubernetes.io/name: techradar-app
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -291,33 +146,14 @@ spec:
       imagePullSecrets: 
         - name: cr-spydersoft-github
       containers: 
-        - env:
-          - name: DB_TYPE
-            value: postgresdb
-          - name: DB_POSTGRESDB_HOST
-            value: techradar-postgres
-          - name: DB_POSTGRESDB_PORT
-            value: "5432"
-          - name: DB_POSTGRESDB_DATABASE
-            value: techradar
-          - name: DB_POSTGRESDB_USER
-            valueFrom:
-              secretKeyRef:
-                key: POSTGRES_NON_ROOT_USER
-                name: postgres-secrets
-          - name: DB_POSTGRESDB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: POSTGRES_NON_ROOT_PASSWORD
-                name: postgres-secrets
-          envFrom:
+        - envFrom:
           - secretRef:
               name: techradar-data-api
           - configMapRef:
-              name: techradar-common
+              name: techradar-app-common
           - configMapRef:
-              name: techradar-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.0.1
+              name: techradar-app-data-api
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -336,26 +172,19 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
-          volumeMounts:
-          - mountPath: /postgres-secrets
-            name: postgres-secrets
-      volumes: 
-        - name: postgres-secrets
-          secret:
-            secretName: postgres-secrets
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: techradar-frontend
+  name: techradar-app-frontend
   labels:
     app.kubernetes.io/controller: frontend
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 spec:
   revisionHistoryLimit: 3
@@ -365,16 +194,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/controller: frontend
-      app.kubernetes.io/name: techradar
-      app.kubernetes.io/instance: techradar
+      app.kubernetes.io/name: techradar-app
+      app.kubernetes.io/instance: techradar-app
   template:
     metadata:
       annotations: 
-        checksum/configMaps: f3734f50471ab309e1d32520463027d4854e20efa299f08e06b3d3dff56db8e5
+        checksum/configMaps: 715267cb2b0c4eda2b1766e47c59c4b32421860969fada54bd99fe27cb06ffa6
       labels: 
         app.kubernetes.io/controller: frontend
-        app.kubernetes.io/instance: techradar
-        app.kubernetes.io/name: techradar
+        app.kubernetes.io/instance: techradar-app
+        app.kubernetes.io/name: techradar-app
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -390,10 +219,10 @@ spec:
           - secretRef:
               name: techradar-frontend
           - configMapRef:
-              name: techradar-common
+              name: techradar-app-common
           - configMapRef:
-              name: techradar-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.0.1
+              name: techradar-app-frontend
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -412,25 +241,18 @@ spec:
             initialDelaySeconds: 0
             periodSeconds: 10
             timeoutSeconds: 1
-          volumeMounts:
-          - mountPath: /postgres-secrets
-            name: postgres-secrets
-      volumes: 
-        - name: postgres-secrets
-          secret:
-            secretName: postgres-secrets
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: techradar
+  name: techradar-app
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-0.1.0
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.0
+    helm.sh/chart: techradar-2.1.0
   namespace: ra-stage-techradar
 spec:
   parentRefs:
@@ -444,7 +266,7 @@ spec:
     - backendRefs:
       - group: ""
         kind: Service
-        name: techradar-frontend
+        name: techradar-app-frontend
         namespace: ra-stage-techradar
         port: 80
         weight: 1
