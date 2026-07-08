@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: data-api-postgres-init-data
+  name: data-api
   labels:
     app.kubernetes.io/instance: data-api
     app.kubernetes.io/managed-by: Helm
@@ -26,43 +26,6 @@ data:
     fi
 ---
 # Source: data-api/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: data-api-common
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: data-api-0.1.0
-  namespace: pitstop-test
-data:
-  Auth__Audience: pitstop-data-api
-  Auth__Authority: https://auth.mattgerega.net
-  Logging__LogLevel__Default: Warning
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
----
-# Source: data-api/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: data-api
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: data-api-0.1.0
-  namespace: pitstop-test
-data:
-  Telemetry__ActivitySourceName: PitStop.Data.Test.Activity
-  Telemetry__MeterName: PitStop.Data.Test.Meter
-  Telemetry__ServiceName: PitStop.Data.Test
----
-# Source: data-api/templates/common.yaml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -82,31 +45,6 @@ spec:
     requests:
       storage: "10Gi"
   storageClassName: "nfs-client"
----
-# Source: data-api/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: data-api
-  labels:
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/service: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: data-api-0.1.0
-  namespace: pitstop-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/name: data-api
 ---
 # Source: data-api/templates/common.yaml
 apiVersion: v1
@@ -137,75 +75,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: data-api
-  labels:
-    app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: data-api
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: data-api
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: data-api-0.1.0
-  namespace: pitstop-test
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: data-api
-      app.kubernetes.io/name: data-api
-      app.kubernetes.io/instance: data-api
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: 6d8da8817ccb0ed4538530a2fdbace5e5d385399cdabcc1170ab4b61b8f66aa4
-      labels: 
-        app.kubernetes.io/controller: data-api
-        app.kubernetes.io/instance: data-api
-        app.kubernetes.io/name: data-api
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - envFrom:
-          - secretRef:
-              name: data-api-secrets
-          - configMapRef:
-              name: data-api-common
-          - configMapRef:
-              name: data-api
-          image: ghcr.io/spydersoft-consulting/pitstop-data-api:1.0.1-location-split.3
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /livez
-              port: 8080
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            timeoutSeconds: 1
-          name: main
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /readyz
-              port: 8080
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            timeoutSeconds: 1
----
-# Source: data-api/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: data-api-postgres
   labels:
     app.kubernetes.io/controller: postgres
@@ -228,7 +97,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 6d8da8817ccb0ed4538530a2fdbace5e5d385399cdabcc1170ab4b61b8f66aa4
+        checksum/configMaps: ed74e4086bff9b5df5fd05049cade90ad26b5c6600f694e6cb9bffdd7ebd3b52
         linkerd.io/inject: disabled
       labels: 
         app.kubernetes.io/controller: postgres
@@ -269,5 +138,5 @@ spec:
           persistentVolumeClaim:
             claimName: data-api
         - configMap:
-            name: data-api-postgres-init-data
+            name: data-api
           name: postgres-init-data
