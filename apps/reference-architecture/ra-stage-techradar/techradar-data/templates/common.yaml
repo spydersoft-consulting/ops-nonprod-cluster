@@ -85,7 +85,7 @@ metadata:
     helm.sh/chart: techradar-data-0.1.0
   namespace: ra-stage-techradar
 spec:
-  revisionHistoryLimit: 3
+  revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate
