@@ -1,15 +1,15 @@
 ---
-# Source: techradar-postgres/templates/common.yaml
+# Source: techradar-data/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar
+  name: techradar-data
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-data
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
+    app.kubernetes.io/name: techradar-data
     app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-postgres-0.1.0
+    helm.sh/chart: techradar-data-0.1.0
   namespace: ra-test-techradar
 data:
   init-data.sh: |
@@ -25,18 +25,18 @@ data:
       echo "SETUP INFO: No Environment variables given!"
     fi
 ---
-# Source: techradar-postgres/templates/common.yaml
+# Source: techradar-data/templates/common.yaml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: techradar
+  name: techradar-data
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-data
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
+    app.kubernetes.io/name: techradar-data
     app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-postgres-0.1.0
+    helm.sh/chart: techradar-data-0.1.0
   namespace: ra-test-techradar
 spec:
   accessModes:
@@ -46,18 +46,18 @@ spec:
       storage: "300Gi"
   storageClassName: "nfs-client"
 ---
-# Source: techradar-postgres/templates/common.yaml
+# Source: techradar-data/templates/common.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: techradar-postgres
+  name: techradar-data-postgres
   labels:
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-data
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
-    app.kubernetes.io/service: techradar-postgres
+    app.kubernetes.io/name: techradar-data
+    app.kubernetes.io/service: techradar-data-postgres
     app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-postgres-0.1.0
+    helm.sh/chart: techradar-data-0.1.0
   namespace: ra-test-techradar
 spec:
   type: ClusterIP
@@ -68,21 +68,21 @@ spec:
       name: postgres
   selector:
     app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: techradar
-    app.kubernetes.io/name: techradar
+    app.kubernetes.io/instance: techradar-data
+    app.kubernetes.io/name: techradar-data
 ---
-# Source: techradar-postgres/templates/common.yaml
+# Source: techradar-data/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: techradar-postgres
+  name: techradar-data-postgres
   labels:
     app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: techradar
+    app.kubernetes.io/instance: techradar-data
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar
+    app.kubernetes.io/name: techradar-data
     app.kubernetes.io/version: 1.0.9
-    helm.sh/chart: techradar-postgres-0.1.0
+    helm.sh/chart: techradar-data-0.1.0
   namespace: ra-test-techradar
 spec:
   revisionHistoryLimit: 3
@@ -92,16 +92,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/controller: postgres
-      app.kubernetes.io/name: techradar
-      app.kubernetes.io/instance: techradar
+      app.kubernetes.io/name: techradar-data
+      app.kubernetes.io/instance: techradar-data
   template:
     metadata:
       annotations: 
         checksum/configMaps: 7859849155807302ee841322250b12721fd5c247925f801ef52dfce4cdc4a681
       labels: 
         app.kubernetes.io/controller: postgres
-        app.kubernetes.io/instance: techradar
-        app.kubernetes.io/name: techradar
+        app.kubernetes.io/instance: techradar-data
+        app.kubernetes.io/name: techradar-data
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -137,9 +137,9 @@ spec:
       volumes: 
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: techradar
+            claimName: techradar-data
         - configMap:
-            name: techradar
+            name: techradar-data
           name: postgres-init-data
         - name: postgres-secrets
           secret:
