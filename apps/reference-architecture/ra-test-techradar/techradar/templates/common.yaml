@@ -4,30 +4,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: techradar-app-frontend
-  labels:
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
-  namespace: ra-test-techradar
-data:
-  Telemetry__ActivitySourceName: TechRadar.Frontend.Test.Activity
-  Telemetry__MeterName: TechRadar.Frontend.Test.Meter
-  Telemetry__ServiceName: TechRadar.Frontend.Test
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: techradar-app-common
   labels:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
 data:
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
@@ -46,8 +29,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Data.Test.Activity
@@ -56,28 +39,20 @@ data:
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: techradar-app-data-api
+  name: techradar-app-frontend
   labels:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/service: techradar-app-data-api
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: data-api
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/name: techradar-app
+data:
+  Telemetry__ActivitySourceName: TechRadar.Frontend.Test.Activity
+  Telemetry__MeterName: TechRadar.Frontend.Test.Meter
+  Telemetry__ServiceName: TechRadar.Frontend.Test
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
@@ -89,8 +64,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
     app.kubernetes.io/service: techradar-app-frontend
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
 spec:
   type: ClusterIP
@@ -105,6 +80,31 @@ spec:
     app.kubernetes.io/name: techradar-app
 ---
 # Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-app-data-api
+  labels:
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/service: techradar-app-data-api
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
+  namespace: ra-test-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/name: techradar-app
+---
+# Source: techradar/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -114,8 +114,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
 spec:
   revisionHistoryLimit: 3
@@ -153,7 +153,7 @@ spec:
               name: techradar-app-common
           - configMapRef:
               name: techradar-app-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.1.1-beta.3
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.1.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -183,8 +183,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
 spec:
   revisionHistoryLimit: 3
@@ -225,7 +225,7 @@ spec:
               name: techradar-app-common
           - configMapRef:
               name: techradar-app-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.1.1-beta.3
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.1.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -254,8 +254,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.1-beta.3
-    helm.sh/chart: techradar-2.1.1-beta.3
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-test-techradar
 spec:
   parentRefs:
