@@ -4,13 +4,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: audit
+  name: audit-app
   labels:
-    app.kubernetes.io/instance: audit
+    app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: audit
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: audit-0.1.0
+    app.kubernetes.io/name: audit-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: audit-0.0.1-beta.12
   namespace: platform-test
 data:
   Auth__Audience: audit-api
@@ -32,14 +32,14 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: audit
+  name: audit-app
   labels:
-    app.kubernetes.io/instance: audit
+    app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: audit
-    app.kubernetes.io/service: audit
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: audit-0.1.0
+    app.kubernetes.io/name: audit-app
+    app.kubernetes.io/service: audit-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: audit-0.0.1-beta.12
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -50,21 +50,21 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: audit-api
-    app.kubernetes.io/instance: audit
-    app.kubernetes.io/name: audit
+    app.kubernetes.io/instance: audit-app
+    app.kubernetes.io/name: audit-app
 ---
 # Source: audit/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: audit-audit-processor
+  name: audit-app-audit-api
   labels:
-    app.kubernetes.io/controller: audit-processor
-    app.kubernetes.io/instance: audit
+    app.kubernetes.io/controller: audit-api
+    app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: audit
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: audit-0.1.0
+    app.kubernetes.io/name: audit-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: audit-0.0.1-beta.12
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -73,17 +73,17 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/controller: audit-processor
-      app.kubernetes.io/name: audit
-      app.kubernetes.io/instance: audit
+      app.kubernetes.io/controller: audit-api
+      app.kubernetes.io/name: audit-app
+      app.kubernetes.io/instance: audit-app
   template:
     metadata:
       annotations: 
         checksum/configMaps: c6e0a146a7552337ad5993011c7bbdd34bdbf3b00246d533c998af60a10f28e1
       labels: 
-        app.kubernetes.io/controller: audit-processor
-        app.kubernetes.io/instance: audit
-        app.kubernetes.io/name: audit
+        app.kubernetes.io/controller: audit-api
+        app.kubernetes.io/instance: audit-app
+        app.kubernetes.io/name: audit-app
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -96,11 +96,11 @@ spec:
         - name: cr-spydersoft-github
       containers: 
         - envFrom:
-          - configMapRef:
-              name: audit
           - secretRef:
               name: audit-secrets
-          image: ghcr.io/spydersoft-consulting/audit-processor:0.1.0
+          - configMapRef:
+              name: audit-app
+          image: ghcr.io/spydersoft-consulting/audit-api:0.0.1-beta.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -124,14 +124,14 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: audit-audit-api
+  name: audit-app-audit-processor
   labels:
-    app.kubernetes.io/controller: audit-api
-    app.kubernetes.io/instance: audit
+    app.kubernetes.io/controller: audit-processor
+    app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: audit
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: audit-0.1.0
+    app.kubernetes.io/name: audit-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: audit-0.0.1-beta.12
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -140,17 +140,17 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/controller: audit-api
-      app.kubernetes.io/name: audit
-      app.kubernetes.io/instance: audit
+      app.kubernetes.io/controller: audit-processor
+      app.kubernetes.io/name: audit-app
+      app.kubernetes.io/instance: audit-app
   template:
     metadata:
       annotations: 
         checksum/configMaps: c6e0a146a7552337ad5993011c7bbdd34bdbf3b00246d533c998af60a10f28e1
       labels: 
-        app.kubernetes.io/controller: audit-api
-        app.kubernetes.io/instance: audit
-        app.kubernetes.io/name: audit
+        app.kubernetes.io/controller: audit-processor
+        app.kubernetes.io/instance: audit-app
+        app.kubernetes.io/name: audit-app
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -163,11 +163,11 @@ spec:
         - name: cr-spydersoft-github
       containers: 
         - envFrom:
-          - configMapRef:
-              name: audit
           - secretRef:
               name: audit-secrets
-          image: ghcr.io/spydersoft-consulting/audit-api:0.1.0
+          - configMapRef:
+              name: audit-app
+          image: ghcr.io/spydersoft-consulting/audit-processor:0.0.1-beta.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -191,13 +191,13 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: audit
+  name: audit-app
   labels:
-    app.kubernetes.io/instance: audit
+    app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: audit
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: audit-0.1.0
+    app.kubernetes.io/name: audit-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: audit-0.0.1-beta.12
   namespace: platform-test
 spec:
   parentRefs:
@@ -211,7 +211,7 @@ spec:
     - backendRefs:
       - group: ""
         kind: Service
-        name: audit
+        name: audit-app
         namespace: platform-test
         port: 80
         weight: 1
