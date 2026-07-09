@@ -86,7 +86,7 @@ metadata:
   namespace: pitstop-test
 spec:
   revisionHistoryLimit: 1
-  replicas: 0
+  replicas: 1
   strategy:
     type: Recreate
   selector:
