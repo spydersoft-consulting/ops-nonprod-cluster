@@ -58,31 +58,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pitstop-app-web
-  labels:
-    app.kubernetes.io/instance: pitstop-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/service: pitstop-app-web
-    app.kubernetes.io/version: 2.0.1
-    helm.sh/chart: pitstop-2.0.1
-  namespace: pitstop-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: web
-    app.kubernetes.io/instance: pitstop-app
-    app.kubernetes.io/name: pitstop-app
----
-# Source: pitstop/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: pitstop-app-data-api
   labels:
     app.kubernetes.io/instance: pitstop-app
@@ -101,6 +76,31 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/name: pitstop-app
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pitstop-app-web
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/service: pitstop-app-web
+    app.kubernetes.io/version: 2.0.1
+    helm.sh/chart: pitstop-2.0.1
+  namespace: pitstop-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: web
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/name: pitstop-app
 ---
