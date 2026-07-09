@@ -1,5 +1,5 @@
 ---
-# Source: data-api/templates/web-es.yaml
+# Source: pitstop-data/templates/web-es.yaml
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
