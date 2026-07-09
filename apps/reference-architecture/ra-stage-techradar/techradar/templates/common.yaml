@@ -4,13 +4,33 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: techradar-app-common
+  labels:
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
+  namespace: ra-stage-techradar
+data:
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: stage
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: stage
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: stage
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: techradar-app-data-api
   labels:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Data.Stage.Activity
@@ -26,33 +46,13 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 data:
   Telemetry__ActivitySourceName: TechRadar.Frontend.Stage.Activity
   Telemetry__MeterName: TechRadar.Frontend.Stage.Meter
   Telemetry__ServiceName: TechRadar.Frontend.Stage
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: techradar-app-common
-  labels:
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
-  namespace: ra-stage-techradar
-data:
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Log__Otlp__Headers__X-Scope-OrgID: stage
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: stage
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
-  Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: stage
 ---
 # Source: techradar/templates/common.yaml
 apiVersion: v1
@@ -64,8 +64,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
     app.kubernetes.io/service: techradar-app-data-api
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 spec:
   type: ClusterIP
@@ -89,8 +89,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
     app.kubernetes.io/service: techradar-app-frontend
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 spec:
   type: ClusterIP
@@ -114,8 +114,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 spec:
   revisionHistoryLimit: 3
@@ -153,7 +153,7 @@ spec:
               name: techradar-app-common
           - configMapRef:
               name: techradar-app-data-api
-          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.1.0
+          image: ghcr.io/spydersoft-consulting/techradar-data-api:2.1.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -183,8 +183,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 spec:
   revisionHistoryLimit: 3
@@ -215,14 +215,17 @@ spec:
       imagePullSecrets: 
         - name: cr-spydersoft-github
       containers: 
-        - envFrom:
+        - env:
+          - name: OidcProxySettings__ReverseProxy__Clusters__techRadarApi__Destinations__techRadarApi/destination1__Address
+            value: http://techradar-app-data-api/
+          envFrom:
           - secretRef:
               name: techradar-frontend
           - configMapRef:
               name: techradar-app-common
           - configMapRef:
               name: techradar-app-frontend
-          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.1.0
+          image: ghcr.io/spydersoft-consulting/techradar-frontend:2.1.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -251,8 +254,8 @@ metadata:
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/version: 2.1.0
-    helm.sh/chart: techradar-2.1.0
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
   namespace: ra-stage-techradar
 spec:
   parentRefs:

@@ -5,10 +5,10 @@ kind: Pod
 metadata:
   name: "techradar-app-test-connection"
   labels:
-    helm.sh/chart: techradar-2.1.0
+    helm.sh/chart: techradar-2.1.1
     app.kubernetes.io/name: techradar
     app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/version: "2.1.1"
     app.kubernetes.io/managed-by: Helm
   annotations:
     "helm.sh/hook": test
