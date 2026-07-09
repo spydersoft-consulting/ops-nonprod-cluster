@@ -58,31 +58,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: techradar-app-frontend
-  labels:
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/service: techradar-app-frontend
-    app.kubernetes.io/version: 2.1.1
-    helm.sh/chart: techradar-2.1.1
-  namespace: ra-test-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: frontend
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/name: techradar-app
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: techradar-app-data-api
   labels:
     app.kubernetes.io/instance: techradar-app
@@ -101,6 +76,31 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/name: techradar-app
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-app-frontend
+  labels:
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/service: techradar-app-frontend
+    app.kubernetes.io/version: 2.1.1
+    helm.sh/chart: techradar-2.1.1
+  namespace: ra-test-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/name: techradar-app
 ---
