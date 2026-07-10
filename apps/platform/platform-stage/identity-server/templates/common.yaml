@@ -14,6 +14,7 @@ metadata:
 data:
   AllowedOrigins__0: https://*.mattgerega.org
   Identity__AuthorityUrl: https://auth.mattgerega.org
+  Resend__EmailFrom: Spydersoft Stage
   Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Identity.Stage.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
@@ -145,7 +146,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 787bf2fa4951672146f8d0dbd8ba405d0e5d1e8e3cf482f5acd71c5b225e1c6c
+        checksum/configMaps: c22eb648e4b9af82e2cf819ae306e7508b6e23dfffaf79da35de106377e22aa7
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-server
@@ -166,7 +167,7 @@ spec:
               name: identity-server-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.1.4
+          image: ghcr.io/spyder007/identity_server:3.1.5-admin-split.17
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -219,7 +220,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 787bf2fa4951672146f8d0dbd8ba405d0e5d1e8e3cf482f5acd71c5b225e1c6c
+        checksum/configMaps: c22eb648e4b9af82e2cf819ae306e7508b6e23dfffaf79da35de106377e22aa7
       labels: 
         app.kubernetes.io/controller: postgres
         app.kubernetes.io/instance: identity-server
