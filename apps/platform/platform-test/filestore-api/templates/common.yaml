@@ -4,13 +4,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filestore-api
+  name: filestore-app
   labels:
-    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: filestore-api
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: filestore-api-0.1.0
+    app.kubernetes.io/name: filestore-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: filestore-api-0.0.1-beta.12
   namespace: platform-test
 data:
   Auth__Audience: filestore-api
@@ -30,14 +30,14 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: filestore-api
+  name: filestore-app
   labels:
-    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: filestore-api
-    app.kubernetes.io/service: filestore-api
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: filestore-api-0.1.0
+    app.kubernetes.io/name: filestore-app
+    app.kubernetes.io/service: filestore-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: filestore-api-0.0.1-beta.12
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -48,21 +48,21 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: filestore-api
-    app.kubernetes.io/instance: filestore-api
-    app.kubernetes.io/name: filestore-api
+    app.kubernetes.io/instance: filestore-app
+    app.kubernetes.io/name: filestore-app
 ---
 # Source: filestore-api/templates/common.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: filestore-api
+  name: filestore-app
   labels:
     app.kubernetes.io/controller: filestore-api
-    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: filestore-api
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: filestore-api-0.1.0
+    app.kubernetes.io/name: filestore-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: filestore-api-0.0.1-beta.12
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -72,16 +72,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/controller: filestore-api
-      app.kubernetes.io/name: filestore-api
-      app.kubernetes.io/instance: filestore-api
+      app.kubernetes.io/name: filestore-app
+      app.kubernetes.io/instance: filestore-app
   template:
     metadata:
       annotations: 
         checksum/configMaps: 86f65b127c627cb2557b6cbdc488c673d81f206c1806a9159b2ecae02a1d421a
       labels: 
         app.kubernetes.io/controller: filestore-api
-        app.kubernetes.io/instance: filestore-api
-        app.kubernetes.io/name: filestore-api
+        app.kubernetes.io/instance: filestore-app
+        app.kubernetes.io/name: filestore-app
     spec: 
       enableServiceLinks: false
       serviceAccountName: default
@@ -94,11 +94,11 @@ spec:
         - name: cr-spydersoft-github
       containers: 
         - envFrom:
-          - configMapRef:
-              name: filestore-api
           - secretRef:
               name: filestore-secrets
-          image: ghcr.io/spydersoft-consulting/filestore-api:0.1.0
+          - configMapRef:
+              name: filestore-app
+          image: ghcr.io/spydersoft-consulting/filestore-api:0.0.1-beta.12
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -122,13 +122,13 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: filestore-api
+  name: filestore-app
   labels:
-    app.kubernetes.io/instance: filestore-api
+    app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: filestore-api
-    app.kubernetes.io/version: 0.1.0
-    helm.sh/chart: filestore-api-0.1.0
+    app.kubernetes.io/name: filestore-app
+    app.kubernetes.io/version: 0.0.1-beta.12
+    helm.sh/chart: filestore-api-0.0.1-beta.12
   namespace: platform-test
 spec:
   parentRefs:
@@ -142,7 +142,7 @@ spec:
     - backendRefs:
       - group: ""
         kind: Service
-        name: filestore-api
+        name: filestore-app
         namespace: platform-test
         port: 80
         weight: 1
