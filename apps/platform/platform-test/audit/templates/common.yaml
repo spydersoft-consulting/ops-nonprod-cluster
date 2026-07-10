@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 0.0.1-beta.12
-    helm.sh/chart: audit-0.0.1-beta.12
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: audit-1.0.0
   namespace: platform-test
 data:
   Auth__Audience: audit-api
@@ -38,8 +38,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
     app.kubernetes.io/service: audit-app
-    app.kubernetes.io/version: 0.0.1-beta.12
-    helm.sh/chart: audit-0.0.1-beta.12
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: audit-1.0.0
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -63,8 +63,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 0.0.1-beta.12
-    helm.sh/chart: audit-0.0.1-beta.12
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: audit-1.0.0
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -100,7 +100,7 @@ spec:
               name: audit-secrets
           - configMapRef:
               name: audit-app
-          image: ghcr.io/spydersoft-consulting/audit-api:0.0.1-beta.12
+          image: ghcr.io/spydersoft-consulting/audit-api:1.0.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -130,8 +130,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 0.0.1-beta.12
-    helm.sh/chart: audit-0.0.1-beta.12
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: audit-1.0.0
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -167,7 +167,7 @@ spec:
               name: audit-secrets
           - configMapRef:
               name: audit-app
-          image: ghcr.io/spydersoft-consulting/audit-processor:0.0.1-beta.12
+          image: ghcr.io/spydersoft-consulting/audit-processor:1.0.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -196,8 +196,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 0.0.1-beta.12
-    helm.sh/chart: audit-0.0.1-beta.12
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: audit-1.0.0
   namespace: platform-test
 spec:
   parentRefs:
