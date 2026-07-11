@@ -115,36 +115,3 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 1
----
-# Source: identity-server-admin-ui/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: identity-server-admin-ui
-  labels:
-    app.kubernetes.io/instance: identity-server-admin-ui
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-server-admin-ui
-    app.kubernetes.io/version: 1.0.0
-    helm.sh/chart: identity-server-admin-ui-0.1.0
-  namespace: platform-stage
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "admin.auth.mattgerega.org"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: identity-server-admin-ui
-        namespace: platform-stage
-        port: 80
-        weight: 1
-      matches:
-        - path:
-            type: PathPrefix
-            value: /
