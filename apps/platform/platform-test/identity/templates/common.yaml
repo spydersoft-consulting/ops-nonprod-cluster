@@ -375,7 +375,7 @@ spec:
       name: main
       namespace: envoy-gateway-system
   hostnames:
-    - "admin-api.auth.mattgerega.net"
+    - "auth-admin-api.mattgerega.net"
   rules:
     - backendRefs:
       - group: ""
@@ -408,7 +408,7 @@ spec:
       name: main
       namespace: envoy-gateway-system
   hostnames:
-    - "admin.auth.mattgerega.net"
+    - "auth-admin.mattgerega.net"
   rules:
     - backendRefs:
       - group: ""
