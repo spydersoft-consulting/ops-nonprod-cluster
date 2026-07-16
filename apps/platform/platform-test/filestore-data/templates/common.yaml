@@ -127,6 +127,9 @@ spec:
           image: postgres:17
           imagePullPolicy: IfNotPresent
           name: main
+          resources:
+            requests:
+              cpu: 5m
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
             name: postgres-data

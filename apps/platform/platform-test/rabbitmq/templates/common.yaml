@@ -109,6 +109,9 @@ spec:
             tcpSocket:
               port: 5672
             timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 10m
           startupProbe:
             failureThreshold: 30
             periodSeconds: 10

@@ -139,6 +139,9 @@ spec:
             tcpSocket:
               port: 27017
             timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 20m
           volumeMounts:
           - mountPath: /data/db
             name: mongo-data

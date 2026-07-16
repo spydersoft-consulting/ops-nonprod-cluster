@@ -81,6 +81,9 @@ spec:
           image: mongo-express:1.0.2
           imagePullPolicy: IfNotPresent
           name: main
+          resources:
+            requests:
+              cpu: 5m
 ---
 # Source: mongo-express/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
