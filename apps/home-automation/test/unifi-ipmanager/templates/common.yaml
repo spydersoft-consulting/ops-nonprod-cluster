@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 data:
   config.js: |
@@ -33,8 +33,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 data:
   Identity__ApiName: unifi.ipmanager
@@ -54,8 +54,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
     app.kubernetes.io/service: unifi-ipmanager-app-api
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 spec:
   type: ClusterIP
@@ -79,8 +79,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
     app.kubernetes.io/service: unifi-ipmanager-app-frontend
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 spec:
   type: ClusterIP
@@ -98,71 +98,14 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: unifi-ipmanager-app-frontend
-  labels:
-    app.kubernetes.io/controller: frontend
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
-  namespace: test
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: frontend
-      app.kubernetes.io/name: unifi-ipmanager-app
-      app.kubernetes.io/instance: unifi-ipmanager-app
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: 5a5fe79c67c33cfd6359cab82f6c191c6c1b1fc4caf0f487fa57e85698242d8f
-      labels: 
-        app.kubernetes.io/controller: frontend
-        app.kubernetes.io/instance: unifi-ipmanager-app
-        app.kubernetes.io/name: unifi-ipmanager-app
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - image: ghcr.io/spyder007/unifi-client:1.1.2-beta.3
-          imagePullPolicy: IfNotPresent
-          name: main
-          resources:
-            requests:
-              cpu: 5m
-          volumeMounts:
-          - mountPath: /usr/share/nginx/html/config.js
-            name: config-js
-            subPath: config.js
-      volumes: 
-        - configMap:
-            name: unifi-ipmanager-app-config-js
-          name: config-js
----
-# Source: unifi-ipmanager/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: unifi-ipmanager-app-api
   labels:
     app.kubernetes.io/controller: api
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 spec:
   revisionHistoryLimit: 1
@@ -200,7 +143,7 @@ spec:
               name: unifi-ipmanager-app-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.2-beta.3
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.2-beta.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -232,6 +175,63 @@ spec:
           name: config-js
 ---
 # Source: unifi-ipmanager/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi-ipmanager-app-frontend
+  labels:
+    app.kubernetes.io/controller: frontend
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager-app
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
+  namespace: test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: frontend
+      app.kubernetes.io/name: unifi-ipmanager-app
+      app.kubernetes.io/instance: unifi-ipmanager-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 5a5fe79c67c33cfd6359cab82f6c191c6c1b1fc4caf0f487fa57e85698242d8f
+      labels: 
+        app.kubernetes.io/controller: frontend
+        app.kubernetes.io/instance: unifi-ipmanager-app
+        app.kubernetes.io/name: unifi-ipmanager-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - image: ghcr.io/spyder007/unifi-client:1.1.2-beta.4
+          imagePullPolicy: IfNotPresent
+          name: main
+          resources:
+            requests:
+              cpu: 5m
+          volumeMounts:
+          - mountPath: /usr/share/nginx/html/config.js
+            name: config-js
+            subPath: config.js
+      volumes: 
+        - configMap:
+            name: unifi-ipmanager-app-config-js
+          name: config-js
+---
+# Source: unifi-ipmanager/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -240,8 +240,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 spec:
   parentRefs:
@@ -279,8 +279,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2-beta.3
-    helm.sh/chart: unifi-ipmanager-1.1.2-beta.3
+    app.kubernetes.io/version: 1.1.2-beta.4
+    helm.sh/chart: unifi-ipmanager-1.1.2-beta.4
   namespace: test
 spec:
   parentRefs:
