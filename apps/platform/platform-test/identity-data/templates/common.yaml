@@ -1,5 +1,26 @@
 ---
 # Source: identity-data/templates/common.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: identity-data-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: identity-data
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-data
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: identity-data-0.1.0
+  namespace: platform-test
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/instance: identity-data
+      app.kubernetes.io/name: identity-data
+  minAvailable: 1
+---
+# Source: identity-data/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:

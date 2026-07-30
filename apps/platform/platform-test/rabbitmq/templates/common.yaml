@@ -1,5 +1,26 @@
 ---
 # Source: rabbitmq/templates/common.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: rabbitmq
+  labels:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: rabbitmq
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: rabbitmq
+    app.kubernetes.io/version: "3.13"
+    helm.sh/chart: rabbitmq-0.1.0
+  namespace: platform-test
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: main
+      app.kubernetes.io/instance: rabbitmq
+      app.kubernetes.io/name: rabbitmq
+  minAvailable: 1
+---
+# Source: rabbitmq/templates/common.yaml
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -152,7 +173,9 @@ spec:
   hostnames:
     - "rabbitmq.mattgerega.net"
   rules:
-    - backendRefs:
+    -
+      backendRefs:
+            
       - group: ""
         kind: Service
         name: rabbitmq

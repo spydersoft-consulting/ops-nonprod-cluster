@@ -1,5 +1,26 @@
 ---
 # Source: filestore-data/templates/common.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: filestore-data-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: filestore-data
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: filestore-data
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: filestore-data-0.1.0
+  namespace: platform-test
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/instance: filestore-data
+      app.kubernetes.io/name: filestore-data
+  minAvailable: 1
+---
+# Source: filestore-data/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
