@@ -1,5 +1,26 @@
 ---
 # Source: pitstop-data/templates/common.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pitstop-data-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: pitstop-data
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-data
+    app.kubernetes.io/version: 0.0.0
+    helm.sh/chart: pitstop-data-0.1.0
+  namespace: pitstop-test
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/instance: pitstop-data
+      app.kubernetes.io/name: pitstop-data
+  minAvailable: 1
+---
+# Source: pitstop-data/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
