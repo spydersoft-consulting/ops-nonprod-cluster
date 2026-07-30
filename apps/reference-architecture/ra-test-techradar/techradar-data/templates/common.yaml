@@ -1,5 +1,26 @@
 ---
 # Source: techradar-data/templates/common.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: techradar-data-postgres
+  labels:
+    app.kubernetes.io/controller: postgres
+    app.kubernetes.io/instance: techradar-data
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar-data
+    app.kubernetes.io/version: 1.0.9
+    helm.sh/chart: techradar-data-0.1.0
+  namespace: ra-test-techradar
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: postgres
+      app.kubernetes.io/instance: techradar-data
+      app.kubernetes.io/name: techradar-data
+  minAvailable: 1
+---
+# Source: techradar-data/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
