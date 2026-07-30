@@ -4,6 +4,26 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: unifi-ipmanager-app-ipmanager
+  labels:
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager-app
+    app.kubernetes.io/version: 1.1.2
+    helm.sh/chart: unifi-ipmanager-1.1.2
+  namespace: test
+data:
+  Identity__ApiName: unifi.ipmanager
+  Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
+  Telemetry__MeterName: Unifi.IpManager.Test.Meter
+  Telemetry__ServiceName: Unifi.IpManager.Test
+  UnifiControllerOptions__DnsZone: gerega.net
+  UnifiControllerOptions__Url: https://unifi.gerega.net
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: unifi-ipmanager-app-config-js
   labels:
     app.kubernetes.io/instance: unifi-ipmanager-app
@@ -23,26 +43,6 @@ data:
       clientId: 'unifiwebclient',
       redirectUri: 'https://uni.mattgerega.net',
     };
----
-# Source: unifi-ipmanager/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: unifi-ipmanager-app-ipmanager
-  labels:
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.2
-    helm.sh/chart: unifi-ipmanager-1.1.2
-  namespace: test
-data:
-  Identity__ApiName: unifi.ipmanager
-  Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
-  Telemetry__MeterName: Unifi.IpManager.Test.Meter
-  Telemetry__ServiceName: Unifi.IpManager.Test
-  UnifiControllerOptions__DnsZone: gerega.net
-  UnifiControllerOptions__Url: https://unifi.gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
