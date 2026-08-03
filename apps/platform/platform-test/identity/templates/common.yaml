@@ -4,29 +4,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: identity-app-admin-ui
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.1.7-beta.2
-    helm.sh/chart: identity-3.1.7-beta.2
-  namespace: platform-test
-data:
-  OidcProxySettings__Oidc__Authority: https://auth.mattgerega.net
-  OidcProxySettings__Oidc__ClientId: identity.admin.frontend
-  Serilog__MinimumLevel__Default: Information
-  Telemetry__ActivitySourceName: Identity.Admin.Ui.Test.Activity
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__MeterName: Identity.Admin.Ui.Test.Meter
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__ServiceName: Identity.Admin.Ui.Test
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: identity-app-identity
   labels:
     app.kubernetes.io/instance: identity-app
@@ -70,6 +47,29 @@ data:
   Telemetry__MeterName: Identity.Admin.Api.Test.Meter
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Admin.Api.Test
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identity-app-admin-ui
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.1.7-beta.2
+    helm.sh/chart: identity-3.1.7-beta.2
+  namespace: platform-test
+data:
+  OidcProxySettings__Oidc__Authority: https://auth.mattgerega.net
+  OidcProxySettings__Oidc__ClientId: identity.admin.frontend
+  Serilog__MinimumLevel__Default: Information
+  Telemetry__ActivitySourceName: Identity.Admin.Ui.Test.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: Identity.Admin.Ui.Test.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: Identity.Admin.Ui.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
 ---
 # Source: identity/templates/common.yaml
