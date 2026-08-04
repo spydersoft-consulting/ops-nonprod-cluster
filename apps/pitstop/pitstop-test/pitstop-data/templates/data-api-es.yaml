@@ -16,6 +16,8 @@ spec:
       engineVersion: v2
       data:
         ConnectionStrings__pitstop-db: "Host=pitstop-data-postgres;Database=pitstop;Username={{ .db_user }};Password={{ .db_password }}"
+        FileStore__ClientId: "{{ .filestore_clientid }}"
+        FileStore__ClientSecret: "{{ .filestore_clientsecret }}"
   data:
   - secretKey: db_user
     remoteRef:
@@ -25,3 +27,11 @@ spec:
     remoteRef:
       key: secrets-k8/pitstop/test/postgres
       property: password
+  - secretKey: filestore_clientid
+    remoteRef:
+      key: secrets-k8/pitstop/test/filestore
+      property: clientid
+  - secretKey: filestore_clientsecret
+    remoteRef:
+      key: secrets-k8/pitstop/test/filestore
+      property: clientsecret

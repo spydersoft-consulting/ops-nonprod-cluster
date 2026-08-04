@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 data:
   Auth__Audience: pitstop-data-api
@@ -28,10 +28,13 @@ metadata:
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 data:
+  FileStore__BaseUrl: https://filestore.mattgerega.net
+  FileStore__Scope: filestore:read filestore:write
+  FileStore__TokenEndpoint: https://auth.mattgerega.net/connect/token
   Telemetry__ActivitySourceName: PitStop.Data.Test.Activity
   Telemetry__MeterName: PitStop.Data.Test.Meter
   Telemetry__ServiceName: PitStop.Data.Test
@@ -45,8 +48,8 @@ metadata:
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 data:
   Telemetry__ActivitySourceName: PitStop.Web.Test.Activity
@@ -63,8 +66,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
     app.kubernetes.io/service: pitstop-app-data-api
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 spec:
   type: ClusterIP
@@ -88,8 +91,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
     app.kubernetes.io/service: pitstop-app-web
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 spec:
   type: ClusterIP
@@ -113,8 +116,8 @@ metadata:
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 spec:
   revisionHistoryLimit: 1
@@ -129,7 +132,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: ab4b90afd207799e388f9ecf0f538f54723e716a819d3569cf18973c94aa8934
+        checksum/configMaps: 795e4e0912e984f131af644ef5ae611f75cc58efe0b42bd33d7336fa554e154f
       labels: 
         app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: pitstop-app
@@ -152,7 +155,7 @@ spec:
               name: pitstop-app-common
           - configMapRef:
               name: pitstop-app-data-api
-          image: ghcr.io/spydersoft-consulting/pitstop-data-api:2.0.3-beta.21
+          image: ghcr.io/spydersoft-consulting/pitstop-data-api:2.0.3-beta.22
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -185,8 +188,8 @@ metadata:
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 spec:
   revisionHistoryLimit: 1
@@ -201,7 +204,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: ab4b90afd207799e388f9ecf0f538f54723e716a819d3569cf18973c94aa8934
+        checksum/configMaps: 795e4e0912e984f131af644ef5ae611f75cc58efe0b42bd33d7336fa554e154f
       labels: 
         app.kubernetes.io/controller: web
         app.kubernetes.io/instance: pitstop-app
@@ -227,7 +230,7 @@ spec:
               name: pitstop-app-common
           - configMapRef:
               name: pitstop-app-web
-          image: ghcr.io/spydersoft-consulting/pitstop-web:2.0.3-beta.21
+          image: ghcr.io/spydersoft-consulting/pitstop-web:2.0.3-beta.22
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -259,8 +262,8 @@ metadata:
     app.kubernetes.io/instance: pitstop-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.0.3-beta.21
-    helm.sh/chart: pitstop-2.0.3-beta.21
+    app.kubernetes.io/version: 2.0.3-beta.22
+    helm.sh/chart: pitstop-2.0.3-beta.22
   namespace: pitstop-test
 spec:
   parentRefs:
