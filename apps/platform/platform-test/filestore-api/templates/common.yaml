@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: filestore-app
-    app.kubernetes.io/version: 1.1.0
-    helm.sh/chart: filestore-api-1.1.0
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: filestore-api-1.1.1-beta.1
   namespace: platform-test
 data:
   Auth__Audience: filestore-api
@@ -36,8 +36,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: filestore-app
     app.kubernetes.io/service: filestore-app
-    app.kubernetes.io/version: 1.1.0
-    helm.sh/chart: filestore-api-1.1.0
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: filestore-api-1.1.1-beta.1
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -61,8 +61,8 @@ metadata:
     app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: filestore-app
-    app.kubernetes.io/version: 1.1.0
-    helm.sh/chart: filestore-api-1.1.0
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: filestore-api-1.1.1-beta.1
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -98,7 +98,7 @@ spec:
               name: filestore-secrets
           - configMapRef:
               name: filestore-app
-          image: ghcr.io/spydersoft-consulting/filestore-api:1.1.0
+          image: ghcr.io/spydersoft-consulting/filestore-api:1.1.1-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -130,8 +130,8 @@ metadata:
     app.kubernetes.io/instance: filestore-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: filestore-app
-    app.kubernetes.io/version: 1.1.0
-    helm.sh/chart: filestore-api-1.1.0
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: filestore-api-1.1.1-beta.1
   namespace: platform-test
 spec:
   parentRefs:
