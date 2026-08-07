@@ -18,6 +18,7 @@ spec:
         OidcProxySettings__Oidc__Authority: "{{ .authority }}"
         OidcProxySettings__Oidc__ClientId: "{{ .client_id }}"
         OidcProxySettings__Oidc__ClientSecret: "{{ .client_secret }}"
+        AddressLookup__GooglePlacesApiKey: "{{ .google_places_api_key }}"
 
   data:
   - secretKey: authority
@@ -32,3 +33,7 @@ spec:
     remoteRef:
       key: secrets-k8/pitstop/test/auth
       property: client_secret
+  - secretKey: google_places_api_key
+    remoteRef:
+      key: secrets-k8/pitstop/test/google-places
+      property: api_key
