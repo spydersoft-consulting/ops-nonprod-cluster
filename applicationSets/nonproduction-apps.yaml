@@ -32,6 +32,14 @@ spec:
       destination:
         server: https://cp-nonproduction.gerega.net:6443
         namespace: "{{ path[2] }}"
+      ignoreDifferences:
+        - group: "external-secrets.io"
+          kind: ExternalSecret
+          jqPathExpressions:
+            - '.spec.target.template.mergePolicy'
+      syncPolicy:
+        syncOptions:
+          - RespectIgnoreDifferences=true
       # syncPolicy:
       #   automated:
       #     prune: true
