@@ -43,6 +43,9 @@ spec:
           kind: ExternalSecret
           jqPathExpressions:
             - '.spec.target.template.mergePolicy'
+            - '.spec.data[]?.remoteRef.conversionStrategy'
+            - '.spec.data[]?.remoteRef.decodingStrategy'
+            - '.spec.data[]?.remoteRef.metadataPolicy'
       syncPolicy:
         syncOptions: # Sync options which modifies sync behavior
           - RespectIgnoreDifferences=true
