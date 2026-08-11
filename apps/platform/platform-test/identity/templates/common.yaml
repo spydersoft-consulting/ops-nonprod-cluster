@@ -76,6 +76,31 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
+  name: identity-app-main
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/service: identity-app-main
+    app.kubernetes.io/version: 3.2.0
+    helm.sh/chart: identity-3.2.0
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/name: identity-app
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
   name: identity-app-admin-api
   labels:
     app.kubernetes.io/instance: identity-app
@@ -119,31 +144,6 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: admin-frontend
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/name: identity-app
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: identity-app-main
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/service: identity-app-main
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: identity-3.2.0
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: main
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/name: identity-app
 ---
