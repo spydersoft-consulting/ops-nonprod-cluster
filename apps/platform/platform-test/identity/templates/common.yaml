@@ -76,31 +76,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: identity-app-main
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/service: identity-app-main
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: identity-3.2.0
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: main
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/name: identity-app
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: identity-app-admin-api
   labels:
     app.kubernetes.io/instance: identity-app
@@ -146,6 +121,101 @@ spec:
     app.kubernetes.io/controller: admin-frontend
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/name: identity-app
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-app-main
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/service: identity-app-main
+    app.kubernetes.io/version: 3.2.0
+    helm.sh/chart: identity-3.2.0
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/name: identity-app
+---
+# Source: identity/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-app-admin-api
+  labels:
+    app.kubernetes.io/controller: admin-api
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.2.0
+    helm.sh/chart: identity-3.2.0
+  namespace: platform-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: admin-api
+      app.kubernetes.io/name: identity-app
+      app.kubernetes.io/instance: identity-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 8004354c3e8da351ca4f448fd3ad25f8c27d5d237401aa6f58098a8d86b5f645
+      labels: 
+        app.kubernetes.io/controller: admin-api
+        app.kubernetes.io/instance: identity-app
+        app.kubernetes.io/name: identity-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: identity-app-admin-api
+          - secretRef:
+              name: identity-server-admin-api-secrets
+          image: ghcr.io/spyder007/identity_admin_api:3.2.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 5m
 ---
 # Source: identity/templates/common.yaml
 apiVersion: apps/v1
@@ -294,76 +364,6 @@ spec:
               port: 8080
             periodSeconds: 10
             timeoutSeconds: 1
----
-# Source: identity/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: identity-app-admin-api
-  labels:
-    app.kubernetes.io/controller: admin-api
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: identity-3.2.0
-  namespace: platform-test
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: admin-api
-      app.kubernetes.io/name: identity-app
-      app.kubernetes.io/instance: identity-app
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: 8004354c3e8da351ca4f448fd3ad25f8c27d5d237401aa6f58098a8d86b5f645
-      labels: 
-        app.kubernetes.io/controller: admin-api
-        app.kubernetes.io/instance: identity-app
-        app.kubernetes.io/name: identity-app
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - envFrom:
-          - configMapRef:
-              name: identity-app-admin-api
-          - secretRef:
-              name: identity-server-admin-api-secrets
-          image: ghcr.io/spyder007/identity_admin_api:3.2.0
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /livez
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 1
-          name: main
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /readyz
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 1
-          resources:
-            requests:
-              cpu: 5m
 ---
 # Source: identity/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
