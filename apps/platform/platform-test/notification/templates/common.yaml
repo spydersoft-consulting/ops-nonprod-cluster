@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 data:
   Auth__Audience: notification-api
@@ -33,8 +33,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
     app.kubernetes.io/service: notification-app-notification-hub
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -58,8 +58,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
     app.kubernetes.io/service: notification-app-notification-api
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -83,8 +83,8 @@ metadata:
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -123,7 +123,7 @@ spec:
               name: notification-secrets
           - configMapRef:
               name: notification-app
-          image: ghcr.io/spydersoft-consulting/notification-api:1.0.1-beta.2
+          image: ghcr.io/spydersoft-consulting/notification-api:1.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -156,8 +156,8 @@ metadata:
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -193,7 +193,7 @@ spec:
               name: notification-secrets
           - configMapRef:
               name: notification-app
-          image: ghcr.io/spydersoft-consulting/notification-hub:1.0.1-beta.2
+          image: ghcr.io/spydersoft-consulting/notification-hub:1.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -225,8 +225,8 @@ metadata:
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 spec:
   parentRefs:
@@ -258,8 +258,8 @@ metadata:
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
-    app.kubernetes.io/version: 1.0.1-beta.2
-    helm.sh/chart: notification-1.0.1-beta.2
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
   namespace: platform-test
 spec:
   parentRefs:
