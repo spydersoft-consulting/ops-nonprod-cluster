@@ -1,11 +1,11 @@
-type: application
-version: 5.1.0
 dependencies:
-- version: 5.1.0
-  name: common
+- name: common
+  version: 5.1.0
   repository: https://bjw-s-labs.github.io/helm-charts
+version: 5.1.0
+type: application
 apiVersion: v2
-name: nonproduction-redis
 appVersion: 7.4.0-v7
+name: nonproduction-redis
 
 
