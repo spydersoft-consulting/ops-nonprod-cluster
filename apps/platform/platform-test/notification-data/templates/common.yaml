@@ -1,26 +1,5 @@
 ---
 # Source: notification-data/templates/common.yaml
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: notification-data-postgres
-  labels:
-    app.kubernetes.io/controller: postgres
-    app.kubernetes.io/instance: notification-data
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: notification-data
-    app.kubernetes.io/version: 0.0.0
-    helm.sh/chart: notification-data-0.1.0
-  namespace: platform-test
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: postgres
-      app.kubernetes.io/instance: notification-data
-      app.kubernetes.io/name: notification-data
-  minAvailable: 1
----
-# Source: notification-data/templates/common.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
