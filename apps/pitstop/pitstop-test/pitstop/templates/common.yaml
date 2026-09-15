@@ -4,25 +4,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pitstop-app-common
-  labels:
-    app.kubernetes.io/instance: pitstop-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: pitstop-app
-    app.kubernetes.io/version: 2.1.1-beta.8
-    helm.sh/chart: pitstop-2.1.1-beta.8
-  namespace: pitstop-test
-data:
-  Auth__Audience: pitstop-data-api
-  Auth__Authority: https://auth.mattgerega.net
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
----
-# Source: pitstop/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: pitstop-app-data-api
   labels:
     app.kubernetes.io/instance: pitstop-app
@@ -62,6 +43,25 @@ data:
   Telemetry__ActivitySourceName: PitStop.Web.Test.Activity
   Telemetry__MeterName: PitStop.Web.Test.Meter
   Telemetry__ServiceName: PitStop.Web.Test
+---
+# Source: pitstop/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pitstop-app-common
+  labels:
+    app.kubernetes.io/instance: pitstop-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: pitstop-app
+    app.kubernetes.io/version: 2.1.1-beta.8
+    helm.sh/chart: pitstop-2.1.1-beta.8
+  namespace: pitstop-test
+data:
+  Auth__Audience: pitstop-data-api
+  Auth__Authority: https://auth.mattgerega.net
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
 ---
 # Source: pitstop/templates/common.yaml
 apiVersion: v1
