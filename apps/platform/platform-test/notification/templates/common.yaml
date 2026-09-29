@@ -220,39 +220,6 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: notification-app-notification-api
-  labels:
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: notification-app
-    app.kubernetes.io/version: 1.1.0
-    helm.sh/chart: notification-1.1.0
-  namespace: platform-test
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "notify.mattgerega.net"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: notification-app-notification-api
-        namespace: platform-test
-        port: 80
-        weight: 1
-      matches:
-        - path:
-            type: PathPrefix
-            value: /
----
-# Source: notification/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
   name: notification-app-notification-hub
   labels:
     app.kubernetes.io/instance: notification-app
@@ -274,6 +241,39 @@ spec:
       - group: ""
         kind: Service
         name: notification-app-notification-hub
+        namespace: platform-test
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+# Source: notification/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: notification-app-notification-api
+  labels:
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: notification-app
+    app.kubernetes.io/version: 1.1.0
+    helm.sh/chart: notification-1.1.0
+  namespace: platform-test
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "notify.mattgerega.net"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: notification-app-notification-api
         namespace: platform-test
         port: 80
         weight: 1
