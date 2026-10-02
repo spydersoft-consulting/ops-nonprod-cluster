@@ -1,11 +1,11 @@
+name: nonproduction-redis
 apiVersion: v2
 dependencies:
 - repository: oci://ghcr.io/bjw-s-labs/helm
-  name: common
   version: 5.2.0
+  name: common
 appVersion: 7.4.0-v7
-name: nonproduction-redis
-version: 5.1.0
 type: application
+version: 5.1.0
 
 
