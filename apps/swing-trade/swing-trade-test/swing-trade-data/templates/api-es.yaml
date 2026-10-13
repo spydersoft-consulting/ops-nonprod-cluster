@@ -1,0 +1,48 @@
+---
+# Source: swing-trade-data/templates/api-es.yaml
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: api-es
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: api-secrets
+    template:
+      type: kubernetes.io/secret
+      engineVersion: v2
+      data:
+        ConnectionStrings__swingtrade-db: "Host=swing-trade-data-postgres;Database=swingtrade;Username={{ .db_user }};Password={{ .db_password }}"
+        MarketData__Alpaca__KeyId: "{{ .alpaca_key_id }}"
+        MarketData__Alpaca__SecretKey: "{{ .alpaca_secret_key }}"
+        MarketData__Tiingo__Token: "{{ .tiingo_token }}"
+        # The owner's identity-server subject. Not committed: it lives in Vault only.
+        Mcp__OwnerSubject: "{{ .mcp_owner_subject }}"
+  data:
+  - secretKey: db_user
+    remoteRef:
+      key: secrets-k8/swing-trade/test/postgres
+      property: user
+  - secretKey: db_password
+    remoteRef:
+      key: secrets-k8/swing-trade/test/postgres
+      property: password
+  - secretKey: alpaca_key_id
+    remoteRef:
+      key: secrets-k8/swing-trade/test/market-data
+      property: alpaca_key_id
+  - secretKey: alpaca_secret_key
+    remoteRef:
+      key: secrets-k8/swing-trade/test/market-data
+      property: alpaca_secret_key
+  - secretKey: tiingo_token
+    remoteRef:
+      key: secrets-k8/swing-trade/test/market-data
+      property: tiingo_token
+  - secretKey: mcp_owner_subject
+    remoteRef:
+      key: secrets-k8/swing-trade/test/mcp
+      property: owner_subject

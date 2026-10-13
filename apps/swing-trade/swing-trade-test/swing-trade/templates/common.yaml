@@ -1,0 +1,331 @@
+---
+# Source: swing-trade/templates/common.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: swing-trade-app-api
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+data:
+  MarketData__Providers__0: alpaca
+  MarketData__Providers__1: tiingo
+  Mcp__AllowedHosts__0: swingtrade-mcp.mattgerega.net
+  Mcp__EnableAddNote: "false"
+  Mcp__PublicUrl: https://swingtrade-mcp.mattgerega.net/mcp
+  Telemetry__ActivitySourceName: SwingTrade.Api.Test.Activity
+  Telemetry__MeterName: SwingTrade.Api.Test.Meter
+  Telemetry__ServiceName: SwingTrade.Api.Test
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: swing-trade-app-common
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+data:
+  Auth__Authority: https://auth.mattgerega.net
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: swing-trade-app-web
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+data:
+  Telemetry__ActivitySourceName: SwingTrade.Web.Test.Activity
+  Telemetry__MeterName: SwingTrade.Web.Test.Meter
+  Telemetry__ServiceName: SwingTrade.Web.Test
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: swing-trade-app-web
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/service: swing-trade-app-web
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: web
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/name: swing-trade-app
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: swing-trade-app-api
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/service: swing-trade-app-api
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: api
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/name: swing-trade-app
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swing-trade-app-api
+  labels:
+    app.kubernetes.io/controller: api
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: api
+      app.kubernetes.io/name: swing-trade-app
+      app.kubernetes.io/instance: swing-trade-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: af885fea219d5791f2349258ae16b6eb2b3a9a70b5e8f5bda80f71cb4bb22f25
+      labels: 
+        app.kubernetes.io/controller: api
+        app.kubernetes.io/instance: swing-trade-app
+        app.kubernetes.io/name: swing-trade-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: api-secrets
+          - configMapRef:
+              name: swing-trade-app-common
+          - configMapRef:
+              name: swing-trade-app-api
+          image: ghcr.io/spydersoft-consulting/swing-trade-api:0.0.1-beta.20
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 5m
+          startupProbe:
+            failureThreshold: 36
+            httpGet:
+              path: /livez
+              port: 8080
+            periodSeconds: 5
+            timeoutSeconds: 1
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swing-trade-app-web
+  labels:
+    app.kubernetes.io/controller: web
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: web
+      app.kubernetes.io/name: swing-trade-app
+      app.kubernetes.io/instance: swing-trade-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: af885fea219d5791f2349258ae16b6eb2b3a9a70b5e8f5bda80f71cb4bb22f25
+      labels: 
+        app.kubernetes.io/controller: web
+        app.kubernetes.io/instance: swing-trade-app
+        app.kubernetes.io/name: swing-trade-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - env:
+          - name: OidcProxySettings__ReverseProxy__Clusters__swingTradeApi__Destinations__destination1__Address
+            value: http://swing-trade-app-api/
+          envFrom:
+          - secretRef:
+              name: web-secrets
+          - configMapRef:
+              name: swing-trade-app-common
+          - configMapRef:
+              name: swing-trade-app-web
+          image: ghcr.io/spydersoft-consulting/swing-trade-web:0.0.1-beta.20
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 5m
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: swing-trade-app-api-mcp
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "swingtrade-mcp.mattgerega.net"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: swing-trade-app-api
+        namespace: swing-trade-test
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /mcp
+        - path:
+            type: PathPrefix
+            value: /.well-known/oauth-protected-resource
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: swing-trade-app-web
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "swingtrade.mattgerega.net"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: swing-trade-app-web
+        namespace: swing-trade-test
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
