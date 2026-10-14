@@ -17,8 +17,10 @@ spec:
       data:
         ConnectionStrings__swingtrade-db: "Host=swing-trade-data-postgres;Database=swingtrade;Username={{ .db_user }};Password={{ .db_password }}"
         MarketData__Alpaca__KeyId: "{{ .alpaca_key_id }}"
+        # Tiingo is an optional fallback and is not wired up. To enable it: add MarketData__Tiingo__Token here with a
+        # tiingo_token remoteRef below, store tiingo_token in Vault, and add tiingo to MarketData__Providers in
+        # apps/swing-trade-app/config/values.yaml.gotmpl.
         MarketData__Alpaca__SecretKey: "{{ .alpaca_secret_key }}"
-        MarketData__Tiingo__Token: "{{ .tiingo_token }}"
         # The owner's identity-server subject. Not committed: it lives in Vault only.
         Mcp__OwnerSubject: "{{ .mcp_owner_subject }}"
   data:
@@ -38,10 +40,6 @@ spec:
     remoteRef:
       key: secrets-k8/swing-trade/test/market-data
       property: alpaca_secret_key
-  - secretKey: tiingo_token
-    remoteRef:
-      key: secrets-k8/swing-trade/test/market-data
-      property: tiingo_token
   - secretKey: mcp_owner_subject
     remoteRef:
       key: secrets-k8/swing-trade/test/mcp

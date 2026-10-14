@@ -4,28 +4,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: swing-trade-app-api
-  labels:
-    app.kubernetes.io/instance: swing-trade-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
-  namespace: swing-trade-test
-data:
-  MarketData__Providers__0: alpaca
-  MarketData__Providers__1: tiingo
-  Mcp__AllowedHosts__0: swingtrade-mcp.mattgerega.net
-  Mcp__EnableAddNote: "false"
-  Mcp__PublicUrl: https://swingtrade-mcp.mattgerega.net/mcp
-  Telemetry__ActivitySourceName: SwingTrade.Api.Test.Activity
-  Telemetry__MeterName: SwingTrade.Api.Test.Meter
-  Telemetry__ServiceName: SwingTrade.Api.Test
----
-# Source: swing-trade/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: swing-trade-app-common
   labels:
     app.kubernetes.io/instance: swing-trade-app
@@ -59,28 +37,24 @@ data:
 ---
 # Source: swing-trade/templates/common.yaml
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: swing-trade-app-web
+  name: swing-trade-app-api
   labels:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/service: swing-trade-app-web
     app.kubernetes.io/version: 0.0.1-beta.20
     helm.sh/chart: swing-trade-0.0.1-beta.20
   namespace: swing-trade-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: web
-    app.kubernetes.io/instance: swing-trade-app
-    app.kubernetes.io/name: swing-trade-app
+data:
+  MarketData__Providers__0: alpaca
+  Mcp__AllowedHosts__0: swingtrade-mcp.mattgerega.net
+  Mcp__EnableAddNote: "false"
+  Mcp__PublicUrl: https://swingtrade-mcp.mattgerega.net/mcp
+  Telemetry__ActivitySourceName: SwingTrade.Api.Test.Activity
+  Telemetry__MeterName: SwingTrade.Api.Test.Meter
+  Telemetry__ServiceName: SwingTrade.Api.Test
 ---
 # Source: swing-trade/templates/common.yaml
 apiVersion: v1
@@ -104,6 +78,31 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: api
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/name: swing-trade-app
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: swing-trade-app-web
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/service: swing-trade-app-web
+    app.kubernetes.io/version: 0.0.1-beta.20
+    helm.sh/chart: swing-trade-0.0.1-beta.20
+  namespace: swing-trade-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: web
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/name: swing-trade-app
 ---
@@ -133,7 +132,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: af885fea219d5791f2349258ae16b6eb2b3a9a70b5e8f5bda80f71cb4bb22f25
+        checksum/configMaps: a0bd7dc93346848fee6ae1d5c347797f1fe34b67fc3bf7a3b0f8ca89e9b9a629
       labels: 
         app.kubernetes.io/controller: api
         app.kubernetes.io/instance: swing-trade-app
@@ -212,7 +211,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: af885fea219d5791f2349258ae16b6eb2b3a9a70b5e8f5bda80f71cb4bb22f25
+        checksum/configMaps: a0bd7dc93346848fee6ae1d5c347797f1fe34b67fc3bf7a3b0f8ca89e9b9a629
       labels: 
         app.kubernetes.io/controller: web
         app.kubernetes.io/instance: swing-trade-app
