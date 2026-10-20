@@ -4,13 +4,34 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: swing-trade-app-api
+  labels:
+    app.kubernetes.io/instance: swing-trade-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: swing-trade-app
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
+  namespace: swing-trade-test
+data:
+  MarketData__Providers__0: alpaca
+  Mcp__AllowedHosts__0: swingtrade-mcp.mattgerega.net
+  Mcp__EnableAddNote: "false"
+  Mcp__PublicUrl: https://swingtrade-mcp.mattgerega.net/mcp
+  Telemetry__ActivitySourceName: SwingTrade.Api.Test.Activity
+  Telemetry__MeterName: SwingTrade.Api.Test.Meter
+  Telemetry__ServiceName: SwingTrade.Api.Test
+---
+# Source: swing-trade/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: swing-trade-app-common
   labels:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 data:
   Auth__Authority: https://auth.mattgerega.net
@@ -27,34 +48,13 @@ metadata:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 data:
   Telemetry__ActivitySourceName: SwingTrade.Web.Test.Activity
   Telemetry__MeterName: SwingTrade.Web.Test.Meter
   Telemetry__ServiceName: SwingTrade.Web.Test
----
-# Source: swing-trade/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: swing-trade-app-api
-  labels:
-    app.kubernetes.io/instance: swing-trade-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
-  namespace: swing-trade-test
-data:
-  MarketData__Providers__0: alpaca
-  Mcp__AllowedHosts__0: swingtrade-mcp.mattgerega.net
-  Mcp__EnableAddNote: "false"
-  Mcp__PublicUrl: https://swingtrade-mcp.mattgerega.net/mcp
-  Telemetry__ActivitySourceName: SwingTrade.Api.Test.Activity
-  Telemetry__MeterName: SwingTrade.Api.Test.Meter
-  Telemetry__ServiceName: SwingTrade.Api.Test
 ---
 # Source: swing-trade/templates/common.yaml
 apiVersion: v1
@@ -66,8 +66,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
     app.kubernetes.io/service: swing-trade-app-api
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 spec:
   type: ClusterIP
@@ -91,8 +91,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
     app.kubernetes.io/service: swing-trade-app-web
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 spec:
   type: ClusterIP
@@ -116,8 +116,8 @@ metadata:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 spec:
   revisionHistoryLimit: 1
@@ -155,7 +155,7 @@ spec:
               name: swing-trade-app-common
           - configMapRef:
               name: swing-trade-app-api
-          image: ghcr.io/spydersoft-consulting/swing-trade-api:0.0.1-beta.20
+          image: ghcr.io/spydersoft-consulting/swing-trade-api:0.0.1-beta.26
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -195,8 +195,8 @@ metadata:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 spec:
   revisionHistoryLimit: 1
@@ -237,7 +237,7 @@ spec:
               name: swing-trade-app-common
           - configMapRef:
               name: swing-trade-app-web
-          image: ghcr.io/spydersoft-consulting/swing-trade-web:0.0.1-beta.20
+          image: ghcr.io/spydersoft-consulting/swing-trade-web:0.0.1-beta.26
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -269,8 +269,8 @@ metadata:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 spec:
   parentRefs:
@@ -305,8 +305,8 @@ metadata:
     app.kubernetes.io/instance: swing-trade-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: swing-trade-app
-    app.kubernetes.io/version: 0.0.1-beta.20
-    helm.sh/chart: swing-trade-0.0.1-beta.20
+    app.kubernetes.io/version: 0.0.1-beta.26
+    helm.sh/chart: swing-trade-0.0.1-beta.26
   namespace: swing-trade-test
 spec:
   parentRefs:
