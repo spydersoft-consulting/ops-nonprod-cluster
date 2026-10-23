@@ -4,6 +4,28 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: identity-app-admin-api
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.2.1-beta.2
+    helm.sh/chart: identity-3.2.1-beta.2
+  namespace: platform-test
+data:
+  IdentityServer__Authority: https://auth.mattgerega.net
+  Serilog__MinimumLevel__Default: Information
+  Telemetry__ActivitySourceName: Identity.Admin.Api.Test.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: Identity.Admin.Api.Test.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: Identity.Admin.Api.Test
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: identity-app-admin-ui
   labels:
     app.kubernetes.io/instance: identity-app
@@ -48,28 +70,6 @@ data:
   Telemetry__MeterName: Identity.Test.Meter
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Test
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: identity-app-admin-api
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.2.1-beta.2
-    helm.sh/chart: identity-3.2.1-beta.2
-  namespace: platform-test
-data:
-  IdentityServer__Authority: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Information
-  Telemetry__ActivitySourceName: Identity.Admin.Api.Test.Activity
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__MeterName: Identity.Admin.Api.Test.Meter
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__ServiceName: Identity.Admin.Api.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
 ---
 # Source: identity/templates/common.yaml
@@ -369,6 +369,39 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
+  name: identity-app-main
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.2.1-beta.2
+    helm.sh/chart: identity-3.2.1-beta.2
+  namespace: platform-test
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: main
+      namespace: envoy-gateway-system
+  hostnames:
+    - "auth.mattgerega.net"
+  rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: identity-app-main
+        namespace: platform-test
+        port: 80
+        weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+---
+# Source: identity/templates/common.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
   name: identity-app-admin-api
   labels:
     app.kubernetes.io/instance: identity-app
@@ -423,39 +456,6 @@ spec:
       - group: ""
         kind: Service
         name: identity-app-admin-frontend
-        namespace: platform-test
-        port: 80
-        weight: 1
-      matches:
-        - path:
-            type: PathPrefix
-            value: /
----
-# Source: identity/templates/common.yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: identity-app-main
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.2.1-beta.2
-    helm.sh/chart: identity-3.2.1-beta.2
-  namespace: platform-test
-spec:
-  parentRefs:
-    - group: gateway.networking.k8s.io
-      kind: Gateway
-      name: main
-      namespace: envoy-gateway-system
-  hostnames:
-    - "auth.mattgerega.net"
-  rules:
-    - backendRefs:
-      - group: ""
-        kind: Service
-        name: identity-app-main
         namespace: platform-test
         port: 80
         weight: 1
