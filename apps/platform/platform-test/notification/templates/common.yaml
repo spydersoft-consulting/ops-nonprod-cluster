@@ -27,31 +27,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: notification-app-notification-hub
-  labels:
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: notification-app
-    app.kubernetes.io/service: notification-app-notification-hub
-    app.kubernetes.io/version: 1.1.1-beta.1
-    helm.sh/chart: notification-1.1.1-beta.1
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: notification-hub
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/name: notification-app
----
-# Source: notification/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: notification-app-notification-api
   labels:
     app.kubernetes.io/instance: notification-app
@@ -70,6 +45,31 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: notification-api
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/name: notification-app
+---
+# Source: notification/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-app-notification-hub
+  labels:
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: notification-app
+    app.kubernetes.io/service: notification-app-notification-hub
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: notification-1.1.1-beta.1
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: notification-hub
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/name: notification-app
 ---
