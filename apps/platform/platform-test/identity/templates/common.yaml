@@ -4,6 +4,28 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: identity-app-admin-api
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.3.1-beta.1
+    helm.sh/chart: identity-3.3.1-beta.1
+  namespace: platform-test
+data:
+  IdentityServer__Authority: https://auth.mattgerega.net
+  Serilog__MinimumLevel__Default: Information
+  Telemetry__ActivitySourceName: Identity.Admin.Api.Test.Activity
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__MeterName: Identity.Admin.Api.Test.Meter
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+  Telemetry__ServiceName: Identity.Admin.Api.Test
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: identity-app-admin-ui
   labels:
     app.kubernetes.io/instance: identity-app
@@ -38,6 +60,10 @@ metadata:
 data:
   AllowedOrigins__0: https://*.mattgerega.net
   AllowedOrigins__1: http://localhost:3000
+  EmailClient__BaseUrl: http://email-app.platform-test
+  EmailClient__ClientId: identity-server
+  EmailClient__Scope: email:send
+  EmailClient__TokenEndpoint: https://auth.mattgerega.net/connect/token
   Identity__AuthorityUrl: https://auth.mattgerega.net
   Resend__EmailFrom: Spydersoft Test
   Serilog__MinimumLevel__Default: Information
@@ -48,28 +74,6 @@ data:
   Telemetry__MeterName: Identity.Test.Meter
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Test
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: identity-app-admin-api
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.1-beta.1
-    helm.sh/chart: identity-3.3.1-beta.1
-  namespace: platform-test
-data:
-  IdentityServer__Authority: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Information
-  Telemetry__ActivitySourceName: Identity.Admin.Api.Test.Activity
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__MeterName: Identity.Admin.Api.Test.Meter
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
-  Telemetry__ServiceName: Identity.Admin.Api.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
 ---
 # Source: identity/templates/common.yaml
@@ -173,7 +177,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 8004354c3e8da351ca4f448fd3ad25f8c27d5d237401aa6f58098a8d86b5f645
+        checksum/configMaps: bdf48e9ba7dd4158bd7cadec68a72c8461b72367b9693e1dc6b7027043a8a339
       labels: 
         app.kubernetes.io/controller: main
         app.kubernetes.io/instance: identity-app
@@ -248,7 +252,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 8004354c3e8da351ca4f448fd3ad25f8c27d5d237401aa6f58098a8d86b5f645
+        checksum/configMaps: bdf48e9ba7dd4158bd7cadec68a72c8461b72367b9693e1dc6b7027043a8a339
       labels: 
         app.kubernetes.io/controller: admin-api
         app.kubernetes.io/instance: identity-app
@@ -318,7 +322,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 8004354c3e8da351ca4f448fd3ad25f8c27d5d237401aa6f58098a8d86b5f645
+        checksum/configMaps: bdf48e9ba7dd4158bd7cadec68a72c8461b72367b9693e1dc6b7027043a8a339
       labels: 
         app.kubernetes.io/controller: admin-frontend
         app.kubernetes.io/instance: identity-app
