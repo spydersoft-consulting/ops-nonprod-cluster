@@ -38,6 +38,7 @@ metadata:
   namespace: swing-trade-test
 data:
   Auth__Authority: https://auth.mattgerega.net
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
@@ -135,7 +136,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: f690a9986c5b5cbf71f3819f02cf886fe116c99c3d464900d969e8025552f787
+        checksum/configMaps: b2d95579fad89561513aa4d17d3ded834808e753746b81b06cea758a331a02e9
       labels: 
         app.kubernetes.io/controller: api
         app.kubernetes.io/instance: swing-trade-app
@@ -214,7 +215,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: f690a9986c5b5cbf71f3819f02cf886fe116c99c3d464900d969e8025552f787
+        checksum/configMaps: b2d95579fad89561513aa4d17d3ded834808e753746b81b06cea758a331a02e9
       labels: 
         app.kubernetes.io/controller: web
         app.kubernetes.io/instance: swing-trade-app
