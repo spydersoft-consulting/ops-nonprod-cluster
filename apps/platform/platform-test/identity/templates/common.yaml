@@ -14,7 +14,7 @@ metadata:
   namespace: platform-test
 data:
   IdentityServer__Authority: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Identity.Admin.Api.Test.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Identity.Admin.Api.Test.Meter
@@ -37,7 +37,7 @@ metadata:
 data:
   OidcProxySettings__Oidc__Authority: https://auth.mattgerega.net
   OidcProxySettings__Oidc__ClientId: identity.admin.frontend
-  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Identity.Admin.Ui.Test.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Identity.Admin.Ui.Test.Meter
@@ -66,9 +66,7 @@ data:
   EmailClient__TokenEndpoint: https://auth.mattgerega.net/connect/token
   Identity__AuthorityUrl: https://auth.mattgerega.net
   Resend__EmailFrom: Spydersoft Test
-  Serilog__MinimumLevel__Default: Information
-  Serilog__MinimumLevel__Override__Microsoft: Information
-  Serilog__MinimumLevel__Override__System: Information
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Identity.Test.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Identity.Test.Meter
@@ -155,81 +153,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: identity-app-main
-  labels:
-    app.kubernetes.io/controller: main
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.3.1-beta.1
-    helm.sh/chart: identity-3.3.1-beta.1
-  namespace: platform-test
-spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      app.kubernetes.io/controller: main
-      app.kubernetes.io/name: identity-app
-      app.kubernetes.io/instance: identity-app
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: bdf48e9ba7dd4158bd7cadec68a72c8461b72367b9693e1dc6b7027043a8a339
-      labels: 
-        app.kubernetes.io/controller: main
-        app.kubernetes.io/instance: identity-app
-        app.kubernetes.io/name: identity-app
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - envFrom:
-          - configMapRef:
-              name: identity-app-identity
-          - secretRef:
-              name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.3.1-beta.1
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /livez
-              port: 8080
-            periodSeconds: 10
-            timeoutSeconds: 1
-          name: main
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /readyz
-              port: 8080
-            periodSeconds: 10
-            timeoutSeconds: 1
-          resources:
-            requests:
-              cpu: 5m
-          startupProbe:
-            failureThreshold: 12
-            httpGet:
-              path: /livez
-              port: 8080
-            periodSeconds: 10
-            timeoutSeconds: 1
----
-# Source: identity/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: identity-app-admin-api
   labels:
     app.kubernetes.io/controller: admin-api
@@ -252,7 +175,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: bdf48e9ba7dd4158bd7cadec68a72c8461b72367b9693e1dc6b7027043a8a339
+        checksum/configMaps: 2f701ad71b2af9126470351156e138397c33f7f032ec11cbcd355ba5c7ba9bbc
       labels: 
         app.kubernetes.io/controller: admin-api
         app.kubernetes.io/instance: identity-app
@@ -322,7 +245,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: bdf48e9ba7dd4158bd7cadec68a72c8461b72367b9693e1dc6b7027043a8a339
+        checksum/configMaps: 2f701ad71b2af9126470351156e138397c33f7f032ec11cbcd355ba5c7ba9bbc
       labels: 
         app.kubernetes.io/controller: admin-frontend
         app.kubernetes.io/instance: identity-app
@@ -368,6 +291,81 @@ spec:
           resources:
             requests:
               cpu: 5m
+---
+# Source: identity/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-app-main
+  labels:
+    app.kubernetes.io/controller: main
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/version: 3.3.1-beta.1
+    helm.sh/chart: identity-3.3.1-beta.1
+  namespace: platform-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: main
+      app.kubernetes.io/name: identity-app
+      app.kubernetes.io/instance: identity-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 2f701ad71b2af9126470351156e138397c33f7f032ec11cbcd355ba5c7ba9bbc
+      labels: 
+        app.kubernetes.io/controller: main
+        app.kubernetes.io/instance: identity-app
+        app.kubernetes.io/name: identity-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - configMapRef:
+              name: identity-app-identity
+          - secretRef:
+              name: identity-server-secrets
+          image: ghcr.io/spyder007/identity_server:3.3.1-beta.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 5m
+          startupProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /livez
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 1
 ---
 # Source: identity/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1

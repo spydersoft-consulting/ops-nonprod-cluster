@@ -20,7 +20,7 @@ data:
   RabbitMq__Host: rabbitmq
   RabbitMq__Port: "5672"
   RabbitMq__VirtualHost: /
-  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Audit.Test.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Audit.Test.Meter
@@ -79,7 +79,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: c6e0a146a7552337ad5993011c7bbdd34bdbf3b00246d533c998af60a10f28e1
+        checksum/configMaps: 3880edf28af88756c598b7983aa9e6996e23e0eace62a10c37b4a7c01ca9d20c
       labels: 
         app.kubernetes.io/controller: audit-api
         app.kubernetes.io/instance: audit-app
@@ -149,7 +149,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: c6e0a146a7552337ad5993011c7bbdd34bdbf3b00246d533c998af60a10f28e1
+        checksum/configMaps: 3880edf28af88756c598b7983aa9e6996e23e0eace62a10c37b4a7c01ca9d20c
       labels: 
         app.kubernetes.io/controller: audit-processor
         app.kubernetes.io/instance: audit-app

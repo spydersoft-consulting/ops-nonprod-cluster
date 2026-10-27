@@ -15,7 +15,7 @@ metadata:
 data:
   Auth__Audience: notification-api
   Auth__Authority: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Notification.Test.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Notification.Test.Meter
@@ -99,7 +99,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 6f913bce7a98067ec3452ee08d434f031b0f9cd618b65467a1ea993caeb31a55
+        checksum/configMaps: 3a60e9d531dfb782f4c56e664706fb58b30ea224a8b419092ffe4456be9799d0
       labels: 
         app.kubernetes.io/controller: notification-api
         app.kubernetes.io/instance: notification-app
@@ -172,7 +172,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 6f913bce7a98067ec3452ee08d434f031b0f9cd618b65467a1ea993caeb31a55
+        checksum/configMaps: 3a60e9d531dfb782f4c56e664706fb58b30ea224a8b419092ffe4456be9799d0
       labels: 
         app.kubernetes.io/controller: notification-hub
         app.kubernetes.io/instance: notification-app

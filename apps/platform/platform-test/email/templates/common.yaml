@@ -18,7 +18,7 @@ data:
   Email__DefaultFrom: Spydersoft <test-noreply@mattgerega.com>
   Email__EnvironmentTag: test
   Email__SendingDomain: mattgerega.com
-  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Default: Warning
   Telemetry__ActivitySourceName: Email.Test.Activity
   Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__MeterName: Email.Test.Meter
@@ -77,7 +77,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 91d1296fa8bfa877fd27dbab68362a1c8917ff83b509cc9bb85b6589c61151d8
+        checksum/configMaps: 409dd6ca43a143f682acbc030d0e178333e1b2e2fc95eb9701addcb89888782e
       labels: 
         app.kubernetes.io/controller: email-api
         app.kubernetes.io/instance: email-app

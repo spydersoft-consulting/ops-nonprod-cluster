@@ -15,7 +15,7 @@ metadata:
 data:
   Auth__Audience: filestore-api
   Auth__Authority: https://auth.mattgerega.net
-  Serilog__MinimumLevel__Default: Information
+  Serilog__MinimumLevel__Default: Warning
   Storage__BucketName: file-storage-test
   Storage__Region: us-east-1
   Storage__ServiceUrl: https://gs3.mattgerega.net
@@ -77,7 +77,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 6c4b74c0434eb27730e21a6e0ca2d6f18abe2dfefc9ad2656eca132406f73a01
+        checksum/configMaps: 3d81924d1e6cce1db08b95209ffc8bde7fcb380e0e0171e4d6d40123b6f944d9
       labels: 
         app.kubernetes.io/controller: filestore-api
         app.kubernetes.io/instance: filestore-app
