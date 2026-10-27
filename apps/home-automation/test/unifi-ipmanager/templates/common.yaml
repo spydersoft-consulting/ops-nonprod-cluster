@@ -4,26 +4,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: unifi-ipmanager-app-ipmanager
-  labels:
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
-  namespace: test
-data:
-  Identity__ApiName: unifi.ipmanager
-  Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
-  Telemetry__MeterName: Unifi.IpManager.Test.Meter
-  Telemetry__ServiceName: Unifi.IpManager.Test
-  UnifiControllerOptions__DnsZone: gerega.net
-  UnifiControllerOptions__Url: https://unifi.gerega.net
----
-# Source: unifi-ipmanager/templates/common.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: unifi-ipmanager-app-config-js
   labels:
     app.kubernetes.io/instance: unifi-ipmanager-app
@@ -43,6 +23,27 @@ data:
       clientId: 'unifiwebclient',
       redirectUri: 'https://uni.mattgerega.net',
     };
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unifi-ipmanager-app-ipmanager
+  labels:
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager-app
+    app.kubernetes.io/version: 1.1.3-mtp-migration.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+  namespace: test
+data:
+  Identity__ApiName: unifi.ipmanager
+  Serilog__MinimumLevel__Default: Warning
+  Telemetry__ActivitySourceName: Unifi.IpManager.Test.Activity
+  Telemetry__MeterName: Unifi.IpManager.Test.Meter
+  Telemetry__ServiceName: Unifi.IpManager.Test
+  UnifiControllerOptions__DnsZone: gerega.net
+  UnifiControllerOptions__Url: https://unifi.gerega.net
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -120,7 +121,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 5a5fe79c67c33cfd6359cab82f6c191c6c1b1fc4caf0f487fa57e85698242d8f
+        checksum/configMaps: 740bc59510c6fae3cddaf280ff0dc2aec8b5b65bd9683cbe439f7aa965409bb0
       labels: 
         app.kubernetes.io/controller: api
         app.kubernetes.io/instance: unifi-ipmanager-app
@@ -200,7 +201,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 5a5fe79c67c33cfd6359cab82f6c191c6c1b1fc4caf0f487fa57e85698242d8f
+        checksum/configMaps: 740bc59510c6fae3cddaf280ff0dc2aec8b5b65bd9683cbe439f7aa965409bb0
       labels: 
         app.kubernetes.io/controller: frontend
         app.kubernetes.io/instance: unifi-ipmanager-app
