@@ -13,11 +13,12 @@ metadata:
     helm.sh/chart: techradar-2.1.3-beta.1
   namespace: ra-test-techradar
 data:
-  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Serilog__MinimumLevel__Default: Warning
+  Telemetry__Log__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Log__Otlp__Headers__X-Scope-OrgID: test
-  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Metrics__Otlp__Headers__X-Scope-OrgID: test
-  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4318
+  Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana.svc.cluster.local:4317
   Telemetry__Trace__Otlp__Headers__X-Scope-OrgID: test
 ---
 # Source: techradar/templates/common.yaml
@@ -58,31 +59,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: techradar-app-frontend
-  labels:
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: techradar-app
-    app.kubernetes.io/service: techradar-app-frontend
-    app.kubernetes.io/version: 2.1.3-beta.1
-    helm.sh/chart: techradar-2.1.3-beta.1
-  namespace: ra-test-techradar
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: frontend
-    app.kubernetes.io/instance: techradar-app
-    app.kubernetes.io/name: techradar-app
----
-# Source: techradar/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: techradar-app-data-api
   labels:
     app.kubernetes.io/instance: techradar-app
@@ -101,6 +77,31 @@ spec:
       name: http
   selector:
     app.kubernetes.io/controller: data-api
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/name: techradar-app
+---
+# Source: techradar/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: techradar-app-frontend
+  labels:
+    app.kubernetes.io/instance: techradar-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: techradar-app
+    app.kubernetes.io/service: techradar-app-frontend
+    app.kubernetes.io/version: 2.1.3-beta.1
+    helm.sh/chart: techradar-2.1.3-beta.1
+  namespace: ra-test-techradar
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: techradar-app
     app.kubernetes.io/name: techradar-app
 ---
@@ -130,7 +131,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 1a106b99cffaf1f400da45e7860ce489f8d3c046f271b7cc6ee1ce4a9b8fe5ba
+        checksum/configMaps: fc1ed13f90319fd9df7c64e102d1550e7f43353987da4652432b0244b12b884b
       labels: 
         app.kubernetes.io/controller: data-api
         app.kubernetes.io/instance: techradar-app
@@ -202,7 +203,7 @@ spec:
   template:
     metadata:
       annotations: 
-        checksum/configMaps: 1a106b99cffaf1f400da45e7860ce489f8d3c046f271b7cc6ee1ce4a9b8fe5ba
+        checksum/configMaps: fc1ed13f90319fd9df7c64e102d1550e7f43353987da4652432b0244b12b884b
       labels: 
         app.kubernetes.io/controller: frontend
         app.kubernetes.io/instance: techradar-app
