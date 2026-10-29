@@ -27,31 +27,6 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: notification-app-notification-api
-  labels:
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: notification-app
-    app.kubernetes.io/service: notification-app-notification-api
-    app.kubernetes.io/version: 1.1.1-beta.1
-    helm.sh/chart: notification-1.1.1-beta.1
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: notification-api
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/name: notification-app
----
-# Source: notification/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: notification-app-notification-hub
   labels:
     app.kubernetes.io/instance: notification-app
@@ -74,74 +49,29 @@ spec:
     app.kubernetes.io/name: notification-app
 ---
 # Source: notification/templates/common.yaml
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  name: notification-app-notification-hub
+  name: notification-app-notification-api
   labels:
-    app.kubernetes.io/controller: notification-hub
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: notification-app
+    app.kubernetes.io/service: notification-app-notification-api
     app.kubernetes.io/version: 1.1.1-beta.1
     helm.sh/chart: notification-1.1.1-beta.1
   namespace: platform-test
 spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: RollingUpdate
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
   selector:
-    matchLabels:
-      app.kubernetes.io/controller: notification-hub
-      app.kubernetes.io/name: notification-app
-      app.kubernetes.io/instance: notification-app
-  template:
-    metadata:
-      annotations: 
-        checksum/configMaps: 3a60e9d531dfb782f4c56e664706fb58b30ea224a8b419092ffe4456be9799d0
-      labels: 
-        app.kubernetes.io/controller: notification-hub
-        app.kubernetes.io/instance: notification-app
-        app.kubernetes.io/name: notification-app
-    spec: 
-      enableServiceLinks: false
-      serviceAccountName: default
-      automountServiceAccountToken: true
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      dnsPolicy: ClusterFirst
-      imagePullSecrets: 
-        - name: cr-spydersoft-github
-      containers: 
-        - envFrom:
-          - secretRef:
-              name: notification-secrets
-          - configMapRef:
-              name: notification-app
-          image: ghcr.io/spydersoft-consulting/notification-hub:1.1.1-beta.1
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /livez
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 1
-          name: main
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /readyz
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 1
-          resources:
-            requests:
-              cpu: 5m
+    app.kubernetes.io/controller: notification-api
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/name: notification-app
 ---
 # Source: notification/templates/common.yaml
 apiVersion: apps/v1
@@ -194,6 +124,76 @@ spec:
           - configMapRef:
               name: notification-app
           image: ghcr.io/spydersoft-consulting/notification-api:1.1.1-beta.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: main
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 5m
+---
+# Source: notification/templates/common.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-app-notification-hub
+  labels:
+    app.kubernetes.io/controller: notification-hub
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: notification-app
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: notification-1.1.1-beta.1
+  namespace: platform-test
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: notification-hub
+      app.kubernetes.io/name: notification-app
+      app.kubernetes.io/instance: notification-app
+  template:
+    metadata:
+      annotations: 
+        checksum/configMaps: 3a60e9d531dfb782f4c56e664706fb58b30ea224a8b419092ffe4456be9799d0
+      labels: 
+        app.kubernetes.io/controller: notification-hub
+        app.kubernetes.io/instance: notification-app
+        app.kubernetes.io/name: notification-app
+    spec: 
+      enableServiceLinks: false
+      serviceAccountName: default
+      automountServiceAccountToken: true
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      dnsPolicy: ClusterFirst
+      imagePullSecrets: 
+        - name: cr-spydersoft-github
+      containers: 
+        - envFrom:
+          - secretRef:
+              name: notification-secrets
+          - configMapRef:
+              name: notification-app
+          image: ghcr.io/spydersoft-consulting/notification-hub:1.1.1-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
