@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
-    app.kubernetes.io/version: 0.0.1-beta.10
-    helm.sh/chart: email-0.0.1-beta.10
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: email-1.0.0
   namespace: platform-test
 data:
   Auth__Audience: email-api
@@ -36,8 +36,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
     app.kubernetes.io/service: email-app
-    app.kubernetes.io/version: 0.0.1-beta.10
-    helm.sh/chart: email-0.0.1-beta.10
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: email-1.0.0
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -61,8 +61,8 @@ metadata:
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
-    app.kubernetes.io/version: 0.0.1-beta.10
-    helm.sh/chart: email-0.0.1-beta.10
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: email-1.0.0
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -98,7 +98,7 @@ spec:
               name: email-secrets
           - configMapRef:
               name: email-app
-          image: ghcr.io/spydersoft-consulting/email-api:0.0.1-beta.10
+          image: ghcr.io/spydersoft-consulting/email-api:1.0.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -130,8 +130,8 @@ metadata:
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
-    app.kubernetes.io/version: 0.0.1-beta.10
-    helm.sh/chart: email-0.0.1-beta.10
+    app.kubernetes.io/version: 1.0.0
+    helm.sh/chart: email-1.0.0
   namespace: platform-test
 spec:
   parentRefs:
