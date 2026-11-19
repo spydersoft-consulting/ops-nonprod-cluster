@@ -24,9 +24,11 @@ data:
     else
       echo "SETUP INFO: No environment variables given!"
     fi
+
+
+
 ---
 # Source: identity-data/templates/common.yaml
----
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -45,6 +47,10 @@ spec:
     requests:
       storage: "300Gi"
   storageClassName: "nfs-client"
+
+
+
+
 ---
 # Source: identity-data/templates/common.yaml
 apiVersion: v1
@@ -70,6 +76,14 @@ spec:
     app.kubernetes.io/controller: postgres
     app.kubernetes.io/instance: identity-data
     app.kubernetes.io/name: identity-data
+
+
+
+
+
+
+
+
 ---
 # Source: identity-data/templates/common.yaml
 apiVersion: apps/v1
@@ -143,3 +157,7 @@ spec:
         - configMap:
             name: identity-data
           name: postgres-init-data
+
+
+  
+

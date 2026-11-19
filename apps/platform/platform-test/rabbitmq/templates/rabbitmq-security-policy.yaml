@@ -20,3 +20,4 @@ spec:
       - profile
       - roles
     redirectURL: "https://rabbitmq.mattgerega.net/oauth2/callback"
+

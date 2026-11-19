@@ -23,9 +23,14 @@ spec:
     app.kubernetes.io/controller: main
     app.kubernetes.io/instance: mongo-express
     app.kubernetes.io/name: mongo-express
+
+
+
+
+  
+
 ---
 # Source: mongo-express/templates/common.yaml
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -84,6 +89,10 @@ spec:
           resources:
             requests:
               cpu: 5m
+
+
+  
+
 ---
 # Source: mongo-express/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -113,3 +122,8 @@ spec:
         namespace: platform-test
         port: 8081
         weight: 1
+
+
+
+
+

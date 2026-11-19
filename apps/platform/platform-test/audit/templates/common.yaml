@@ -1,6 +1,5 @@
 ---
 # Source: audit/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 1.0.2-beta.4
-    helm.sh/chart: audit-1.0.2-beta.4
+    app.kubernetes.io/version: 1.0.2-beta.5
+    helm.sh/chart: audit-1.0.2-beta.5
   namespace: platform-test
 data:
   Auth__Audience: audit-api
@@ -27,6 +26,9 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Audit.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+
+
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: v1
@@ -38,8 +40,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
     app.kubernetes.io/service: audit-app
-    app.kubernetes.io/version: 1.0.2-beta.4
-    helm.sh/chart: audit-1.0.2-beta.4
+    app.kubernetes.io/version: 1.0.2-beta.5
+    helm.sh/chart: audit-1.0.2-beta.5
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -52,6 +54,12 @@ spec:
     app.kubernetes.io/controller: audit-api
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/name: audit-app
+
+
+
+
+  
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: apps/v1
@@ -63,8 +71,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 1.0.2-beta.4
-    helm.sh/chart: audit-1.0.2-beta.4
+    app.kubernetes.io/version: 1.0.2-beta.5
+    helm.sh/chart: audit-1.0.2-beta.5
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -100,7 +108,7 @@ spec:
               name: audit-secrets
           - configMapRef:
               name: audit-app
-          image: ghcr.io/spydersoft-consulting/audit-api:1.0.2-beta.4
+          image: ghcr.io/spydersoft-consulting/audit-api:1.0.2-beta.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -122,6 +130,7 @@ spec:
           resources:
             requests:
               cpu: 5m
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: apps/v1
@@ -133,8 +142,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 1.0.2-beta.4
-    helm.sh/chart: audit-1.0.2-beta.4
+    app.kubernetes.io/version: 1.0.2-beta.5
+    helm.sh/chart: audit-1.0.2-beta.5
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -170,7 +179,7 @@ spec:
               name: audit-secrets
           - configMapRef:
               name: audit-app
-          image: ghcr.io/spydersoft-consulting/audit-processor:1.0.2-beta.4
+          image: ghcr.io/spydersoft-consulting/audit-processor:1.0.2-beta.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -192,6 +201,10 @@ spec:
           resources:
             requests:
               cpu: 5m
+
+
+  
+
 ---
 # Source: audit/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -202,8 +215,8 @@ metadata:
     app.kubernetes.io/instance: audit-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: audit-app
-    app.kubernetes.io/version: 1.0.2-beta.4
-    helm.sh/chart: audit-1.0.2-beta.4
+    app.kubernetes.io/version: 1.0.2-beta.5
+    helm.sh/chart: audit-1.0.2-beta.5
   namespace: platform-test
 spec:
   parentRefs:
@@ -225,3 +238,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+

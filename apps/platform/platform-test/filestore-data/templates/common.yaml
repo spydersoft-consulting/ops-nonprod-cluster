@@ -24,9 +24,11 @@ data:
     else
       echo "SETUP INFO: No environment variables given!"
     fi
+
+
+
 ---
 # Source: filestore-data/templates/common.yaml
----
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -45,6 +47,10 @@ spec:
     requests:
       storage: "10Gi"
   storageClassName: "nfs-client"
+
+
+
+
 ---
 # Source: filestore-data/templates/common.yaml
 apiVersion: v1
@@ -70,6 +76,14 @@ spec:
     app.kubernetes.io/controller: postgres
     app.kubernetes.io/instance: filestore-data
     app.kubernetes.io/name: filestore-data
+
+
+
+
+
+
+
+
 ---
 # Source: filestore-data/templates/common.yaml
 apiVersion: apps/v1
@@ -143,3 +157,7 @@ spec:
         - configMap:
             name: filestore-data
           name: postgres-init-data
+
+
+  
+

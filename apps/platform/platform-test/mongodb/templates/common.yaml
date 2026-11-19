@@ -27,9 +27,11 @@ data:
     } else {
       print('SETUP INFO: MONGO_NON_ROOT_USER/PASSWORD not provided; skipping audit user creation');
     }
+
+
+
 ---
 # Source: mongodb/templates/common.yaml
----
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -48,6 +50,10 @@ spec:
     requests:
       storage: "50Gi"
   storageClassName: "nfs-client"
+
+
+
+
 ---
 # Source: mongodb/templates/common.yaml
 apiVersion: v1
@@ -73,6 +79,14 @@ spec:
     app.kubernetes.io/controller: main
     app.kubernetes.io/instance: mongodb
     app.kubernetes.io/name: mongodb
+
+
+
+
+
+
+
+
 ---
 # Source: mongodb/templates/common.yaml
 apiVersion: apps/v1
@@ -160,3 +174,7 @@ spec:
         - name: mongodb-secrets
           secret:
             secretName: mongodb-secrets
+
+
+  
+

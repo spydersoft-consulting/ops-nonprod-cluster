@@ -1,6 +1,5 @@
 ---
 # Source: notification/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -22,31 +21,9 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Notification.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
----
-# Source: notification/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: notification-app-notification-hub
-  labels:
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: notification-app
-    app.kubernetes.io/service: notification-app-notification-hub
-    app.kubernetes.io/version: 1.1.1-beta.1
-    helm.sh/chart: notification-1.1.1-beta.1
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: notification-hub
-    app.kubernetes.io/instance: notification-app
-    app.kubernetes.io/name: notification-app
+
+
+
 ---
 # Source: notification/templates/common.yaml
 apiVersion: v1
@@ -72,6 +49,40 @@ spec:
     app.kubernetes.io/controller: notification-api
     app.kubernetes.io/instance: notification-app
     app.kubernetes.io/name: notification-app
+
+  
+
+---
+# Source: notification/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-app-notification-hub
+  labels:
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: notification-app
+    app.kubernetes.io/service: notification-app-notification-hub
+    app.kubernetes.io/version: 1.1.1-beta.1
+    helm.sh/chart: notification-1.1.1-beta.1
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: notification-hub
+    app.kubernetes.io/instance: notification-app
+    app.kubernetes.io/name: notification-app
+
+
+
+
+  
+
 ---
 # Source: notification/templates/common.yaml
 apiVersion: apps/v1
@@ -145,6 +156,7 @@ spec:
           resources:
             requests:
               cpu: 5m
+
 ---
 # Source: notification/templates/common.yaml
 apiVersion: apps/v1
@@ -215,6 +227,10 @@ spec:
           resources:
             requests:
               cpu: 5m
+
+
+  
+
 ---
 # Source: notification/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -248,6 +264,9 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+  
+
 ---
 # Source: notification/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -281,3 +300,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+

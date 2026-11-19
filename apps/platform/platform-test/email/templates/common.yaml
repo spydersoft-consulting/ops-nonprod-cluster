@@ -1,6 +1,5 @@
 ---
 # Source: email/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
-    app.kubernetes.io/version: 1.0.0
-    helm.sh/chart: email-1.0.0
+    app.kubernetes.io/version: 1.0.1-beta.1
+    helm.sh/chart: email-1.0.1-beta.1
   namespace: platform-test
 data:
   Auth__Audience: email-api
@@ -25,6 +24,9 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Email.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+
+
+
 ---
 # Source: email/templates/common.yaml
 apiVersion: v1
@@ -36,8 +38,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
     app.kubernetes.io/service: email-app
-    app.kubernetes.io/version: 1.0.0
-    helm.sh/chart: email-1.0.0
+    app.kubernetes.io/version: 1.0.1-beta.1
+    helm.sh/chart: email-1.0.1-beta.1
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -50,6 +52,12 @@ spec:
     app.kubernetes.io/controller: email-api
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/name: email-app
+
+
+
+
+  
+
 ---
 # Source: email/templates/common.yaml
 apiVersion: apps/v1
@@ -61,8 +69,8 @@ metadata:
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
-    app.kubernetes.io/version: 1.0.0
-    helm.sh/chart: email-1.0.0
+    app.kubernetes.io/version: 1.0.1-beta.1
+    helm.sh/chart: email-1.0.1-beta.1
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -98,7 +106,7 @@ spec:
               name: email-secrets
           - configMapRef:
               name: email-app
-          image: ghcr.io/spydersoft-consulting/email-api:1.0.0
+          image: ghcr.io/spydersoft-consulting/email-api:1.0.1-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -120,6 +128,10 @@ spec:
           resources:
             requests:
               cpu: 5m
+
+
+  
+
 ---
 # Source: email/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -130,8 +142,8 @@ metadata:
     app.kubernetes.io/instance: email-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: email-app
-    app.kubernetes.io/version: 1.0.0
-    helm.sh/chart: email-1.0.0
+    app.kubernetes.io/version: 1.0.1-beta.1
+    helm.sh/chart: email-1.0.1-beta.1
   namespace: platform-test
 spec:
   parentRefs:
@@ -153,3 +165,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+

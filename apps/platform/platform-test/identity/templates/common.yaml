@@ -1,6 +1,5 @@
 ---
 # Source: identity/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 data:
   IdentityServer__Authority: https://auth.mattgerega.net
@@ -21,6 +20,7 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Admin.Api.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: v1
@@ -31,8 +31,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 data:
   OidcProxySettings__Oidc__Authority: https://auth.mattgerega.net
@@ -44,6 +44,7 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Admin.Ui.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: v1
@@ -54,8 +55,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 data:
   AllowedOrigins__0: https://*.mattgerega.net
@@ -74,6 +75,37 @@ data:
   Telemetry__Metrics__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
   Telemetry__ServiceName: Identity.Test
   Telemetry__Trace__Otlp__Endpoint: http://nonproduction-grafana-alloy.grafana:4317
+
+
+
+---
+# Source: identity/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-app-admin-api
+  labels:
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: identity-app
+    app.kubernetes.io/service: identity-app-admin-api
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
+  namespace: platform-test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: admin-api
+    app.kubernetes.io/instance: identity-app
+    app.kubernetes.io/name: identity-app
+
+  
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: v1
@@ -85,8 +117,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
     app.kubernetes.io/service: identity-app-admin-frontend
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -99,6 +131,9 @@ spec:
     app.kubernetes.io/controller: admin-frontend
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/name: identity-app
+
+  
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: v1
@@ -110,8 +145,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
     app.kubernetes.io/service: identity-app-main
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   type: ClusterIP
@@ -124,31 +159,12 @@ spec:
     app.kubernetes.io/controller: main
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/name: identity-app
----
-# Source: identity/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: identity-app-admin-api
-  labels:
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: identity-app
-    app.kubernetes.io/service: identity-app-admin-api
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
-  namespace: platform-test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: admin-api
-    app.kubernetes.io/instance: identity-app
-    app.kubernetes.io/name: identity-app
+
+
+
+
+  
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: apps/v1
@@ -160,8 +176,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -197,7 +213,7 @@ spec:
               name: identity-app-admin-api
           - secretRef:
               name: identity-server-admin-api-secrets
-          image: ghcr.io/spyder007/identity_admin_api:3.4.0
+          image: ghcr.io/spyder007/identity_admin_api:3.4.1-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -219,6 +235,7 @@ spec:
           resources:
             requests:
               cpu: 5m
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: apps/v1
@@ -230,8 +247,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -270,7 +287,7 @@ spec:
               name: identity-app-admin-ui
           - secretRef:
               name: identity-server-admin-ui-secrets
-          image: ghcr.io/spyder007/identity_admin_frontend:3.4.0
+          image: ghcr.io/spyder007/identity_admin_frontend:3.4.1-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -292,6 +309,7 @@ spec:
           resources:
             requests:
               cpu: 5m
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: apps/v1
@@ -303,8 +321,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   revisionHistoryLimit: 1
@@ -340,7 +358,7 @@ spec:
               name: identity-app-identity
           - secretRef:
               name: identity-server-secrets
-          image: ghcr.io/spyder007/identity_server:3.4.0
+          image: ghcr.io/spyder007/identity_server:3.4.1-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -367,6 +385,10 @@ spec:
               port: 8080
             periodSeconds: 10
             timeoutSeconds: 1
+
+
+  
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -377,8 +399,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   parentRefs:
@@ -400,6 +422,9 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+  
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -410,8 +435,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   parentRefs:
@@ -433,6 +458,9 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+  
+
 ---
 # Source: identity/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -443,8 +471,8 @@ metadata:
     app.kubernetes.io/instance: identity-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: identity-app
-    app.kubernetes.io/version: 3.4.0
-    helm.sh/chart: identity-3.4.0
+    app.kubernetes.io/version: 3.4.1-beta.1
+    helm.sh/chart: identity-3.4.1-beta.1
   namespace: platform-test
 spec:
   parentRefs:
@@ -466,3 +494,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+

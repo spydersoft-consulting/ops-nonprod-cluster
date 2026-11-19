@@ -1,6 +1,5 @@
 ---
 # Source: rabbitmq/templates/common.yaml
----
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -19,6 +18,12 @@ spec:
     requests:
       storage: "10Gi"
   storageClassName: "nfs-client"
+
+
+
+
+
+
 ---
 # Source: rabbitmq/templates/common.yaml
 apiVersion: v1
@@ -48,6 +53,12 @@ spec:
     app.kubernetes.io/controller: main
     app.kubernetes.io/instance: rabbitmq
     app.kubernetes.io/name: rabbitmq
+
+
+
+
+  
+
 ---
 # Source: rabbitmq/templates/common.yaml
 apiVersion: apps/v1
@@ -130,6 +141,10 @@ spec:
         - name: rabbitmq-secrets
           secret:
             secretName: rabbitmq-secrets
+
+
+  
+
 ---
 # Source: rabbitmq/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -161,3 +176,8 @@ spec:
         namespace: platform-test
         port: 15672
         weight: 1
+
+
+
+
+
