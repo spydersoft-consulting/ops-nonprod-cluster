@@ -1,6 +1,5 @@
 ---
 # Source: unifi-ipmanager/templates/common.yaml
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 data:
   config.js: |
@@ -23,6 +22,7 @@ data:
       clientId: 'unifiwebclient',
       redirectUri: 'https://uni.mattgerega.net',
     };
+
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -33,8 +33,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 data:
   Identity__ApiName: unifi.ipmanager
@@ -44,31 +44,9 @@ data:
   Telemetry__ServiceName: Unifi.IpManager.Test
   UnifiControllerOptions__DnsZone: gerega.net
   UnifiControllerOptions__Url: https://unifi.gerega.net
----
-# Source: unifi-ipmanager/templates/common.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: unifi-ipmanager-app-api
-  labels:
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/service: unifi-ipmanager-app-api
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
-  namespace: test
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app.kubernetes.io/controller: api
-    app.kubernetes.io/instance: unifi-ipmanager-app
-    app.kubernetes.io/name: unifi-ipmanager-app
+
+
+
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: v1
@@ -80,8 +58,8 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
     app.kubernetes.io/service: unifi-ipmanager-app-frontend
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 spec:
   type: ClusterIP
@@ -94,6 +72,40 @@ spec:
     app.kubernetes.io/controller: frontend
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/name: unifi-ipmanager-app
+
+  
+
+---
+# Source: unifi-ipmanager/templates/common.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: unifi-ipmanager-app-api
+  labels:
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: unifi-ipmanager-app
+    app.kubernetes.io/service: unifi-ipmanager-app-api
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
+  namespace: test
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/controller: api
+    app.kubernetes.io/instance: unifi-ipmanager-app
+    app.kubernetes.io/name: unifi-ipmanager-app
+
+
+
+
+  
+
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: apps/v1
@@ -105,8 +117,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 spec:
   revisionHistoryLimit: 1
@@ -144,7 +156,7 @@ spec:
               name: unifi-ipmanager-app-ipmanager
           - secretRef:
               name: unifi-secrets
-          image: ghcr.io/spyder007/unifi-ipmanager:1.1.3-mtp-migration.1
+          image: ghcr.io/spyder007/unifi-ipmanager:1.1.3-beta.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -174,6 +186,7 @@ spec:
         - configMap:
             name: unifi-ipmanager-app-config-js
           name: config-js
+
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: apps/v1
@@ -185,8 +198,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 spec:
   revisionHistoryLimit: 1
@@ -217,7 +230,7 @@ spec:
       imagePullSecrets: 
         - name: cr-spydersoft-github
       containers: 
-        - image: ghcr.io/spyder007/unifi-client:1.1.3-mtp-migration.1
+        - image: ghcr.io/spyder007/unifi-client:1.1.3-beta.1
           imagePullPolicy: IfNotPresent
           name: main
           resources:
@@ -231,6 +244,10 @@ spec:
         - configMap:
             name: unifi-ipmanager-app-config-js
           name: config-js
+
+
+  
+
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -241,8 +258,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 spec:
   parentRefs:
@@ -270,6 +287,9 @@ spec:
             path:
               replacePrefixMatch: /
               type: ReplacePrefixMatch
+
+  
+
 ---
 # Source: unifi-ipmanager/templates/common.yaml
 apiVersion: gateway.networking.k8s.io/v1
@@ -280,8 +300,8 @@ metadata:
     app.kubernetes.io/instance: unifi-ipmanager-app
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: unifi-ipmanager-app
-    app.kubernetes.io/version: 1.1.3-mtp-migration.1
-    helm.sh/chart: unifi-ipmanager-1.1.3-mtp-migration.1
+    app.kubernetes.io/version: 1.1.3-beta.1
+    helm.sh/chart: unifi-ipmanager-1.1.3-beta.1
   namespace: test
 spec:
   parentRefs:
@@ -303,3 +323,8 @@ spec:
         - path:
             type: PathPrefix
             value: /
+
+
+
+
+
