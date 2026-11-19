@@ -44,3 +44,4 @@ spec:
     remoteRef:
       key: secrets-k8/swing-trade/test/mcp
       property: owner_subject
+

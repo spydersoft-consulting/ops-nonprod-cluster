@@ -43,3 +43,4 @@ spec:
     remoteRef:
       key: secrets-k8/redis/nonproduction
       property: password
+
