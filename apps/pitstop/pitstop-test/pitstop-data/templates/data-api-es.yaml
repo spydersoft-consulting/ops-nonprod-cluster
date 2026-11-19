@@ -37,3 +37,4 @@ spec:
     remoteRef:
       key: secrets-k8/pitstop/test/data-api-client
       property: clientsecret
+
